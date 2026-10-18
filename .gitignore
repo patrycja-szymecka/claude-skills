@@ -1,0 +1,6 @@
+# image cache and built portraits (personal data)
+work/
+test-output/
+dist/
+*.built.html
+portret-*.html
