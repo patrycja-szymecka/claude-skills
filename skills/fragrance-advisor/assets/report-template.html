@@ -1,0 +1,830 @@
+<!doctype html>
+<!--
+  Fragrance report template ("Portret zapachowy"): one interactive page with three modes (day / work / evening).
+
+  How to fill it (see SKILL.md, "The HTML report"):
+  1. Edit the visible copy in the markup: the NAME in its Polish case forms (possessive genitive without "dla" in the running head "Portret Anny" and under the cover title "Anny"; the farewell signature also "Anny", never "dla"; vocative "Anno," opening the farewell line). The prologue (first scene) stays generic: no name, notes or perfumes, the cover line, the "Twój portret" section and the farewell note. No dates anywhere.
+     All copy in the user's language; note names in the data stay in English (`name`) with a translation (`pl`).
+  2. Replace the example data in the <script> block: NOTES (give key notes a `bot` drawing and a `why`), P (18 perfumes: per mode one exact + one similar in each tier), MODES (`sel.exact` / `sel.similar`). FAM holds the family colours.
+     Every note used in a pyramid, chip or key list must exist in NOTES.
+  3. Images are placeholders: {{IMG_<fragrantica perfume id>}} for bottles, {{NOTE_<fragrantica note id>}} for note icons, {{BOT_<note id>}} for the botanical drawing of the signature/key notes.
+     Run (Windows):  powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build_report.ps1 -Src report.html -Out report-final.html -Artifact report-artifact.html
+     Run (elsewhere): python scripts/fragrantica_images.py embed report.html -o report-final.html
+  4. For an Artifact publish: drop the <!doctype>/<html>/<head>/<body> wrapper, move data-mode="wieczor" into
+     a script (document.body.dataset.mode = "wieczor"), and remove the "Zapisz PDF" button (printing is blocked there).
+
+  The example data below is the test profile from development; never ship it as someone's real result.
+-->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portret zapachowy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Jost:wght@400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  /* Layout: an editorial "dossier" on warm paper; a soft aura behind it changes colour with the mode. */
+  :root {
+    --paper:#f4eee5; --card:rgba(251,248,243,.8); --ink:#2f2722; --muted:#76695f; --rule:#c9b9aa; --bordo:#632c35; --track:#ece4d9;
+    --serif:"Instrument Serif", Georgia, serif; --text:"Newsreader", Georgia, serif; --label:Jost, "Helvetica Neue", Arial, sans-serif;
+    --script:"Great Vibes", "Edwardian Script ITC", cursive;
+  }
+  * { box-sizing:border-box; }
+  html { background:var(--paper); }
+  body { margin:0; color:var(--ink); font:300 17px/1.6 var(--text); background:var(--paper); }
+  button { font:inherit; color:inherit; }
+  img { max-width:100%; }
+
+  .aura { position:fixed; inset:-12%; z-index:-1; filter:blur(70px); opacity:0; transition:opacity .9s ease; pointer-events:none; }
+  .aura.dzien  { background:radial-gradient(34% 30% at 14% 12%, #f6ddb0, transparent 70%), radial-gradient(30% 26% at 86% 20%, #f3cf86, transparent 70%), radial-gradient(34% 30% at 76% 76%, #f1d7c4, transparent 70%), radial-gradient(28% 26% at 12% 86%, #e9e2c6, transparent 70%); }
+  .aura.praca  { background:radial-gradient(34% 30% at 14% 12%, #ecdccb, transparent 70%), radial-gradient(30% 26% at 86% 20%, #dfd4c2, transparent 70%), radial-gradient(34% 30% at 76% 76%, #d8c9bd, transparent 70%), radial-gradient(28% 26% at 12% 86%, #d9d8c8, transparent 70%); }
+  .aura.wieczor{ background:radial-gradient(34% 30% at 14% 12%, #ecc9b2, transparent 70%), radial-gradient(30% 26% at 86% 20%, #d9a37a, transparent 70%), radial-gradient(34% 30% at 76% 76%, #b9848a, transparent 70%), radial-gradient(28% 26% at 12% 86%, #8d6470, transparent 70%); }
+  body[data-mode="dzien"] .aura.dzien, body[data-mode="praca"] .aura.praca, body[data-mode="wieczor"] .aura.wieczor { opacity:.7; }
+
+  /* old-perfumery paper: fine grain + slow mottling + a candle-light vignette, laid over everything */
+  :root {
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .24 0 0 0 0 .18 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --mottle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .22 0 0 0 .10 -.03'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+  }
+  body::after { content:""; position:fixed; inset:0; z-index:50; pointer-events:none; mix-blend-mode:multiply;
+    background:var(--grain), var(--mottle), radial-gradient(ellipse 120% 90% at 50% 40%, transparent 58%, rgba(90,52,30,.09) 100%); }
+
+  .page { max-width:1060px; margin:0 auto; padding-inline:20px; padding-block:0 96px; }
+
+  /* rooms: an arched doorway you walk through while scrolling (--p = progress through the viewport) */
+  .threshold { position:relative; height:clamp(240px, 52vh, 440px); display:grid; place-items:center; color:var(--bordo); overflow:hidden; margin:8px 0; }
+  .threshold .door { position:absolute; height:88%; width:auto; transform:scale(calc(.72 + var(--p, .5) * 1.15)); opacity:calc(.12 + var(--o, 1) * .88); will-change:transform, opacity; }
+  .threshold .room { position:relative; text-align:center; opacity:var(--o, 1); transform:translateY(calc((.5 - var(--p, .5)) * 70px)); }
+  .threshold .num { display:block; font:400 64px/1 var(--serif); }
+  .threshold .nm { display:block; margin-top:6px; font:500 11px var(--label); letter-spacing:.3em; text-transform:uppercase; color:var(--ink); }
+  .threshold .nm::before, .threshold .nm::after { content:""; display:inline-block; width:28px; height:1px; background:var(--rule); vertical-align:middle; margin:0 12px; }
+
+  /* things appear as you enter a room (only when motion is welcome) */
+  .motion .reveal { opacity:0; transform:translateY(28px); transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .motion .reveal.in { opacity:1; transform:none; }
+  .motion .note.reveal.in { transform:rotate(-.6deg); }
+  .motion .grid .card:nth-child(2) { transition-delay:.12s; } .motion .grid .card:nth-child(3) { transition-delay:.24s; }
+  .motion .keys .key:nth-child(2) { transition-delay:.1s; } .motion .keys .key:nth-child(3) { transition-delay:.2s; }
+  .motion .card.in:hover, .motion .card.in:focus-visible { transform:translateY(-4px); transition-delay:0s; }
+  .motion .key.in:hover, .motion .key.in:focus-visible { transform:translateY(-3px); transition-delay:0s; }
+  .motion .card .arch img { clip-path:inset(100% 0 0 0); transition:clip-path 1.2s cubic-bezier(.2,.7,.2,1) .25s; }
+  .motion .card.in .arch img { clip-path:inset(0 0 0 0); }
+  .label { font:500 11px/1.4 var(--label); letter-spacing:.2em; text-transform:uppercase; }
+  .bordo { color:var(--bordo); }
+  .muted { color:var(--muted); }
+
+  .runhead { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:28px 0 12px; border-bottom:3px double var(--bordo); }
+  .pdf { font:500 11px var(--label); letter-spacing:.18em; text-transform:uppercase; background:transparent; border:1px solid var(--bordo); color:var(--bordo); padding:9px 14px; cursor:pointer; }
+  .pdf:hover { background:var(--bordo); color:var(--paper); }
+
+  /* cover */
+  .cover { display:grid; grid-template-columns:1.2fr 1fr; gap:40px; align-items:center; padding:48px 0 40px; }
+  .cover h1 { font:400 clamp(64px, 10vw, 120px)/.92 var(--serif); margin:0; letter-spacing:-.02em; padding-bottom:.12em; }
+  .cover .name { font:400 64px/1 var(--script); color:var(--bordo); margin-top:clamp(14px, 2vw, 22px); margin-left:-2px; }
+  .cover .rule { width:56px; height:1px; background:var(--bordo); margin:28px 0 18px; }
+  .cover .sub { font:300 italic 21px/1.45 var(--text); margin:22px 0 0; max-width:480px; }
+  .plate { position:relative; margin:0; max-width:420px; justify-self:center; }
+  .plate img { display:block; width:100%; -webkit-mask:radial-gradient(closest-side, #000 78%, transparent 100%); mask:radial-gradient(closest-side, #000 78%, transparent 100%); }
+  .plate figcaption { position:absolute; right:0; bottom:6%; font:italic 300 15px/1.3 var(--text); color:var(--muted); text-align:right; }
+
+  /* portrait */
+  .portrait { display:grid; grid-template-columns:1.25fr 1fr; gap:48px; padding:44px 0 36px; border-top:1px solid var(--rule); }
+  .portrait h2 { font:400 56px/1 var(--serif); margin:10px 0 14px; }
+  .thesis { font:400 32px/1.15 var(--serif); color:var(--bordo); margin:0 0 20px; }
+  .portrait p { margin:0 0 14px; max-width:60ch; }
+  .traits { display:grid; gap:26px; align-content:start; padding-top:8px; }
+  .traits ul { list-style:none; margin:10px 0 0; padding:0; font-size:16px; }
+  .traits li { padding:8px 0; border-top:1px solid var(--rule); }
+  .traits p { margin:10px 0 0; font-size:16px; }
+
+  /* mode switch */
+  .switch-wrap { position:sticky; top:0; z-index:4; padding:14px 0; margin-top:16px; background:linear-gradient(var(--paper) 70%, rgba(244,238,229,0)); }
+  .switch { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--bordo); border-radius:999px; padding:4px; max-width:560px; margin:0 auto; background:rgba(251,248,243,.8); }
+  .switch button { border:0; background:transparent; border-radius:999px; padding:10px 8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font:500 12px var(--label); letter-spacing:.14em; text-transform:uppercase; color:var(--bordo); transition:background .3s, color .3s; }
+  .switch button[aria-selected="true"] { background:var(--bordo); color:var(--paper); }
+  .switch svg { width:16px; height:16px; flex:none; }
+
+  .mode { display:none; padding-top:24px; animation:fade .6s ease; }
+  body[data-mode="dzien"] .mode[data-mode="dzien"], body[data-mode="praca"] .mode[data-mode="praca"], body[data-mode="wieczor"] .mode[data-mode="wieczor"] { display:block; }
+  @keyframes fade { from { opacity:.3; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .mode-head { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:end; padding:16px 0 36px; }
+  .mode-head h2 { font:400 clamp(48px, 7vw, 76px)/.95 var(--serif); margin:12px 0 0; }
+  .mode-head h2 em { color:var(--bordo); }
+  .mode-head p { margin:0; }
+  .sillage { margin-top:12px; }
+
+  .panel { background:var(--grain), var(--card); border:1px solid rgba(255,255,255,.9); border-radius:28px; padding:30px; min-width:0;
+    box-shadow:inset 0 0 0 7px rgba(251,248,243,.6), inset 0 0 0 8px rgba(201,185,170,.45), 0 18px 50px rgba(70,40,30,.07); }
+
+  /* engraved note medallion */
+  .duo { position:relative; display:block; aspect-ratio:1; border-radius:50%; overflow:hidden; background:rgba(255,252,247,.85); border:1px solid var(--rule); }
+  .duo img { display:block; width:100%; height:100%; object-fit:cover; }
+
+  .keys { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:24px; }
+  .key { text-align:left; background:var(--grain), var(--card); border:1px solid rgba(255,255,255,.9); border-radius:24px; padding:22px; cursor:pointer; display:grid; grid-template-columns:96px minmax(0,1fr); gap:18px; align-items:center; transition:transform .25s, box-shadow .25s; }
+  .key:hover, .key:focus-visible { transform:translateY(-3px); box-shadow:0 14px 34px rgba(99,44,53,.12); outline:none; }
+  .key .n { font:500 11px var(--label); letter-spacing:.18em; color:var(--bordo); }
+  .key h3 { font:400 30px/1 var(--serif); margin:4px 0 6px; }
+  .key p { margin:0; font-size:14.5px; line-height:1.45; color:var(--muted); }
+  .key .more { display:inline-block; margin-top:8px; font:500 10.5px var(--label); letter-spacing:.16em; text-transform:uppercase; color:var(--bordo); }
+
+  .twin { display:grid; grid-template-columns:1.5fr 1fr; gap:24px; }
+  /* the pyramid panel matches the chart panel's height: centre the pyramid in it instead of leaving a gap below */
+  .twin > .panel:first-child { display:flex; flex-direction:column; }
+  .twin > .panel:first-child .pyr-wrap { width:100%; margin-block:auto; }
+
+  /* pyramid */
+  .pyr-wrap { display:grid; grid-template-columns:auto minmax(0, 1fr); gap:14px; margin-top:18px; }
+  .pyr-labels { position:relative; width:96px; }
+  .lvl { position:absolute; left:0; transform:translateY(-50%); font:500 11px/1.35 var(--label); letter-spacing:.16em; text-transform:uppercase; }
+  .lvl small { display:block; font:italic 300 14px/1.2 var(--text); letter-spacing:0; text-transform:none; color:var(--muted); }
+  .pyramid { position:relative; container-type:inline-size; width:100%; max-width:560px; aspect-ratio:100/92; justify-self:center; }
+  .tri { position:absolute; inset:0; clip-path:polygon(50% 0, 100% 100%, 0 100%); background:linear-gradient(180deg, rgba(255,251,244,.95) 0%, #f2e5d6 42%, #e7d2c4 68%, #cfb0a8 100%); }
+  body[data-mode="wieczor"] .tri { background:linear-gradient(180deg, rgba(255,251,244,.95) 0%, #efdcca 38%, #d9b7ae 66%, #a87b81 100%); }
+  .pnote { position:absolute; background:none; border:0; padding:0; cursor:pointer; text-align:center; }
+  .pnote .duo { box-shadow:0 0 0 2px rgba(255,255,255,.95); transition:transform .2s; }
+  .pnote:hover .duo, .pnote:focus-visible .duo { transform:scale(1.08); }
+  .pnote:focus-visible { outline:none; }
+  .pnote.is-key .duo { box-shadow:0 0 0 2px rgba(255,255,255,.95), 0 0 0 3.5px var(--bordo); }
+  .pnote .nm { position:absolute; left:50%; top:100%; width:118%; transform:translateX(-50%); margin-top:.9cqw; font:400 2.5cqw/1.12 var(--label); color:var(--ink); }
+
+  /* family chart (two styles to compare) */
+  .chart-box { display:flex; flex-direction:column; gap:14px; }
+  .chart-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .chart-box svg { display:block; width:100%; max-width:280px; height:auto; margin:0 auto; overflow:visible; touch-action:manipulation; }
+  .chart-box svg text { font-family:var(--label); }
+  [data-fi] { cursor:pointer; transition:opacity .25s; }
+  .dim [data-fi]:not(.on) { opacity:.22; }
+  .legend { list-style:none; margin:0; padding:0; width:100%; font:400 13px var(--label); display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); column-gap:22px; }
+  .legend li { display:flex; align-items:center; gap:10px; padding:5px 0; border-top:1px solid rgba(201,185,170,.6); }
+  .legend i { width:9px; height:9px; border-radius:50%; flex:none; }
+  .legend b { margin-left:auto; font-weight:500; font-variant-numeric:tabular-nums; }
+  .hint { font:italic 300 14px/1.4 var(--text); color:var(--muted); margin:0; }
+
+  /* selection */
+  .sel-head { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin:0 0 20px; padding-bottom:14px; border-bottom:3px double var(--bordo); }
+  .sel-head h3 { font:400 48px/1 var(--serif); margin:0; }
+  .match-switch { display:flex; gap:4px; border:1px solid var(--bordo); border-radius:999px; padding:3px; background:rgba(251,248,243,.8); }
+  .match-switch button { border:0; background:transparent; border-radius:999px; padding:7px 14px; font:500 11px var(--label); letter-spacing:.12em; text-transform:uppercase; color:var(--bordo); cursor:pointer; }
+  .match-switch button[aria-pressed="true"] { background:var(--bordo); color:var(--paper); }
+  .sel-set { display:none; }
+  .mode[data-match="exact"] .sel-set[data-set="exact"], .mode[data-match="similar"] .sel-set[data-set="similar"] { display:block; }
+  .set-note { font:italic 300 15px/1.4 var(--text); color:var(--muted); margin:0 0 18px; }
+  .grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px; }
+  .card { background:var(--grain), var(--card); border:1px solid rgba(255,255,255,.9); border-radius:26px; padding:14px 14px 22px; display:flex; flex-direction:column; cursor:pointer; text-align:left; transition:transform .25s, box-shadow .25s; }
+  .card:hover, .card:focus-visible { transform:translateY(-4px); box-shadow:0 18px 40px rgba(99,44,53,.12); outline:none; }
+  /* bottle niche: plastered arch with depth at the top, like a shelf alcove in an old officina */
+  .arch { border-radius:999px 999px 18px 18px; aspect-ratio:4/5; display:flex; align-items:flex-end; justify-content:center; overflow:hidden; isolation:isolate; margin-bottom:16px; padding-top:14%;
+    background:var(--grain), linear-gradient(180deg, #fffaf3, var(--tint, #efe2d1));
+    box-shadow:inset 0 22px 30px -20px rgba(70,40,28,.28), inset 0 0 0 1px rgba(201,185,170,.5); }
+  .arch img { display:block; max-width:70%; max-height:100%; object-fit:contain; mix-blend-mode:multiply; filter:sepia(.08) saturate(.92); }
+  .card .body { padding:0 8px; display:flex; flex-direction:column; flex:1; }
+  .meta { display:flex; justify-content:space-between; gap:8px; font:500 10.5px var(--label); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .meta .t { color:var(--bordo); }
+  .card h4 { font:400 32px/1.02 var(--serif); margin:0; }
+  .card .brand { font:500 11px var(--label); letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:6px 0 12px; }
+  .card p { font-size:15.5px; line-height:1.5; margin:0 0 14px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; }
+  .chip { display:inline-flex; align-items:center; gap:6px; font:400 12px var(--label); padding:3px 10px 3px 3px; border-radius:999px; background:rgba(255,255,255,.75); border:1px solid rgba(201,185,170,.6); }
+  .chip .duo { width:20px; border:0; }
+  .foot { display:flex; justify-content:space-between; align-items:center; margin-top:14px; font:500 12px var(--label); }
+  .foot .open { color:var(--bordo); letter-spacing:.14em; text-transform:uppercase; font-size:10.5px; }
+  .extra { display:none; }
+
+  /* closing: a small note left on the counter */
+  .closing { padding:72px 0 0; display:grid; place-items:center; }
+  .note { position:relative; width:min(560px, 100%); text-align:center; padding:44px 48px 36px;
+    background:var(--grain), #fbf7f0; border:1px solid rgba(201,185,170,.7);
+    box-shadow:inset 0 0 0 8px #fbf7f0, inset 0 0 0 9px rgba(201,185,170,.5), 0 24px 50px rgba(70,40,28,.12); transform:rotate(-.6deg); }
+  .note-sprig { display:block; width:120px; height:120px; margin:-4px auto 10px; object-fit:cover; border-radius:50%;
+    -webkit-mask:radial-gradient(closest-side, #000 70%, transparent 100%); mask:radial-gradient(closest-side, #000 70%, transparent 100%); }
+  /* prologue: an arch drawing itself, then four lines arriving one by one */
+  .prologue .scene-in { display:grid; place-items:center; width:100%; }
+  /* the box has the arch's own proportions, and the text is sized in units of the box (cqw),
+     so the words always sit inside the opening, whatever the screen size */
+  .pro { position:relative; width:min(520px, 100%, calc(78vh * 200 / 280)); aspect-ratio:200 / 280; container-type:inline-size; text-align:center; }
+  .pro-arch { position:absolute; inset:0; width:100%; height:100%; fill:none; stroke:var(--bordo); }
+  .pro-arch path:first-child { stroke-width:1.1; } .pro-arch path:last-child { stroke-width:.6; opacity:.7; }
+  .pro-arch path { stroke-dasharray:760; stroke-dashoffset:0; }
+  /* the lines share one spot and one typeface; each arrives, lingers and gives way to the next */
+  .pro-text { position:absolute; z-index:0; isolation:isolate; display:grid; place-items:center; left:24%; right:24%; top:38%; bottom:24%; }
+  /* a soft, blurred halo of paper behind the words, so the arch lines melt away where the text sits */
+  .pro-text::before { content:""; position:absolute; z-index:-1; inset:-20% -30%;
+    background:radial-gradient(closest-side, rgba(244,238,229,.96) 0%, rgba(244,238,229,.82) 45%, rgba(244,238,229,0) 100%);
+    -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
+    -webkit-mask:radial-gradient(closest-side, #000 55%, transparent 100%); mask:radial-gradient(closest-side, #000 55%, transparent 100%); }
+  .pro-line { grid-area:1 / 1; margin:0; font:400 8cqw/1.14 var(--serif); color:var(--ink); text-wrap:balance; }
+  .pro-line:not(.pro-last) { opacity:0; }
+  .pro-cue { position:absolute; bottom:4%; left:0; right:0; text-align:center; font:500 11px var(--label); letter-spacing:.24em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+  .pro-cue::after { content:""; display:block; width:1px; height:30px; margin:10px auto 0; background:var(--bordo); }
+  @media (prefers-reduced-motion:no-preference) {
+    .pro-arch path { stroke-dashoffset:760; animation:draw 3.4s cubic-bezier(.4,0,.2,1) .3s forwards; }
+    .pro-arch path:last-child { animation-delay:.9s; }
+    .pro-line:not(.pro-last) { animation:pass 3.6s ease both; }
+    .pro-line:nth-child(1) { animation-delay:1.4s; } .pro-line:nth-child(2) { animation-delay:5s; } .pro-line:nth-child(3) { animation-delay:8.6s; }
+    .pro-last { opacity:0; animation:rise 1.6s ease 12.2s forwards; }
+    .pro-cue { opacity:0; animation:rise 1.4s ease 13.8s forwards; }
+    .pro-cue::after { animation:cue 1.8s ease-in-out 15s infinite; }
+  }
+  @keyframes draw { to { stroke-dashoffset:0; } }
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  /* in, linger, out */
+  @keyframes pass { 0% { opacity:0; transform:translateY(8px); } 25% { opacity:1; transform:none; } 72% { opacity:1; } 100% { opacity:0; transform:translateY(-6px); } }
+  html:not(.depth) .prologue { min-height:92vh; display:grid; grid-template-columns:minmax(0, 1fr); place-items:center; }
+  .hud-room, .hud-dots, .view-toggle { transition:opacity .5s; }
+  html.depth.at-prologue .hud-room, html.depth.at-prologue .hud-dots, html.depth.at-prologue .view-toggle { opacity:0; pointer-events:none; }
+
+  /* the farewell is written in a calligraphic hand */
+  .note .note-line { font:400 46px/1.08 var(--script); color:var(--bordo); margin:12px auto 16px; max-width:21ch; text-wrap:balance; }
+  .note-sign .who { display:block; margin-top:6px; font:400 36px/1 var(--script); letter-spacing:0; text-transform:none; color:var(--bordo); }
+  .note p { margin:0 auto 14px; max-width:44ch; font-size:16.5px; }
+  .note .note-ps { font:italic 300 15.5px/1.45 var(--text); color:var(--muted); margin-top:18px; }
+  .note-sign { margin-top:22px; padding-top:14px; border-top:1px solid var(--rule); font:500 10.5px var(--label); letter-spacing:.24em; text-transform:uppercase; color:var(--bordo); }
+
+  /* side sheet */
+  dialog { border:0; padding:0; width:min(520px, 100%); max-width:100%; max-height:100%; height:100%; margin:0 0 0 auto; background:var(--paper); color:var(--ink); box-shadow:-20px 0 60px rgba(47,39,34,.2); }
+  dialog::backdrop { background:rgba(47,39,34,.35); }
+  dialog[open] { animation:slide .35s ease; }
+  @keyframes slide { from { transform:translateX(40px); opacity:0; } to { transform:none; opacity:1; } }
+  .sheet { position:relative; padding:28px 32px 48px; }
+  .sheet .close { position:sticky; top:0; float:right; z-index:2; border:1px solid var(--rule); background:var(--paper); border-radius:50%; width:40px; height:40px; cursor:pointer; font:400 20px/1 var(--label); }
+  .sheet .frame { clear:both; height:300px; border-radius:999px 999px 20px 20px; overflow:hidden; isolation:isolate; display:flex; align-items:flex-end; justify-content:center; padding-top:34px; margin:6px 0 24px; background:linear-gradient(180deg, #fffaf3, var(--tint, #efe2d1)); }
+  .sheet .frame img { display:block; max-height:100%; max-width:62%; object-fit:contain; mix-blend-mode:multiply; }
+  .sheet .botan { clear:both; display:block; width:240px; max-width:100%; margin:0 auto 18px; }
+  .sheet .botan img { display:block; width:100%; -webkit-mask:radial-gradient(closest-side, #000 75%, transparent 100%); mask:radial-gradient(closest-side, #000 75%, transparent 100%); }
+  .sheet .eng { clear:both; display:block; width:150px; margin:8px 0 18px; }
+  .sheet h3 { font:400 46px/1 var(--serif); margin:6px 0 4px; }
+  .sheet h5 { font:500 11px var(--label); letter-spacing:.18em; text-transform:uppercase; color:var(--bordo); margin:22px 0 6px; }
+  .sheet p { margin:0; font-size:16.5px; }
+  .sheet .lv { display:grid; grid-template-columns:72px minmax(0,1fr); gap:10px; padding:7px 0; border-top:1px solid var(--rule); font-size:15.5px; }
+  .sheet .lv span:first-child { font:500 10.5px var(--label); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); padding-top:4px; }
+  .sheet .warn { border-left:2px solid var(--bordo); padding-left:12px; }
+  .sheet .links { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .sheet .links button { border:1px solid var(--rule); background:rgba(255,255,255,.6); border-radius:999px; padding:6px 12px; cursor:pointer; font:400 13px var(--label); }
+
+  @media (max-width:860px) {
+    .cover, .portrait, .mode-head, .twin { grid-template-columns:minmax(0,1fr); gap:24px; }
+    .keys, .grid { grid-template-columns:minmax(0,1fr); }
+    .pyr-labels { width:72px; } .lvl small { font-size:12.5px; }
+    .panel { padding:22px; }
+    .sheet { padding:20px 18px 40px; }
+  }
+  /* ---------- depth tour (large screens, motion allowed): rooms stacked in depth, scroll walks forward ---------- */
+  .hud, #track { display:none; }
+  .view-toggle { position:fixed; left:20px; bottom:20px; z-index:70; font:500 10.5px var(--label); letter-spacing:.16em; text-transform:uppercase; color:var(--bordo); background:rgba(251,248,243,.9); border:1px solid var(--rule); border-radius:999px; padding:9px 14px; cursor:pointer; }
+  .view-toggle:hover, .view-toggle:focus-visible { border-color:var(--bordo); outline:none; }
+  @media print { .view-toggle { display:none !important; } }
+  body[data-mode="dzien"] { --glow:rgba(246,214,150,.55); } body[data-mode="praca"] { --glow:rgba(226,211,190,.55); } body[data-mode="wieczor"] { --glow:rgba(214,150,128,.42); }
+  @media screen {
+    html.depth, html.depth body { height:100%; overflow:hidden; overscroll-behavior:none; }
+    html.depth #tour { touch-action:pan-x; }
+    html.depth .aura, html.depth .threshold { display:none; }
+    html.depth #tour { position:fixed; inset:0; max-width:none; margin:0; padding:0; overflow:hidden; }
+    html.depth .scene { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:84px 6vw 40px; }
+    html.depth .scene-in { position:relative; width:min(1060px, 100%); transform-origin:50% 50%; will-change:transform, opacity; }
+    html.depth .room-bg { position:absolute; inset:0; background:radial-gradient(60% 55% at 50% 46%, var(--glow), transparent 72%), var(--grain), var(--paper); transition:background .8s; }
+    html.depth .portal { position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; transform-origin:50% 56%; will-change:transform, opacity; }
+    html.depth .hole { position:relative; width:40vmin; height:58vmin; transform:translateY(6vmin); border-radius:20vmin 20vmin 0 0; box-shadow:0 0 0 260vmax var(--paper); outline:1px solid var(--bordo); outline-offset:-1px; }
+    html.depth .hole::before { content:""; position:absolute; inset:-2.4vmin -2.4vmin 0; border:1px solid var(--bordo); border-bottom:0; border-radius:22.4vmin 22.4vmin 0 0; }
+    html.depth .hole::after { content:""; position:absolute; left:-70vmin; right:-70vmin; bottom:0; height:1px; background:var(--rule); }
+    html.depth .lintel { position:absolute; bottom:calc(100% + 5vmin); left:50%; transform:translateX(-50%); text-align:center; color:var(--bordo); white-space:nowrap; }
+    html.depth .pn { display:block; font:400 9vmin/1 var(--serif); }
+    html.depth .pname { display:block; margin-top:1.2vmin; font:500 max(10px, 1.4vmin) var(--label); letter-spacing:.3em; text-transform:uppercase; color:var(--ink); }
+    html.depth .portrait { border-top:0; padding:0; }
+    html.depth .cover { padding:28px 0 0; }
+    html.depth .closing { padding:0; }
+    html.depth .hud { display:block; }
+    .hud-room { position:fixed; top:22px; left:28px; z-index:70; display:flex; align-items:baseline; gap:10px; color:var(--bordo); font:500 11px var(--label); letter-spacing:.2em; text-transform:uppercase; }
+    .hud-n { font:400 24px/1 var(--serif); letter-spacing:0; }
+    .hud-dots { position:fixed; right:22px; top:50%; transform:translateY(-50%); z-index:70; list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+    .hud-dots button { width:34px; height:34px; border-radius:50%; border:1px solid var(--rule); background:rgba(251,248,243,.88); font:400 13px var(--serif); color:var(--muted); cursor:pointer; }
+    .hud-dots button[aria-current] { background:var(--bordo); border-color:var(--bordo); color:var(--paper); }
+    .hud-dots button:focus-visible { outline:2px solid var(--bordo); outline-offset:2px; }
+    .hud-hint { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:70; font:italic 300 16px var(--text); color:var(--muted); transition:opacity .4s; pointer-events:none; }
+    .hud-hint::after { content:""; display:block; width:1px; height:26px; margin:8px auto 0; background:var(--bordo); animation:cue 1.8s ease-in-out infinite; }
+    @keyframes cue { 0%,100% { transform:scaleY(.3); transform-origin:top; } 50% { transform:scaleY(1); transform-origin:top; } }
+    html.depth .switch-wrap { position:fixed; top:14px; left:50%; transform:translateX(-50%); width:min(560px, 60vw); z-index:70; margin:0; padding:0; background:none; opacity:0; pointer-events:none; transition:opacity .4s; }
+    html.depth.show-switch .switch-wrap { opacity:1; pointer-events:auto; }
+  }
+
+  @media (prefers-reduced-motion:reduce) { html:not(.depth) *, html:not(.depth) *::before, html:not(.depth) *::after { animation:none !important; transition:none !important; } .threshold .door { transform:none; } .hud-hint::after { animation:none; } }
+
+  @page { size:A4; margin:14mm; }
+  @media print {
+    body { font-size:11pt; } .aura, .switch-wrap, .pdf, dialog, .foot .open, .key .more, .match-switch, .threshold { display:none !important; }
+    .mode { display:block !important; break-before:page; animation:none; }
+    .sel-set { display:block !important; margin-bottom:18px; }
+    .reveal, .arch, .arch img, .scene, .scene-in { opacity:1 !important; transform:none !important; clip-path:none !important; visibility:visible !important; }
+    .room-bg, .portal, .hud, #track { display:none !important; }
+    .panel, .card, .key { background:rgba(255,255,255,.55); box-shadow:none; break-inside:avoid; }
+    .extra { display:block; font-size:10pt; margin-top:10px; border-top:1px solid var(--rule); padding-top:8px; }
+    * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body data-mode="wieczor">
+<div class="aura dzien"></div><div class="aura praca"></div><div class="aura wieczor"></div>
+
+<main class="page" id="tour">
+  <!-- prologue: builds anticipation, reveals nothing (no name, notes or perfumes) -->
+  <section class="scene prologue" data-n="" data-name="Prolog"><div class="scene-in">
+    <div class="pro">
+      <svg class="pro-arch" viewBox="0 0 200 280" aria-hidden="true"><path d="M12 280V108a88 88 0 0 1 176 0v172"/><path d="M30 280V110a70 70 0 0 1 140 0v170"/></svg>
+      <div class="pro-text">
+        <p class="pro-line">Zanim wejdziesz</p>
+        <p class="pro-line">Weź głęboki oddech</p>
+        <p class="pro-line">Za tym progiem czeka zapach, którego jeszcze nie znasz</p>
+        <p class="pro-line pro-last">On zna już Ciebie.</p>
+      </div>
+      <div class="pro-cue">Przewiń, aby wejść</div>
+    </div>
+  </div></section>
+
+  <section class="scene" data-n="I" data-name="Wejście"><div class="scene-in">
+  <div class="runhead"><span class="label">Analiza indywidualna</span><span class="label bordo">Portret Anny</span><button class="pdf" onclick="window.print()">Zapisz PDF</button></div>
+
+  <section class="cover">
+    <div>
+      <div class="label bordo" style="margin-bottom:22px">I · Wejście</div>
+      <h1>Portret<br>zapachowy</h1>
+      <div class="name">Anny</div>
+      <div class="rule"></div>
+      <div class="label muted">Osobista analiza Twoich preferencji i wybrane zapachy</div>
+      <p class="sub">Dla kogoś, kto wchodzi do pokoju jasno, a zostaje w pamięci na długo.</p>
+    </div>
+    <figure class="plate">
+      <img src="{{BOT_16}}" alt="Rysunek botaniczny kwiatu pomarańczy">
+      <figcaption>Citrus aurantium<br>kwiat pomarańczy</figcaption>
+    </figure>
+  </section>
+  </div></section>
+
+  <section class="scene" data-n="II" data-name="Portret"><div class="scene-in">
+  <section class="portrait">
+    <div class="reveal">
+      <div class="label bordo">Twój portret</div>
+      <h2>Jasność, która ma cień</h2>
+      <p class="thesis">Kwiat pomarańczy · Kadzidło · Piżmo</p>
+      <p>Masz w sobie dwie temperatury. Pierwsze wrażenie jest ciepłe i otwarte: łatwo nawiązujesz kontakt, a ludzie szybko czują się przy Tobie swobodnie. To jednak tylko pierwsza warstwa. Głębiej jest ktoś, kto ma własne zdanie, nie tłumaczy się ze swoich wyborów i nie potrzebuje, żeby wszyscy rozumieli go od razu.</p>
+      <p>Zapachy, które naprawdę do Ciebie pasują, działają tak samo. Zaczynają się jasno i przyjaźnie, a z czasem odsłaniają coś głębszego. Lubisz ciepło, ale takie, które ma charakter. Słodycz dla samej słodyczy szybko Cię nuży.</p>
+    </div>
+    <div class="traits reveal">
+      <div><div class="label bordo">To, co Cię porusza</div><ul><li>Światło, które ma swój cień</li><li>Ciepło bez lukru</li><li>Rzeczy, które odkrywa się z czasem</li><li>Własny styl, którego nie trzeba tłumaczyć</li></ul></div>
+      <div><div class="label bordo">Twój styl zapachowy</div><p>Jasne otwarcie i zmysłowe zakończenie. Kwiaty, ale nigdy grzeczne. Zapach, który działa z bliska i zostaje w pokoju dłużej niż Ty.</p></div>
+    </div>
+  </section>
+  </div></section>
+
+  <div class="switch-wrap">
+    <div class="switch" role="tablist" aria-label="Wariant">
+      <button role="tab" data-to="dzien" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg><span>Na dzień</span></button>
+      <button role="tab" data-to="praca" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18"/></svg><span>Do pracy</span></button>
+      <button role="tab" data-to="wieczor" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><span>Na wieczór</span></button>
+    </div>
+  </div>
+
+  <section class="scene" data-n="III" data-name="Pracownia nut"><div class="scene-in" id="m-head"></div></section>
+  <section class="scene" data-n="IV" data-name="Piramida"><div class="scene-in" id="m-twin"></div></section>
+  <section class="scene" data-n="V" data-name="Gabloty"><div class="scene-in" id="m-sel"></div></section>
+  <section class="scene" data-n="VI" data-name="Pożegnanie"><div class="scene-in">
+    <section class="closing">
+      <article class="note reveal">
+        <img class="note-sprig" src="{{BOT_16}}" alt="">
+        <div class="label bordo">Na pożegnanie</div>
+        <p class="note-line">Anno, nie musisz mówić wszystkiego od razu. Twój zapach też nie.</p>
+        <p class="note-body">Wybierz jeden flakon i daj mu cały dzień. Rano poznasz jego jasną stronę, wieczorem tę drugą. Ten, który pod koniec dnia pachnie bardziej jak Ty niż jak perfumy, jest Twój.</p>
+        <p class="note-ps">P.S. Jeśli ktoś zapyta, co masz na sobie, nie musisz od razu zdradzać.</p>
+        <div class="note-sign">Portret zapachowy<span class="who">Anny</span></div>
+      </article>
+    </section>
+  </div></section>
+</main>
+
+<!-- depth-tour chrome: scroll track, room label, room dots, hint -->
+<div id="track" aria-hidden="true"></div>
+<nav class="hud" aria-label="Sale">
+  <div class="hud-room"><span class="hud-n"></span><span class="hud-name"></span></div>
+  <ol class="hud-dots"></ol>
+  <div class="hud-hint">Przewiń, żeby wejść dalej</div>
+</nav>
+<dialog id="sheet"><div class="sheet" id="sheet-body"></div></dialog>
+
+<script>
+/* ===================== DATA (filled per user) ===================== */
+const NOTES = {
+  bergamot:{ name:'Bergamot', pl:'Bergamota', img:'{{NOTE_75}}', smell:'Włoski cytrus o gorzkawej, herbacianej świeżości. To on pachnie w herbacie Earl Grey.', why:'Daje pierwszy oddech. W dzień to on sprawia, że zapach wchodzi lekko, zanim pojawią się kwiaty.' },
+  mandarin:{ name:'Mandarin Orange', pl:'Mandarynka', img:'{{NOTE_82}}', smell:'Słodsza i bardziej soczysta niż pomarańcza, z nutą skórki.' },
+  neroli:{ name:'Neroli', pl:'Neroli', img:'{{NOTE_17}}', bot:'{{BOT_17}}', smell:'Olejek z kwiatów gorzkiej pomarańczy, destylowany parą. Jasny, zielono-miodowy, jak skórka i płatki naraz.', why:'Twoja jasna strona: czysta, otwarta, bez wysiłku. Od niej zaczyna się każda wersja portretu.' },
+  orangeblossom:{ name:'Orange Blossom', pl:'Kwiat pomarańczy', img:'{{NOTE_16}}', bot:'{{BOT_16}}', smell:'Absolut z tych samych kwiatów co neroli, ale cieplejszy i bardziej zmysłowy: miodowy, lekko indolowy, jak skóra po słońcu.', why:'Nić, która łączy wszystkie zapachy, do których wracasz. Ciepła i zmysłowa jednocześnie, tak jak Ty, kiedy ktoś pozna Cię bliżej.' },
+  jasmine:{ name:'Jasmine', pl:'Jaśmin', img:'{{NOTE_14}}', bot:'{{BOT_14}}', smell:'Biały kwiat o bogatym, lekko owocowym i zmysłowym zapachu. Wieczorem nabiera głębi.', why:'Wieczorem łączy jasne serce z ciemną bazą. To on robi z kwiatu pomarańczy coś bardziej zmysłowego.' },
+  rose:{ name:'Rose', pl:'Róża', img:'{{NOTE_105}}', smell:'Klasyczna, aksamitna, lekko cytrynowa. Dodaje kompozycji elegancji.' },
+  iris:{ name:'Iris', pl:'Irys', img:'{{NOTE_11}}', smell:'Pudrowy, chłodny korzeń. Pachnie jak drogi kosmetyk i zamszowe rękawiczki.' },
+  tuberose:{ name:'Tuberose', pl:'Tuberoza', img:'{{NOTE_25}}', smell:'Kremowa, odurzająca biała kwiatowa nuta. Wieczorowa z natury.' },
+  musk:{ name:'Musk', pl:'Piżmo', img:'{{NOTE_4}}', bot:'{{BOT_4}}', smell:'Dziś zawsze syntetyczne. Pachnie czystą skórą, świeżym praniem i ciepłem bliskości.', why:'Sprawia, że zapach zostaje blisko skóry. W pracy właśnie o to chodzi: czuje go osoba obok, a nie cała sala.' },
+  cedar:{ name:'Cedar', pl:'Cedr', img:'{{NOTE_41}}', bot:'{{BOT_41}}', smell:'Suche, ołówkowe drewno. Porządkuje kompozycję i daje jej kręgosłup.', why:'W wersji do pracy zastępuje słodką bazę spokojnym drewnem. Porządkuje i dodaje pewności.' },
+  vetiver:{ name:'Vetiver', pl:'Wetiweria', img:'{{NOTE_2}}', smell:'Korzeń trawy: ziemisty, lekko dymny, elegancko wytrawny.' },
+  patchouli:{ name:'Patchouli', pl:'Paczula', img:'{{NOTE_34}}', bot:'{{BOT_34}}', smell:'Liście o zapachu wilgotnej ziemi, kakao i lekkiego dymu.', why:'Pozwala zejść w ciemność bez cukru. Daje głębię, której szukasz zamiast pralin i karmelu.' },
+  incense:{ name:'Incense', pl:'Kadzidło', img:'{{NOTE_68}}', bot:'{{BOT_68}}', smell:'Żywica olibanum: chłodny, cytrynowo-dymny zapach starego kościoła i nagrzanego kamienia.', why:'Twój tajemniczy finał. Nadaje białym kwiatom cień, nie odbierając im światła.' },
+  leather:{ name:'Leather', pl:'Skóra', img:'{{NOTE_156}}', smell:'Miękka, lekko dymna. Kojarzy się z rękawiczkami i starą torebką.' },
+  myrrh:{ name:'Myrrh', pl:'Mirra', img:'{{NOTE_98}}', smell:'Żywica o ciepłym, gorzkawym, lekko anyżowym zapachu.' },
+  petitgrain:{ name:'Petitgrain', pl:'Petitgrain', img:'{{NOTE_3}}', smell:'Olejek z liści i gałązek drzewa pomarańczowego: zielony, gorzkawy, rześki.' },
+  cacao:{ name:'Cacao', pl:'Kakao', img:'{{NOTE_135}}', smell:'Wytrawne, pudrowe kakao, bardziej ziarno niż czekolada.' },
+  tobacco:{ name:'Tobacco', pl:'Tytoń', img:'{{NOTE_96}}', smell:'Suche liście tytoniu, miodowe i lekko dymne.' }
+};
+
+const P = {
+  /* day */
+  candid:{ name:'Candid', brand:'Maison Alhambra', img:'{{IMG_93542}}', tint:'#f3e6cf', tier:'Budżetowe', match:'exact',
+    top:'Bergamot, Citruses, Pineapple', heart:'Orange Blossom, Jasmine, Rose', base:'Patchouli, Vanilla, Tonka Bean', chips:['bergamot','orangeblossom','jasmine','patchouli'],
+    desc:'Jasny, cytrusowy start, a potem kwiat pomarańczy, jaśmin i róża. Paczula na końcu daje mu elegancję, której nie spodziewasz się w tej cenie. Dobry kandydat na flakon, który zawsze masz przy sobie.',
+    wear:'Wiosna i jesień, dzień. 2–3 psiknięcia.', mismatch:'Ananas w otwarciu bywa przez pierwsze minuty trochę landrynkowy.', test:'Czy po kwadransie owoc ustępuje kwiatom.' },
+  nuit:{ name:"Nuit d'Oranger", brand:'Chloé', img:'{{IMG_96454}}', tint:'#f3e3c4', tier:'Designerskie', match:'exact',
+    top:'Petitgrain, Bergamot, Pink Pepper', heart:'Orange Blossom, Neroli', base:'Vanilla, Mate, Patchouli', chips:['orangeblossom','neroli','petitgrain','patchouli'],
+    desc:'Zaczyna się jak poranek w ogrodzie pomarańczowym: zielony petitgrain, bergamota, szczypta różowego pieprzu. Potem kwiat pomarańczy i neroli miękną, a mate z paczulą dodaje im ziemi. Jasny, ale z charakterem.',
+    wear:'Wiosna i wczesna jesień, dzień. 3–4 psiknięcia.', mismatch:'Wanilia w bazie jest delikatna, ale jest. Po kilku godzinach może zrobić się słodziej, niż lubisz.', test:'Po godzinie: czy mate i paczula dają głębię, czy zapach po prostu znika.' },
+  sens:{ name:'Eau des Sens', brand:'Diptyque', img:'{{IMG_35678}}', tint:'#e6e2cf', tier:'Niszowe', match:'exact',
+    top:'Orange Blossom, Bitter Orange', heart:'Juniper Berries', base:'Angelica, Patchouli', chips:['orangeblossom','patchouli'],
+    desc:'Kwiat pomarańczy i gorzka pomarańcza z jałowcem: rześko, trochę gorzko, bardzo dorośle. Zapach dnia, który zaczyna się od kawy na balkonie, a kończy przy dobrej książce.',
+    wear:'Wiosna i lato, dzień. 4 psiknięcia, bo to EDT.', mismatch:'Jałowiec i dzięgiel są zielone i lekko ziołowe. Może zabraknąć Ci kremowości.', test:'Czy ziołowe otwarcie Cię nie chłodzi.' },
+  emaan:{ name:'Emaan', brand:'Lattafa', img:'{{IMG_85091}}', tint:'#f2e2d6', tier:'Budżetowe', match:'similar',
+    top:'Orange Blossom, Black Currant, Bergamot', heart:'Tuberose, Jasmine, Marigold', base:'Musk, Vanilla, Cedarwood, Patchouli', chips:['orangeblossom','tuberose','jasmine','musk'],
+    desc:'Kwiat pomarańczy na powitanie, a potem bujny bukiet białych kwiatów z tuberozą. Bardziej kwiatowy i promienny niż Twój portret, ale z tą samą ciepłą nicią. Na dni, kiedy chcesz, żeby ktoś zapytał, co masz na sobie.',
+    wear:'Wiosna i lato, dzień. 2 psiknięcia.', mismatch:'Tuberoza jest tu wyraźna. W ciepły dzień może być za dużo kwiatów naraz.', test:'Czy po godzinie robi się kremowo, czy duszno.' },
+  love:{ name:'Love Story', brand:'Chloé', img:'{{IMG_26227}}', tint:'#f2e2db', tier:'Designerskie', match:'similar',
+    top:'Neroli, Pear, Bergamot, Grapefruit, Lemon', heart:'Orange Blossom, Stephanotis, Rose, Peach, Black Currant', base:'Musk, Cedar, Cashmere Wood, Patchouli', chips:['neroli','orangeblossom','musk','cedar'],
+    desc:'Neroli i soczysta gruszka przechodzą w kwiat pomarańczy i stefanotis, a potem w czyste piżmo z cedrem. Jasny, uporządkowany, ze spokojnym uśmiechem. Lżejsza, dzienna wersja Ciebie.',
+    wear:'Wiosna, dzień. 3 psiknięcia.', mismatch:'Owoce w otwarciu mogą wydać się zbyt grzeczne przy Twojej potrzebie oryginalności.', test:'Czy po pół godzinie zostaje bardziej kwiat, czy owoc.' },
+  wneroli:{ name:'White Neroli', brand:'Mizensir', img:'{{IMG_39214}}', tint:'#f1e7d6', tier:'Niszowe', match:'similar',
+    top:'Tunisian Neroli, Calabrian Bergamot', heart:'Orange Blossom', base:'White Musk, Incense', chips:['neroli','bergamot','orangeblossom','incense'],
+    desc:'Najczystsza wersja Twojego portretu: neroli i bergamota, kwiat pomarańczy, a na końcu białe piżmo z cieniem kadzidła. Jak lniana koszula, w której ktoś jednak ma tajemnicę.',
+    wear:'Cały rok, dzień. 3 psiknięcia.', mismatch:'Bardzo lekki. Może szybko zejść do skóry.', test:'Ile zostaje po trzech godzinach.' },
+  /* work */
+  mazaaji:{ name:'Mazaaji', brand:'Lattafa', img:'{{IMG_80296}}', tint:'#f0dcd3', tier:'Budżetowe', match:'exact',
+    top:'Orange Blossom, Mandarin Orange', heart:'Bulgarian Rose, Turkish Rose, Jasmine', base:'Patchouli, Vanilla, Amber, Sandalwood', chips:['orangeblossom','mandarin','rose','patchouli'],
+    desc:'Kwiat pomarańczy i mandarynka na powitanie, róże i jaśmin w sercu, ciepła paczula na koniec. Pewny siebie i uporządkowany, a przy tym w cenie, przy której nie trzeba go oszczędzać.',
+    wear:'Jesień i zima, praca. Jedno psiknięcie, najwyżej dwa.', mismatch:'Projekcja jest mocniejsza, niż wypada w biurze. Przy dwóch psiknięciach może wypełnić salę.', test:'Psiknij raz i zapytaj kogoś przy biurku obok, czy go czuje.' },
+  nrher:{ name:'For Her', brand:'Narciso Rodriguez', img:'{{IMG_209}}', tint:'#efe0de', tier:'Designerskie', match:'exact',
+    top:'African Orange Flower, Osmanthus, Bergamot', heart:'Musk, Amber', base:'Vetiver, Patchouli, Vanilla', chips:['orangeblossom','musk','vetiver','patchouli'],
+    desc:'Kwiat pomarańczy i osmantus otulone piżmem. Ten zapach nie wchodzi przed Tobą do sali, tylko zostaje po Tobie w pamięci. Najbardziej „Twoja skóra, tylko lepsza”.',
+    wear:'Cały rok, praca. 2 psiknięcia.', mismatch:'Piżmo bywa dla niektórych nosów prawie niewyczuwalne. Możesz go po prostu nie czuć na sobie.', test:'Poproś kogoś bliskiego, żeby powiedział, czy czuje go po dwóch godzinach.' },
+  rubik:{ name:'Rubikona No. 11', brand:'Puredistance', img:'{{IMG_63017}}', tint:'#eadfd0', tier:'Niszowe', match:'exact',
+    top:'Grapefruit, Mandarin Orange, Bergamot', heart:'Orange Blossom, Ylang-Ylang, Clove, Rose, Iris', base:'Patchouli, Musk, Solar Notes, Vanilla, Cedar', chips:['orangeblossom','iris','patchouli','musk'],
+    desc:'Cytrusy, potem kwiat pomarańczy z goździkiem, różą i irysem, a na końcu ciepła paczula z piżmem. Dyskretnie bogaty, jak dobrze skrojony płaszcz bez widocznego logo.',
+    wear:'Jesień, praca i ważne spotkania. 2 psiknięcia.', mismatch:'Goździk w sercu jest lekko przyprawowy i nie każdemu pasuje w biurze.', test:'Czy goździk nie przeważa w drugiej godzinie.' },
+  glamour:{ name:'Far Away Glamour', brand:'Avon', img:'{{IMG_56179}}', tint:'#efe0d6', tier:'Budżetowe', match:'similar',
+    top:'Black Currant, Grapefruit, Pink Pepper', heart:'Madagascar Vanilla, Orris, Orange Blossom', base:'Patchouli, Black Musk', chips:['orangeblossom','iris','patchouli','musk'],
+    desc:'Pudrowy irys i kwiat pomarańczy na miękkim piżmie. Cichy, otulający, jak kaszmirowy sweter pod marynarką. Na dni, kiedy w pracy chcesz czuć się po prostu dobrze.',
+    wear:'Jesień i zima, praca. 2 psiknięcia.', mismatch:'Wanilia w sercu jest wyraźniejsza niż w Twoim portrecie. Sprawdź, czy nie robi się zbyt słodko.', test:'Czy po godzinie dominuje puder, czy wanilia.' },
+  gris:{ name:'Gris Montaigne', brand:'Dior', img:'{{IMG_17842}}', tint:'#e9e2da', tier:'Designerskie', match:'similar',
+    top:'Bergamot, Grapefruit', heart:'Rose, Strawberry, Jasmine, Orange Blossom, Ylang-Ylang', base:'Patchouli, Oakmoss, Sandalwood, Amber, Cedar, White Musk', chips:['bergamot','rose','orangeblossom','patchouli'],
+    desc:'Szypr w szarym kostiumie: bergamota, róża i kwiat pomarańczy na mchu i paczuli. Elegancki bez wysiłku, z odrobiną dystansu, który dobrze robi w ważny dzień.',
+    wear:'Jesień, praca. 2 psiknięcia.', mismatch:'Mech dębowy daje nutę klasyczną i nieco poważną. Może wydać się bardziej formalny, niż się czujesz.', test:'Czy po godzinie jest elegancko, czy surowo.' },
+  hacivat:{ name:'Hacivat X', brand:'Nishane', img:'{{IMG_80462}}', tint:'#e7e2d2', tier:'Niszowe', match:'similar',
+    top:'Pineapple, Bergamot, Pink Pepper', heart:'Lime, Tunisian Orange Blossom, Jasmine', base:'Haitian Vetiver, Patchouli, Cedar', chips:['bergamot','orangeblossom','vetiver','cedar'],
+    desc:'Świeży, wytrawny, z kwiatem pomarańczy schowanym między cytrusami a wetiwerią. Brzmi jak pewność siebie w białej koszuli: jasno, czysto i trochę nieoczywiście.',
+    wear:'Wiosna i lato, praca. 2 psiknięcia.', mismatch:'Bardziej drzewny i cytrusowy niż kwiatowy. Kwiatu pomarańczy jest tu mniej, niż lubisz.', test:'Czy kwiat pomarańczy w ogóle się u Ciebie pojawia.' },
+  /* evening */
+  intrude:{ name:"L'Intrude", brand:'Maison Alhambra', img:'{{IMG_93651}}', tint:'#f1ddd2', tier:'Budżetowe', match:'exact',
+    top:'Pear, Bergamot', heart:'Tuberose, Orange Blossom, Jasmine Sambac', base:'Patchouli, Ambroxan, Vanilla, Vetiver', chips:['orangeblossom','tuberose','jasmine','patchouli'],
+    desc:'Gruszka i bergamota, a potem tuberoza, kwiat pomarańczy i jaśmin na ciemnej paczuli. Wieczorowy i pewny siebie, a przy tym przystępny. Dobry sposób, żeby sprawdzić, czy ten kierunek jest Twój.',
+    wear:'Jesień i zima, wieczór. 2–3 psiknięcia.', mismatch:'Ambroxan w bazie jest dość syntetyczny i długo trzyma się ubrań.', test:'Czy po trzech godzinach baza jest ciepła, czy płaska.' },
+  rouge:{ name:"L'Interdit Rouge Ultime", brand:'Givenchy', img:'{{IMG_83865}}', tint:'#f0d6cf', tier:'Designerskie', match:'exact', price:'434 zł · 80 ml',
+    top:'Orange Blossom, Jasmine Sambac, Neroli', heart:'Tuberose, Cacao Pod', base:'Patchouli Leaf, Tobacco, Ambroxan, Vetiver', chips:['orangeblossom','tuberose','cacao','patchouli'],
+    desc:'Kwiat pomarańczy na otwarcie jest jak uśmiech na powitanie: ciepły, bez dystansu. Im później, tym bliżej skóry robi się ciemno: kakao, tytoń, paczula. Ktoś, kto stanie obok Ciebie pod koniec wieczoru, pozna inną wersję Ciebie niż ta, która weszła.',
+    wear:'Jesień i zima, wieczór. 2–3 psiknięcia.', mismatch:'Kakao i tuberoza dają w sercu wyraźną słodycz. Przy Twojej niechęci do lepkich nut to punkt do sprawdzenia.', test:'Po 30–60 minutach: czy słodycz pozostaje kremowa, czy robi się mdła.' },
+  golestan:{ name:'Golestan', brand:'Tauer Perfumes', img:'{{IMG_77252}}', tint:'#efe0c8', tier:'Niszowe', match:'exact',
+    top:'Ylang-Ylang, Lemon Zest, Bergamot', heart:'Tuberose, Orange Blossom, Jasmine, Damask Rose', base:'Ambergris, Vanilla, Woody Notes, Patchouli, Cistus', chips:['orangeblossom','tuberose','rose','patchouli'],
+    desc:'Ogród białych kwiatów nocą: tuberoza, kwiat pomarańczy, jaśmin i róża osadzone na ambrze i żywicznym czystku. Bogaty, ale nie lepki. Zapach na wieczory, które pamięta się latami.',
+    wear:'Jesień, wieczór. 1–2 psiknięcia, to ekstrakt.', mismatch:'Bardzo bogaty bukiet. Przy pierwszym kontakcie może przytłoczyć.', test:'Nałóż jedno psiknięcie i oceń dopiero po godzinie.' },
+  zara:{ name:'Golden Decade Winter', brand:'Zara', img:'{{IMG_84761}}', tint:'#f0dcc2', tier:'Budżetowe', match:'similar',
+    top:'Tangerine, Bergamot', heart:'Orange Blossom, Jasmine, Lavender, Incense', base:'Vanilla, Amber, Tonka Bean, Vetiver, Musk', chips:['orangeblossom','jasmine','incense','musk'],
+    desc:'Ta sama droga od kwiatu pomarańczy do kadzidła i ambry, w cenie, przy której można sobie pozwolić na odwagę. Ciepły, otulający, z odrobiną dymu.',
+    wear:'Jesień i zima, wieczór. 3–4 psiknięcia.', mismatch:'Tonka i wanilia w bazie: przy Twojej niechęci do słodyczy sprawdź koniec wieczoru.', test:'Czy po trzech godzinach ambra nie robi się płaska.' },
+  smoke:{ name:'Orange Smoke', brand:'Dries Van Noten', img:'{{IMG_78408}}', tint:'#f1e2c9', tier:'Designerskie', match:'similar', price:'1078 zł · 200 ml',
+    top:'Neroli, Mandarin Orange, Petitgrain', heart:'Incense, Orange Blossom, Jasmine', base:'Myrrh, Musk', chips:['neroli','incense','orangeblossom','myrrh'],
+    desc:'Pierwsze minuty są jasne i spokojne: neroli, skórka pomarańczy, coś bardzo czystego. Potem, niepostrzeżenie, pojawia się kadzidło. Nie przytłacza, tylko pogłębia. Zapach na wieczory, kiedy chcesz, żeby ludzie zapamiętali rozmowę z Tobą.',
+    wear:'Jesień, wieczór, ale też dzień. 4–5 psiknięć, bo to EDT.', mismatch:'Nie ma tu waniliowej poduszki. Może wydać się chłodniejszy, niż się spodziewasz.', test:'Po dwóch godzinach: czy dym nie przykrywa kwiatu pomarańczy.' },
+  imitation:{ name:'Imitation Woman', brand:'Amouage', img:'{{IMG_49851}}', tint:'#eadbd8', tier:'Niszowe', match:'similar',
+    top:'Ylang-Ylang, Orange Blossom, Jasmine, Rose', heart:'Black Currant, Aldehydes, Licorice', base:'Incense, Patchouli, Sandalwood', chips:['orangeblossom','jasmine','incense','patchouli'],
+    desc:'Otwiera się bukietem białych kwiatów, potem czarna porzeczka i aldehydy dodają mu blasku jak lampa na wieczór, a na końcu zostaje kadzidło z paczulą. Oryginalny, z klasą, której nie trzeba tłumaczyć.',
+    wear:'Jesień, wieczór. 2 psiknięcia.', mismatch:'Aldehydy i lukrecja dają nutę „vintage”. Jeśli kojarzą Ci się z perfumami z dawnych lat, możesz go odrzucić na starcie.', test:'Daj mu godzinę: kadzidło wychodzi dopiero później.' }
+};
+
+const FAM = { white:['Białe kwiaty','#d9c09f'], citrus:['Cytrusy','#dfb25a'], floral:['Kwiaty','#cf9597'], green:['Zielone','#a7ab89'], wood:['Drewno','#8b6a59'], amber:['Ambra i żywice','#c2884e'], musk:['Piżmo','#b7aaa2'], leather:['Skóra i dym','#5c4148'], powder:['Pudrowe','#c7b0c1'], fruity:['Owocowe','#d9997a'], gourmand:['Gourmand','#b98b6e'], aquatic:['Wodne','#9db4b8'], spicy:['Przyprawowe','#b5674f'], other:['Inne','#d6ccc0'] };
+
+const MODES = {
+  dzien:{ label:'Na dzień', title:'Światło<br><em>na skórze</em>', sillage:'Projekcja: lekka do umiarkowanej',
+    mood:'Na dzień zostawiamy z Twojego portretu to, co najjaśniejsze: neroli, bergamotę i kwiat pomarańczy. Ciemna baza jest tu tylko cieniem. Wystarczy, żeby zapach nie był grzeczny, ale nie przytłoczy słonecznego dnia.',
+    keys:[['neroli','Jasność, od której wszystko się zaczyna'],['orangeblossom','Nić, która łączy cały portret'],['bergamot','Oddech, zanim pojawią się kwiaty']],
+    pyr:[['bergamot','mandarin'],['neroli','orangeblossom','jasmine'],['musk','vetiver','cedar','patchouli']],
+    fam:[['citrus',30],['white',26],['musk',10],['floral',8],['green',8],['wood',8],['amber',4],['other',6]],
+    sel:{ exact:['candid','nuit','sens'], similar:['emaan','love','wneroli'] } },
+  praca:{ label:'Do pracy', title:'Blisko,<br><em>ale nie za blisko</em>', sillage:'Projekcja: przy skórze',
+    mood:'W pracy Twój kwiat pomarańczy przechodzi w piżmo i suche drewno. Zapach ma odkryć osoba obok, nie cały open space. Pewność siebie bez słowa.',
+    keys:[['orangeblossom','To samo serce, tylko ciszej'],['musk','Czysta skóra, która zostaje w pamięci'],['cedar','Spokojny kręgosłup zamiast słodkiej bazy']],
+    pyr:[['bergamot','neroli'],['orangeblossom','iris','rose'],['musk','cedar','vetiver','patchouli']],
+    fam:[['white',24],['musk',22],['wood',16],['citrus',14],['powder',8],['floral',8],['other',8]],
+    sel:{ exact:['mazaaji','nrher','rubik'], similar:['glamour','gris','hacivat'] } },
+  wieczor:{ label:'Na wieczór', title:'Biel,<br><em>która ciemnieje</em>', sillage:'Projekcja: wyraźna',
+    mood:'Wieczorem przemiana wybrzmiewa w pełni: od jasnego kwiatu pomarańczy do kadzidła, paczuli i skóry. Pierwsze wrażenie jest ciepłe i otwarte, a to ostatnie zostaje w pamięci.',
+    keys:[['jasmine','Zmysłowość białych kwiatów'],['incense','Cień, który zostaje po Tobie'],['patchouli','Głębia bez cukru']],
+    pyr:[['neroli','bergamot'],['orangeblossom','jasmine','tuberose'],['patchouli','incense','leather','myrrh']],
+    fam:[['white',24],['amber',20],['leather',12],['wood',12],['citrus',10],['floral',10],['musk',6],['other',6]],
+    sel:{ exact:['intrude','rouge','golestan'], similar:['zara','smoke','imitation'] } }
+};
+/* ================================================================== */
+
+const TIER_ORDER = ['Budżetowe', 'Designerskie', 'Niszowe'];
+const MATCH = { exact:'Dokładne dopasowanie', similar:'Podobny klimat' };
+const duo = k => `<span class="duo"><img src="${NOTES[k].img}" alt=""></span>`;
+
+/* Fit rows of note medallions inside the triangle. Units: 1 = 1% of the pyramid's width; box 100 × 92. */
+function layoutPyramid(counts) {
+  const W = 100, H = 92, gap = 2.4, labH = 6.8, rowGap = 2.2, apex = 4, side = 2.5;
+  const widthAt = y => W * y / H - 2 * side;
+  for (let d = 18; d >= 6; d -= 0.25) {
+    const tops = []; let y = H - 1 - labH - d;
+    for (let i = counts.length - 1; i >= 0; i--) { tops[i] = y; y -= d + labH + rowGap; }
+    if (tops[0] < apex) continue;
+    const fits = counts.every((n, i) => { const row = n * d + (n - 1) * gap; return row <= widthAt(tops[i]) && row + 0.7 * d <= widthAt(tops[i] + d); });
+    if (!fits) continue;
+    const cells = counts.map((n, i) => { const x0 = W / 2 - (n * d + (n - 1) * gap) / 2;
+      return Array.from({ length: n }, (_, j) => ({ left: +(x0 + j * (d + gap)).toFixed(2), top: +(tops[i] / H * 100).toFixed(2), size: d })); });
+    return { cells, rowCentre: tops.map(t => +((t + d / 2) / H * 100).toFixed(2)) };
+  }
+  throw new Error('pyramid rows do not fit');
+}
+
+/* ---- charts: SVG drawn to scale ---- */
+const pt = (cx, cy, r, a) => [cx + r * Math.sin(a), cy - r * Math.cos(a)];
+function arcPath(cx, cy, r0, r1, a0, a1) {
+  const large = a1 - a0 > Math.PI ? 1 : 0, [x0, y0] = pt(cx, cy, r1, a0), [x1, y1] = pt(cx, cy, r1, a1), [x2, y2] = pt(cx, cy, r0, a1), [x3, y3] = pt(cx, cy, r0, a0);
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)}A${r1} ${r1} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}A${r0} ${r0} 0 ${large} 0 ${x3.toFixed(2)} ${y3.toFixed(2)}Z`;
+}
+function ringsSVG(fam) {
+  const cx = 150, cy = 150, scaleMax = Math.ceil(Math.max(...fam.map(f => f[1])) / 5) * 5, sweep = Math.PI * 1.5, step = Math.min(15, 104 / fam.length);
+  let s = `<svg class="v-rings" viewBox="4 4 292 292" role="img" aria-label="Proporcje rodzin zapachowych">`;
+  fam.forEach(([f, v], i) => {
+    const r = 132 - i * step, w = step * 0.36;
+    s += `<path d="${arcPath(cx, cy, r - w, r + w, 0, sweep)}" fill="var(--track)"/>`;
+    s += `<g data-fi="${i}"><path d="${arcPath(cx, cy, r - w, r + w, 0, Math.max(v / scaleMax * sweep, .02))}" fill="${FAM[f][1]}"/>`;
+    s += `<text x="${cx - 7}" y="${(cy - r + 3.5).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--ink)">${FAM[f][0]} ${v}%</text></g>`;
+  });
+  return s + `</svg>`;
+}
+
+function renderMode(id, m) {
+  const keySet = new Set(m.keys.map(k => k[0]));
+  const keys = m.keys.map((k, i) => `
+    <button class="key reveal" data-note="${k[0]}">${duo(k[0])}
+      <span><span class="n">0${i + 1}</span><h3>${NOTES[k[0]].pl}</h3><p>${k[1]}</p><span class="more">Dowiedz się więcej</span></span>
+    </button>`).join('');
+  const lv = [['Głowa', 'pierwsze minuty'], ['Serce', 'pierwsze godziny'], ['Baza', 'do końca dnia']];
+  const L = layoutPyramid(m.pyr.map(r => r.length));
+  const pyr = `<div class="pyr-wrap">
+    <div class="pyr-labels">${lv.map((l, i) => `<div class="lvl" style="top:${L.rowCentre[i]}%">${l[0]}<small>${l[1]}</small></div>`).join('')}</div>
+    <div class="pyramid"><div class="tri"></div>
+      ${m.pyr.map((row, i) => row.map((k, j) => { const p = L.cells[i][j]; return `<button class="pnote ${keySet.has(k) ? 'is-key' : ''}" data-note="${k}" aria-label="${NOTES[k].pl}" style="left:${p.left}%;top:${p.top}%;width:${p.size}%">${duo(k)}<span class="nm">${NOTES[k].pl}</span></button>`; }).join('')).join('')}
+    </div></div>`;
+  const legend = m.fam.map(([f, v], i) => `<li data-fi="${i}"><i style="background:${FAM[f][1]}"></i>${FAM[f][0]}<b>${v}%</b></li>`).join('');
+  const chart = `<div class="panel chart-box reveal">
+      <div class="chart-head"><div class="label bordo">Proporcje rodzin</div></div>
+      ${ringsSVG(m.fam)}
+      <ul class="legend">${legend}</ul>
+      <p class="hint">Proporcje orientacyjne, wynikające z Twoich odpowiedzi. Najedź lub dotknij, żeby wyróżnić rodzinę.</p></div>`;
+  const card = pid => { const p = P[pid]; return `
+    <button class="card reveal" data-perfume="${pid}">
+      <div class="arch" style="--tint:${p.tint}"><img src="${p.img}" alt="Flakon ${p.name}"></div>
+      <div class="body">
+        <div class="meta"><span class="t">${p.tier}</span><span>${MATCH[p.match]}</span></div>
+        <h4>${p.name}</h4><div class="brand">${p.brand}</div>
+        <p>${p.desc}</p>
+        <div class="chips">${p.chips.map(k => `<span class="chip">${duo(k)}${NOTES[k].pl}</span>`).join('')}</div>
+        <div class="extra"><b>Możliwy zgrzyt:</b> ${p.mismatch}<br><b>W teście:</b> ${p.test}</div>
+        <div class="foot"><span>${p.price || ''}</span><span class="open">Szczegóły</span></div>
+      </div>
+    </button>`; };
+  const sortTier = ids => ids.slice().sort((a, b) => TIER_ORDER.indexOf(P[a].tier) - TIER_ORDER.indexOf(P[b].tier));
+  const sets = ['exact', 'similar'].map(s => `<div class="sel-set" data-set="${s}">
+      <p class="set-note">${s === 'exact' ? 'Ich piramida odpowiada Twojej poziom po poziomie.' : 'Inna budowa, ale ten sam nastrój i podobne nuty.'}</p>
+      <div class="grid">${sortTier(m.sel[s]).map(card).join('')}</div></div>`).join('');
+  return {
+    head: `<div class="mode" data-mode="${id}">
+      <div class="mode-head">
+        <div><div class="label bordo">Wariant · ${m.label}</div><h2>${m.title}</h2></div>
+        <div><p>${m.mood}</p><div class="label muted sillage">${m.sillage}</div></div>
+      </div>
+      <div class="keys">${keys}</div></div>`,
+    twin: `<div class="mode" data-mode="${id}"><div class="twin"><div class="panel reveal"><div class="label bordo">Twoja piramida</div>${pyr}</div>${chart}</div></div>`,
+    sel: `<div class="mode" data-mode="${id}" data-match="exact">
+      <div class="sel-head"><h3>Twoja selekcja</h3>
+        <div class="match-switch"><button data-match="exact" aria-pressed="true">Dokładne</button><button data-match="similar" aria-pressed="false">Podobne</button></div></div>
+      ${sets}</div>`
+  };
+}
+
+const parts = Object.entries(MODES).map(([id, m]) => renderMode(id, m));
+['head', 'twin', 'sel'].forEach(k => { document.getElementById('m-' + k).innerHTML = parts.map(p => p[k]).join(''); });
+
+/* ---- rooms: doorway drawings, reveal-on-enter, walking-through progress ---- */
+const DOOR = `<svg class="door" viewBox="0 0 200 280" aria-hidden="true">
+  <defs><radialGradient id="doorlight" cx="50%" cy="64%" r="62%"><stop offset="0" stop-color="#fff6e4" stop-opacity=".95"/><stop offset="1" stop-color="#f4eee5" stop-opacity="0"/></radialGradient></defs>
+  <path d="M30 280V110a70 70 0 0 1 140 0v170" fill="url(#doorlight)"/>
+  <path d="M12 280V108a88 88 0 0 1 176 0v172" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M30 280V110a70 70 0 0 1 140 0v170" fill="none" stroke="currentColor" stroke-width=".6"/>
+  <path d="M93 18h14l-2.5 13h-9z" fill="currentColor" opacity=".75"/>
+  <path d="M0 279.5h200" stroke="currentColor" stroke-width=".6"/></svg>`;
+const scenes = [...document.querySelectorAll('.scene')];
+const switchWrap = document.querySelector('.switch-wrap');
+/* vertical layout: a doorway drawing before every room after the first */
+scenes.slice(1).forEach(s => { const t = document.createElement('div'); t.className = 'threshold'; t.dataset.n = s.dataset.n; t.dataset.name = s.dataset.name;
+  t.setAttribute('aria-hidden', 'true'); t.innerHTML = `${DOOR}<div class="room"><span class="num">${s.dataset.n}</span><span class="nm">${s.dataset.name}</span></div>`; s.before(t); });
+
+const motionOK = 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (motionOK) {
+  document.documentElement.classList.add('motion');
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin:'0px 0px -6% 0px', threshold:.06 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+/* depth tour: on large screens each room fills the screen; scrolling moves the visitor forward through arched walls */
+/* The walk is driven by the visitor's own scrolling, so it stays on even when the system asks for reduced motion;
+   a button lets anyone switch to the plain scrolling view (remembered per browser). */
+const depthMQ = matchMedia('(min-width: 760px) and (min-height: 460px)');
+const viewPref = (() => { try { return localStorage.getItem('portret-view'); } catch (e) { return null; } })();
+let wantFlat = viewPref === 'flat', depthOn = false;
+const viewBtn = document.createElement('button');
+viewBtn.className = 'view-toggle';
+const syncBtn = () => { viewBtn.textContent = depthOn ? 'Widok przewijany' : 'Spacer w głąb'; viewBtn.hidden = !depthMQ.matches; };
+viewBtn.addEventListener('click', () => {
+  wantFlat = depthOn; try { localStorage.setItem('portret-view', wantFlat ? 'flat' : 'depth'); } catch (e) {}
+  if (depthOn) location.reload(); else initDepth();
+});
+document.body.appendChild(viewBtn);
+let walk = () => {};
+/* decide now, and again whenever the frame changes size (a viewer panel may open small and grow) */
+depthMQ.addEventListener('change', () => { if (depthMQ.matches && !wantFlat) initDepth(); else if (!depthMQ.matches && depthOn) location.reload(); syncBtn(); });
+function initDepth() {
+  if (depthOn) return; depthOn = true;
+  const root = document.documentElement; root.classList.add('depth');
+  const dots = document.querySelector('.hud-dots');
+  dots.innerHTML = scenes.map((s, i) => s.dataset.n ? `<li><button data-go="${i}" aria-label="Sala ${s.dataset.n}: ${s.dataset.name}">${s.dataset.n}</button></li>` : '').join('');
+  scenes.forEach((s, i) => {
+    s.style.zIndex = 100 - i;
+    s.insertAdjacentHTML('afterbegin', '<div class="room-bg"></div>');
+    s.insertAdjacentHTML('beforeend', `<div class="portal" aria-hidden="true"><div class="hole"><div class="lintel"><span class="pn">${s.dataset.n}</span><span class="pname">${s.dataset.name}</span></div></div></div>`);
+  });
+  // the switch belongs to rooms III–V; keep it outside the transformed scenes so it can sit fixed at the top
+  document.body.appendChild(switchWrap);
+
+  const fitAll = () => scenes.forEach(s => { const inner = s.querySelector('.scene-in'); inner.style.setProperty('--fit', 1);
+    const avail = innerHeight - 120, h = inner.scrollHeight; inner.dataset.fit = Math.min(1, avail / h).toFixed(3); });
+  const hudN = document.querySelector('.hud-n'), hudName = document.querySelector('.hud-name'), hint = document.querySelector('.hud-hint');
+  let lastRoom = -1, cur = 0;
+  walk = () => {
+    const t = window.forcedT != null ? window.forcedT : cur;
+    scenes.forEach((s, i) => {
+      const d = i - t, inner = s.querySelector('.scene-in'), portal = s.querySelector('.portal'), fit = +inner.dataset.fit || 1;
+      const visible = d < 1.75 && d > -0.5;
+      s.style.visibility = visible ? 'visible' : 'hidden';
+      s.style.pointerEvents = Math.abs(d) < 0.3 ? 'auto' : 'none';
+      if (!visible) return;
+      let scale, op, sop = 1;
+      if (d >= 0) { const k = Math.min(d, 1); scale = 0.42 + 0.58 * Math.pow(1 - k, 1.4); op = d <= 1 ? 1 : Math.max(0, 1 - (d - 1) * 2.2); }
+      else { scale = 1 - d * 1.6; op = 1; sop = Math.max(0, 1 + d * 2.4); }
+      inner.style.transform = `scale(${(scale * fit).toFixed(4)})`;
+      inner.style.opacity = op.toFixed(3);
+      s.style.opacity = sop.toFixed(3);
+      // the wall with the arched opening: far away it shrinks, as you approach it grows past the screen edges
+      const ps = d >= 1 ? Math.max(0.55, 1 - (d - 1) * 0.6) : 1 + Math.pow(1 - Math.max(d, 0), 2.2) * 6;
+      portal.style.transform = `scale(${ps.toFixed(4)})`;
+      portal.style.opacity = (d >= 1 ? Math.max(0, 1 - (d - 1) * 1.5) : d < 0.02 ? 0 : 1).toFixed(3);
+    });
+    const room = Math.min(scenes.length - 1, Math.round(t));
+    if (room !== lastRoom) {
+      lastRoom = room; hudN.textContent = scenes[room].dataset.n; hudName.textContent = scenes[room].dataset.name;
+      dots.querySelectorAll('button').forEach(b => b.toggleAttribute('aria-current', +b.dataset.go === room));
+      root.classList.toggle('show-switch', room >= 3 && room <= 5);
+      root.classList.toggle('at-prologue', room === 0);
+    }
+    hint.style.opacity = (t > 0.85 && t < 1.15) ? 1 : 0;
+  };
+  /* own navigation (wheel, touchpad, swipe, keys, dots): one gesture = one room, eased over ~1.1 s.
+     Independent of document scrolling, so it behaves the same inside any viewer frame. */
+  const last = scenes.length - 1, DUR = 1100;
+  let target = 0, from = 0, t0 = 0, animating = false, lockUntil = 0, wheelAcc = 0;
+  const ease = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const step = now => {
+    const p = Math.min(1, (now - t0) / DUR); cur = from + (target - from) * ease(p); walk();
+    if (p < 1) requestAnimationFrame(step); else animating = false;
+  };
+  const go = i => { i = Math.max(0, Math.min(last, i)); if (i === target) return; window.forcedT = null;
+    from = cur; target = i; t0 = performance.now(); lockUntil = t0 + DUR * 0.75; if (!animating) { animating = true; requestAnimationFrame(step); } };
+  const busy = () => document.getElementById('sheet').open;
+  /* a touchpad swipe fires a long tail of inertial wheel events; one gesture must move exactly one room,
+     so after a step we ignore wheel events until they pause for a moment */
+  let lastWheel = 0, gestureUsed = false;
+  addEventListener('wheel', e => {
+    if (busy()) return; e.preventDefault();
+    const now = performance.now(), gap = now - lastWheel; lastWheel = now;
+    if (gap > 220) { gestureUsed = false; wheelAcc = 0; }
+    if (gestureUsed || now < lockUntil) return;
+    wheelAcc += e.deltaMode === 1 ? e.deltaY * 33 : e.deltaY;
+    if (Math.abs(wheelAcc) > 30) { go(target + Math.sign(wheelAcc)); gestureUsed = true; wheelAcc = 0; }
+  }, { passive:false });
+  let touchY = null;
+  addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive:true });
+  addEventListener('touchend', e => { if (touchY == null || busy()) return; const dy = touchY - e.changedTouches[0].clientY; if (Math.abs(dy) > 50) go(target + Math.sign(dy)); touchY = null; }, { passive:true });
+  addEventListener('keydown', e => {
+    if (busy() || (e.target.closest && e.target.closest('input, textarea'))) return;
+    const k = e.key;
+    if (k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !e.shiftKey)) { e.preventDefault(); go(target + 1); }
+    else if (k === 'ArrowUp' || k === 'PageUp' || (k === ' ' && e.shiftKey)) { e.preventDefault(); go(target - 1); }
+    else if (k === 'Home') { e.preventDefault(); go(0); } else if (k === 'End') { e.preventDefault(); go(last); }
+  });
+  addEventListener('resize', () => { fitAll(); walk(); });
+  dots.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
+  document.fonts && document.fonts.ready.then(() => { fitAll(); walk(); });
+  fitAll(); walk();
+  window.refit = () => { fitAll(); walk(); };
+  syncBtn();
+}
+if (depthMQ.matches && !wantFlat) initDepth();
+syncBtn();
+
+/* ---- chart highlight: hover on desktop, tap on touch; tap again (or elsewhere) to clear ---- */
+function highlight(box, i) {
+  box.classList.toggle('dim', i !== null);
+  box.querySelectorAll('[data-fi]').forEach(e => e.classList.toggle('on', i !== null && +e.dataset.fi === i));
+}
+document.addEventListener('pointerover', e => { if (e.pointerType === 'touch') return; const s = e.target.closest('[data-fi]'); if (s) { const box = s.closest('.chart-box'); if (!box.dataset.pin) highlight(box, +s.dataset.fi); } });
+document.addEventListener('pointerout', e => { if (e.pointerType === 'touch') return; const box = e.target.closest('.chart-box'); if (box && !box.contains(e.relatedTarget) && !box.dataset.pin) highlight(box, null); });
+
+/* ---- modes ---- */
+function setMode(id) {
+  document.body.dataset.mode = id;
+  document.querySelectorAll('.switch button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.to === id)));
+  try { localStorage.setItem('portret-mode', id); } catch (e) {}
+  if (window.refit) requestAnimationFrame(window.refit);
+}
+try { const saved = localStorage.getItem('portret-mode'); if (saved && MODES[saved]) setMode(saved); } catch (e) {}
+
+/* ---- detail sheet ---- */
+const dlg = document.getElementById('sheet'), body = document.getElementById('sheet-body');
+const closeBtn = '<button class="close" aria-label="Zamknij" data-close>×</button>';
+const show = () => { if (!dlg.open) dlg.showModal(); dlg.scrollTop = 0; };
+function openNote(k) {
+  const n = NOTES[k];
+  const inP = Object.entries(P).filter(([, p]) => p.chips.includes(k) || [p.top, p.heart, p.base].join(' ').toLowerCase().includes(n.name.toLowerCase()));
+  body.innerHTML = `${closeBtn}
+    ${n.bot ? `<span class="botan"><img src="${n.bot}" alt=""></span>` : `<span class="eng">${duo(k)}</span>`}
+    <div class="label bordo">Nuta</div>
+    <h3>${n.pl}</h3><div class="label muted">${n.name}</div>
+    <h5>Jak pachnie</h5><p>${n.smell}</p>
+    ${n.why ? `<h5>Dlaczego jest w Twoim portrecie</h5><p>${n.why}</p>` : ''}
+    ${inP.length ? `<h5>Znajdziesz ją w</h5><div class="links">${inP.map(([id, p]) => `<button data-perfume="${id}">${p.name}</button>`).join('')}</div>` : ''}`;
+  show();
+}
+function openPerfume(id) {
+  const p = P[id];
+  body.innerHTML = `${closeBtn}
+    <div class="frame" style="--tint:${p.tint}"><img src="${p.img}" alt="Flakon ${p.name}"></div>
+    <div class="label bordo">${p.tier} · ${MATCH[p.match]}</div>
+    <h3>${p.name}</h3><div class="label muted">${p.brand}${p.price ? ' · ' + p.price : ''}</div>
+    <h5>Dlaczego dla Ciebie</h5><p>${p.desc}</p>
+    <h5>Piramida</h5>
+    <div class="lv"><span>Głowa</span><span>${p.top}</span></div>
+    <div class="lv"><span>Serce</span><span>${p.heart}</span></div>
+    <div class="lv"><span>Baza</span><span>${p.base}</span></div>
+    <h5>Jak nosić</h5><p>${p.wear}</p>
+    <h5>Możliwy zgrzyt</h5><p class="warn">${p.mismatch}</p>
+    <h5>W teście</h5><p>${p.test}</p>
+    <h5>Nuty z Twojego portretu</h5><div class="links">${p.chips.map(k => `<button data-note="${k}">${NOTES[k].pl}</button>`).join('')}</div>`;
+  show();
+}
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('[data-close]') || t === dlg) { dlg.close(); return; }
+  const sw = t.closest('.switch button'); if (sw) { setMode(sw.dataset.to); return; }
+  const ms = t.closest('.match-switch button');
+  if (ms) { const mode = ms.closest('.mode'); mode.dataset.match = ms.dataset.match; mode.querySelectorAll('.match-switch button').forEach(b => b.setAttribute('aria-pressed', String(b === ms))); if (window.refit) window.refit(); return; }
+  const seg = t.closest('[data-fi]');
+  if (seg) { const box = seg.closest('.chart-box'), i = +seg.dataset.fi; if (box.dataset.pin === String(i)) { delete box.dataset.pin; highlight(box, null); } else { box.dataset.pin = i; highlight(box, i); } return; }
+  document.querySelectorAll('.chart-box[data-pin]').forEach(b => { delete b.dataset.pin; highlight(b, null); });
+  const n = t.closest('[data-note]'); if (n) { openNote(n.dataset.note); return; }
+  const p = t.closest('[data-perfume]'); if (p) { openPerfume(p.dataset.perfume); return; }
+});
+
+/* deep links: #dzien / #praca / #wieczor, #p-<perfume>, #n-<note>, #podobne */
+(() => { const h = location.hash.slice(1);
+  if (MODES[h]) setMode(h);
+  const room = h.match(/^sala-([\d.]+)$/); if (room && window.refit) { window.forcedT = parseFloat(room[1]) - 1; window.refit(); }
+  if (h.startsWith('p-') && P[h.slice(2)]) openPerfume(h.slice(2));
+  if (h.startsWith('n-') && NOTES[h.slice(2)]) openNote(h.slice(2));
+  if (h === 'podobne') document.querySelectorAll('.mode').forEach(m => { m.dataset.match = 'similar'; m.querySelectorAll('.match-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.match === 'similar'))); });
+})();
+</script>
+</body>
+</html>

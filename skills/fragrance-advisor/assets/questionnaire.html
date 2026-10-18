@@ -1,0 +1,310 @@
+<title>Ankieta zapachowa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=Jost:wght@400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  /* Layout: one quiet card per step on warm paper, an arch outline behind; same world as the portrait it leads to. */
+  :root {
+    --paper:#f4eee5; --card:#fbf8f3; --ink:#2f2722; --muted:#76695f; --rule:#c9b9aa; --bordo:#632c35; --soft:#efe4d6;
+    --serif:"Instrument Serif", Georgia, serif; --text:"Newsreader", Georgia, serif; --label:Jost, "Helvetica Neue", Arial, sans-serif; --script:"Great Vibes", cursive;
+    color-scheme:light;
+  }
+  * { box-sizing:border-box; }
+  html { background:var(--paper); }
+  body { margin:0; color:var(--ink); background:radial-gradient(60% 50% at 50% 30%, rgba(246,214,150,.45), transparent 70%), var(--paper); font:300 17px/1.55 var(--text); min-height:100vh; }
+  .wrap { max-width:720px; margin:0 auto; padding-inline:16px; padding-block:40px 80px; }
+  .label { font:500 11px/1.4 var(--label); letter-spacing:.2em; text-transform:uppercase; color:var(--bordo); }
+  h1 { font:400 clamp(44px, 8vw, 72px)/.95 var(--serif); margin:12px 0 8px; text-wrap:balance; }
+  h2 { font:400 clamp(30px, 5vw, 40px)/1.05 var(--serif); margin:6px 0 18px; text-wrap:balance; }
+  .script { font:400 34px/1.1 var(--script); color:var(--bordo); }
+  .muted { color:var(--muted); }
+  .intro { text-align:center; padding:24px 0 8px; }
+  .intro p { max-width:46ch; margin:12px auto 0; }
+
+  .progress { display:flex; gap:6px; justify-content:center; margin:26px 0 22px; }
+  .progress i { width:28px; height:3px; border-radius:2px; background:var(--rule); }
+  .progress i.on { background:var(--bordo); }
+
+  .card { background:var(--card); border:1px solid rgba(201,185,170,.7); border-radius:24px; padding:30px clamp(18px, 4vw, 36px);
+    box-shadow:inset 0 0 0 7px var(--card), inset 0 0 0 8px rgba(201,185,170,.45), 0 20px 50px rgba(70,40,30,.08); }
+  .q { margin:0 0 26px; }
+  .q:last-child { margin-bottom:0; }
+  .q > .qt { display:block; font:400 22px/1.25 var(--serif); margin-bottom:4px; }
+  .q > .qh { display:block; font-size:14.5px; color:var(--muted); margin-bottom:10px; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px; }
+  .opt { border:1px solid var(--rule); background:#fffdf9; color:var(--ink); border-radius:999px; padding:9px 16px; cursor:pointer; font:400 15px/1.2 var(--text); text-align:left; transition:background .2s, border-color .2s; }
+  .opt small { display:block; font-size:13px; color:var(--muted); margin-top:2px; }
+  .opt.tall { border-radius:16px; flex:1 1 200px; padding:12px 16px; }
+  .opt:hover { border-color:var(--bordo); }
+  .opt[aria-pressed="true"] { background:var(--bordo); border-color:var(--bordo); color:#fbf6f0; }
+  .opt[aria-pressed="true"] small { color:#ead7d0; }
+  .opt:focus-visible, .field:focus-visible, .btn:focus-visible { outline:2px solid var(--bordo); outline-offset:2px; }
+  .field { width:100%; border:1px solid var(--rule); background:#fffdf9; border-radius:14px; padding:12px 14px; font:400 16px/1.4 var(--text); color:var(--ink); }
+  textarea.field { min-height:84px; resize:vertical; }
+  .row { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+  select.field { appearance:none; background-image:linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position:calc(100% - 18px) 55%, calc(100% - 13px) 55%; background-size:5px 5px; background-repeat:no-repeat; }
+
+  .nav { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:22px; }
+  .btn { border:1px solid var(--bordo); background:transparent; color:var(--bordo); border-radius:999px; padding:11px 22px; cursor:pointer; font:500 12px var(--label); letter-spacing:.16em; text-transform:uppercase; }
+  .btn.primary { background:var(--bordo); color:#fbf6f0; }
+  .btn[disabled] { opacity:.45; cursor:default; }
+  .note { font-size:14px; color:var(--muted); margin-top:10px; }
+  .done { text-align:center; padding:20px 0; }
+  .done .script { font-size:48px; }
+  pre.copy { white-space:pre-wrap; word-break:break-word; text-align:left; background:#fffdf9; border:1px solid var(--rule); border-radius:14px; padding:14px; font:400 13px/1.5 ui-monospace, Consolas, monospace; max-height:320px; overflow:auto; }
+  .err { color:var(--bordo); font-size:14.5px; margin-top:10px; }
+  .wait { display:flex; gap:8px; justify-content:center; margin:18px 0; }
+  .wait i { width:7px; height:7px; border-radius:50%; background:var(--bordo); opacity:.25; }
+  @media (prefers-reduced-motion:no-preference) { .wait i { animation:pulse 1.6s ease-in-out infinite; } .wait i:nth-child(2) { animation-delay:.25s; } .wait i:nth-child(3) { animation-delay:.5s; } @keyframes pulse { 50% { opacity:1; } } }
+  @media (max-width:520px) { .row { grid-template-columns:minmax(0,1fr); } .opt.tall { flex-basis:100%; } }
+  @media (prefers-reduced-motion:no-preference) { .card { animation:in .5s ease; } @keyframes in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } } }
+</style>
+
+<main class="wrap">
+  <header class="intro">
+    <div class="label">Portret zapachowy</div>
+    <h1>Zanim powstanie<br>Twój portret</h1>
+    <p class="muted">Kilka pytań o Ciebie, Twoje dni i zapachy, do których wracasz. Nie ma tu złych odpowiedzi. Każde pytanie możesz pominąć.</p>
+  </header>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <section class="card" id="card" aria-live="polite"></section>
+  <div class="nav" id="nav"></div>
+</main>
+
+<script>
+/* ---------- questions (mirror the fragrance-advisor interview) ---------- */
+const TREE = {
+  A:{ t:'Przyciągać', d:'Uwodzić, czarować, intrygować', kids:{
+    A1:{ t:'Uwodzić', d:'Zmysłowo, z myślą o bliskości', leaves:['Blisko skóry, tylko dla kogoś, kto się nachyli','Wyraźny ślad, który odwraca głowy','Mrocznie, z odrobiną ryzyka','„Chcę cię spróbować”, słodko i jadalnie'] },
+    A2:{ t:'Czarować', d:'Ciepło i sympatycznie', leaves:['Słoneczne ciepło, wakacyjny uśmiech','Miękkie otulenie, jak kaszmirowy sweter','Lekki, zabawny flirt'] },
+    A3:{ t:'Romantycznie', d:'Czule i marzycielsko', leaves:['Klasyczny romantyzm, róże i list','Marzycielsko, lekko i nierealnie','Nostalgiczna słodycz, stara toaletka'] },
+    A4:{ t:'Intrygować', d:'Tajemniczo, żeby ktoś zapytał', leaves:['Chłodny dym, z dystansem','Aksamitna ciemność, głęboko i ciepło','Nieuchwytnie, zmienia się na skórze'] } } },
+  B:{ t:'Robić wrażenie', d:'Klasa, autorytet, luksus', kids:{
+    B1:{ t:'Autorytet', d:'Szacunek bez słów', leaves:['Cichy autorytet, który nie musi podnosić głosu','Wyraźna obecność, która wypełnia salę','Klasyka „old money”, ponadczasowo'] },
+    B2:{ t:'Profesjonalnie', d:'Uporządkowanie, zaufanie', leaves:['Rześko i czysto, świeżo wyprasowana koszula','Precyzyjnie, z wyraźną strukturą','Ciepło i godnie zaufania'] },
+    B3:{ t:'Elegancja', d:'Wyrafinowany styl', leaves:['Paryski szyk, od niechcenia','Wieczorowy glamour','Minimalistyczny luksus, beż i kaszmir'] },
+    B4:{ t:'Luksus', d:'Pachnieć drogo', leaves:['Orientalny przepych, złoto i szafran','„Drogi” czysty zapach, jak po kąpieli w hotelu'] } } },
+  C:{ t:'Czuć się dobrze', d:'Zapach dla siebie', kids:{
+    C1:{ t:'Energia', d:'Lekkość i radość', leaves:['Cytrusowy zastrzyk','Morska bryza','Zieleń, ogród po deszczu','Owocowa beztroska'] },
+    C2:{ t:'Czystość', d:'Świeżo i schludnie', leaves:['Dobre mydło','Pranie suszone na słońcu','Twoja skóra, tylko lepsza'] },
+    C3:{ t:'Komfort', d:'Otulenie i ciepło', leaves:['Koc, herbata i książka','Słodkie otulenie z kuchni','Kominek, drewno i wełna'] },
+    C4:{ t:'Spokój', d:'Wyciszenie', leaves:['Medytacyjnie, kadzidło i drewno','Ziołowo, lawenda i rumianek','Spacer po lesie'] } } },
+  D:{ t:'Wyróżniać się', d:'Zostać zapamiętaną', kids:{
+    D1:{ t:'Zwracać uwagę', d:'Komplementy, wyraźna projekcja', leaves:['Magnes na komplementy','Odważna deklaracja','Słodki ślad za mną'] },
+    D2:{ t:'Oryginalność', d:'Nie to, co nosi każdy', leaves:['Konceptualnie, mineralnie, abstrakcyjnie','Buntowniczo, skóra i dym','Awangardowa, gorzka zieleń'] },
+    D3:{ t:'Zapach-podpis', d:'Jeden zapach, który kojarzą ze mną', leaves:['Rozpoznawalny, ale noszalny','Miękka baza z jednym wyraźnym akcentem'] },
+    D4:{ t:'Opowieść', d:'Miejsce, wspomnienie, nastrój', leaves:['Daleka podróż, przyprawy i tropiki','Śródziemnomorskie lato','Vintage, lata pięćdziesiąte','Dzieciństwo, migdały i krem do rąk'] } } }
+};
+
+const STEPS = [
+  { title:'Kilka słów na początek', qs:[
+    { id:'name', type:'text', t:'Jak masz na imię?', h:'Pojawi się na Twoim portrecie. Możesz podać zdrobnienie.' },
+    { id:'forWhom', type:'one', t:'Dla kogo szukamy zapachu?', o:['Dla mnie','Na prezent'] },
+    { id:'line', type:'one', t:'Która linia zapachów jest Ci najbliższa?', o:['Damska','Męska','Tylko unisex','Bez znaczenia'] },
+    { id:'age', type:'one', t:'Przedział wieku', o:['Poniżej 25','25–40','40–55','55+'] } ] },
+  { title:'Gdzie i kiedy', qs:[
+    { id:'setting', type:'one', t:'Gdzie najczęściej będziesz nosić ten zapach?', o:['Biuro, praca formalna','Praca kreatywna lub swobodna','Praca w bliskim kontakcie z ludźmi','Wieczory i wyjścia'], other:true },
+    { id:'seasons', type:'many', t:'W jakich porach roku?', o:['Wiosna','Lato','Jesień','Zima'] },
+    { id:'time', type:'one', t:'O jakiej porze dnia?', o:['Dzień','Wieczór i noc','Jedno i drugie'] } ] },
+  { title:'Zapachy, które znasz', qs:[
+    { id:'loved', type:'area', t:'Jakie perfumy lubisz albo kiedyś lubiłaś?', h:'Nazwy albo opis, np. „coś jak mydło”, „ciepłe i słodkie”.' },
+    { id:'disliked', type:'area', t:'Czego nie znosisz w zapachach?', h:'Konkretne nuty lub perfumy albo wrażenie, np. „za słodkie”, „babciny”, „boli mnie od tego głowa”.' } ] },
+  { title:'Co ma robić Twój zapach', qs:[
+    { id:'dir', type:'tree' } ] },
+  { title:'Jak ma się zmieniać na skórze', qs:[
+    { id:'arc', type:'one', t:'Od pierwszego psiknięcia do wieczora…', tall:true, o:[
+      ['Taki sam przez cały dzień','Stały, przewidywalny charakter'],
+      ['Od świeżego do ciepłego','Jasne otwarcie, przytulne zakończenie'],
+      ['Od niewinnego do zmysłowego','Czysto i biało na początek, ciemno i zmysłowo na koniec'],
+      ['Od mocnego do miękkiego','Głośne wejście, a potem zapach blisko skóry'] ], other:true } ] },
+  { title:'Trochę o Tobie', qs:[
+    { id:'h1', type:'one', t:'Twój idealny wolny dzień?', o:['Ze znajomymi, kiedy coś się dzieje','Dom, książka, kawa i cisza','Nowe miejsce, wycieczka','Plan, porządek, sport'] },
+    { id:'h2', type:'one', t:'Które trzy słowa pasują do Ciebie najbardziej?', o:['Ciepła, troskliwa, empatyczna','Ambitna, zdecydowana, konkretna','Kreatywna, ciekawa, nieprzewidywalna','Spokojna, rozważna, wyważona'] },
+    { id:'h5', type:'one', t:'Jaką tkaninę nosisz najchętniej?', o:['Len, bawełna','Kaszmir, wełna','Jedwab, satyna','Skóra, denim'] },
+    { id:'h6', type:'one', t:'Jakie kolory nosisz najczęściej?', o:['Biel, beż, pastele','Ziemiste, zielenie','Głęboka czerwień, bordo, złoto','Czerń, granat, szarość'] },
+    { id:'bday', type:'bday', t:'Kiedy masz urodziny?', h:'Wystarczy dzień i miesiąc.' } ] }
+];
+
+/* ---------- state + rendering ---------- */
+const S = { step:0, a:{} };
+const card = document.getElementById('card'), nav = document.getElementById('nav'), progress = document.getElementById('progress');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' })[c]);
+const optBtn = (qid, val, label, sub, pressed, tall) =>
+  `<button type="button" class="opt${tall ? ' tall' : ''}" data-q="${qid}" data-v="${esc(val)}" aria-pressed="${pressed}">${esc(label)}${sub ? `<small>${esc(sub)}</small>` : ''}</button>`;
+
+function renderQ(q) {
+  const v = S.a[q.id];
+  if (q.type === 'text') return `<label class="q"><span class="qt">${q.t}</span>${q.h ? `<span class="qh">${q.h}</span>` : ''}<input class="field" id="f-${q.id}" data-f="${q.id}" maxlength="40" autocomplete="given-name" value="${esc(v || '')}"></label>`;
+  if (q.type === 'area') return `<label class="q"><span class="qt">${q.t}</span>${q.h ? `<span class="qh">${q.h}</span>` : ''}<textarea class="field" id="f-${q.id}" data-f="${q.id}" maxlength="800">${esc(v || '')}</textarea></label>`;
+  if (q.type === 'bday') {
+    const months = ['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
+    const b = v || {};
+    return `<div class="q"><span class="qt">${q.t}</span><span class="qh">${q.h}</span><div class="row">
+      <select class="field" id="f-bday-d" data-b="d" aria-label="Dzień"><option value="">dzień</option>${Array.from({ length:31 }, (_, i) => `<option${b.d == i + 1 ? ' selected' : ''}>${i + 1}</option>`).join('')}</select>
+      <select class="field" id="f-bday-m" data-b="m" aria-label="Miesiąc"><option value="">miesiąc</option>${months.map((m, i) => `<option value="${i + 1}"${b.m == i + 1 ? ' selected' : ''}>${m}</option>`).join('')}</select></div></div>`;
+  }
+  if (q.type === 'tree') return renderTree();
+  const many = q.type === 'many', sel = many ? (v || []) : v;
+  const opts = q.o.map(o => { const [label, sub] = Array.isArray(o) ? o : [o, '']; return optBtn(q.id, label, label, sub, many ? sel.includes(label) : sel === label, q.tall); }).join('');
+  const other = q.other ? `<input class="field" style="margin-top:10px" id="f-${q.id}-other" data-f="${q.id}_other" maxlength="200" placeholder="Albo opisz własnymi słowami" value="${esc(S.a[q.id + '_other'] || '')}">` : '';
+  return `<div class="q"><span class="qt">${q.t}</span>${q.h ? `<span class="qh">${q.h}</span>` : ''}<div class="opts" role="group">${opts}</div>${other}</div>`;
+}
+
+function renderTree() {
+  const a = S.a, main = a.dirMain, second = a.dirSecond, l2 = a.dirL2;
+  let h = `<div class="q"><span class="qt">Najważniejsze: co ten zapach ma robić?</span><div class="opts">${Object.entries(TREE).map(([k, n]) => optBtn('dirMain', k, n.t, n.d, main === k, true)).join('')}</div></div>`;
+  if (main) {
+    const node = TREE[main];
+    h += `<div class="q"><span class="qt">${node.t}, ale w jaki sposób?</span><div class="opts">${Object.entries(node.kids).map(([k, n]) => optBtn('dirL2', k, n.t, n.d, l2 === k, true)).join('')}</div></div>`;
+    if (l2 && node.kids[l2]) h += `<div class="q"><span class="qt">Który odcień jest Ci najbliższy?</span><div class="opts">${node.kids[l2].leaves.map(t => optBtn('dirLeaf', t, t, '', a.dirLeaf === t, true)).join('')}</div>
+      <input class="field" style="margin-top:10px" id="f-dirOwn" data-f="dirOwn" maxlength="300" placeholder="Albo opisz własnymi słowami" value="${esc(a.dirOwn || '')}"></div>`;
+    h += `<div class="q"><span class="qt">A na drugim miejscu?</span><span class="qh">Nieobowiązkowe.</span><div class="opts">${Object.entries(TREE).filter(([k]) => k !== main).map(([k, n]) => optBtn('dirSecond', k, n.t, '', second === k, false)).join('')}</div></div>`;
+  }
+  return h;
+}
+
+function render() {
+  progress.innerHTML = STEPS.map((_, i) => `<i class="${i <= S.step ? 'on' : ''}"></i>`).join('');
+  const st = STEPS[S.step];
+  card.innerHTML = `<div class="label">Krok ${S.step + 1} z ${STEPS.length}</div><h2>${st.title}</h2>${st.qs.map(renderQ).join('')}`;
+  const last = S.step === STEPS.length - 1;
+  nav.innerHTML = `<button type="button" class="btn" id="back"${S.step === 0 ? ' disabled' : ''}>Wstecz</button>
+    <button type="button" class="btn primary" id="next">${last ? 'Wyślij' : 'Dalej'}</button>`;
+}
+
+/* ---------- interactions ---------- */
+card.addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if (!b) return;
+  const q = b.dataset.q, v = b.dataset.v;
+  const def = STEPS[S.step].qs.find(x => x.id === q);
+  if (def && def.type === 'many') { const cur = new Set(S.a[q] || []); cur.has(v) ? cur.delete(v) : cur.add(v); S.a[q] = [...cur]; }
+  else if (q === 'dirMain') { if (S.a.dirMain !== v) { S.a.dirMain = v; delete S.a.dirL2; delete S.a.dirLeaf; if (S.a.dirSecond === v) delete S.a.dirSecond; } }
+  else if (q === 'dirL2') { if (S.a.dirL2 !== v) { S.a.dirL2 = v; delete S.a.dirLeaf; } }
+  else S.a[q] = S.a[q] === v ? undefined : v;   // tap again to clear
+  const keep = document.activeElement && document.activeElement.id;
+  render();
+  if (keep) { const el = document.getElementById(keep); if (el) el.focus(); }
+});
+card.addEventListener('input', e => {
+  const f = e.target.dataset.f; if (f) S.a[f] = e.target.value;
+  const bd = e.target.dataset.b; if (bd) { S.a.bday = { ...(S.a.bday || {}), [bd]: e.target.value }; }
+});
+card.addEventListener('change', e => { const bd = e.target.dataset.b; if (bd) S.a.bday = { ...(S.a.bday || {}), [bd]: e.target.value }; });
+nav.addEventListener('click', e => {
+  if (e.target.id === 'back' && S.step > 0) { S.step--; render(); scrollTo({ top:0, behavior:'smooth' }); }
+  if (e.target.id === 'next') { if (S.step < STEPS.length - 1) { S.step++; render(); scrollTo({ top:0, behavior:'smooth' }); } else submit(); }
+});
+
+/* ---------- answers as readable text (also the fallback to copy) ---------- */
+function summary() {
+  const a = S.a, L = [];
+  const add = (k, v) => { if (v != null && v !== '' && !(Array.isArray(v) && !v.length)) L.push(`${k}: ${Array.isArray(v) ? v.join(', ') : v}`); };
+  add('Imię', a.name); add('Dla kogo', a.forWhom); add('Linia', a.line); add('Wiek', a.age);
+  add('Gdzie', a.setting); add('Gdzie (własnymi słowami)', a.setting_other); add('Pory roku', a.seasons); add('Pora dnia', a.time);
+  add('Lubiane perfumy', a.loved); add('Czego nie znosi', a.disliked);
+  if (a.dirMain) { const m = TREE[a.dirMain]; add('Efekt główny', m.t); if (a.dirL2) add('Efekt szczegółowo', m.kids[a.dirL2].t); add('Odcień', a.dirLeaf); }
+  add('Efekt (własnymi słowami)', a.dirOwn); if (a.dirSecond) add('Efekt drugi', TREE[a.dirSecond].t);
+  add('Przemiana', a.arc); add('Przemiana (własnymi słowami)', a.arc_other);
+  add('Wolny dzień', a.h1); add('Trzy słowa', a.h2); add('Tkanina', a.h5); add('Kolory', a.h6);
+  if (a.bday && (a.bday.d || a.bday.m)) add('Urodziny (dzień.miesiąc)', `${a.bday.d || '?'}.${a.bday.m || '?'}`);
+  return L.join('\n');
+}
+
+/* ---------- submit: own document in the artifact's database, or copy fallback ---------- */
+let dbP = null, userP = null;
+try { dbP = window.claude?.use ? claude.use('db') : null; userP = window.claude?.use ? claude.use('user') : null; } catch (e) {}
+
+async function submit() {
+  const next = document.getElementById('next'); next.disabled = true; next.textContent = 'Wysyłam…';
+  const text = summary();
+  let saved = false;
+  try {
+    const [db, user] = await Promise.all([dbP, userP]);
+    const uid = user ? await user.id() : null;
+    if (db && uid) {
+      await db.doc('responses/' + uid).set({ answers: JSON.parse(JSON.stringify(S.a)), text, submittedAt: new Date().toISOString(), status: 'new' });
+      saved = true;
+      watch(db.doc('responses/' + uid));
+      return;
+    }
+  } catch (e) { saved = false; }
+  done(saved, text);
+}
+
+/* ---------- after sending: wait for the portrait, which is prepared in the background and linked into this same doc ---------- */
+let unwatch = null;
+function watch(ref) {
+  if (unwatch) unwatch();
+  progress.innerHTML = ''; nav.innerHTML = '';
+  unwatch = ref.onSnapshot(snap => {
+    if (!snap.exists) return;
+    const d = snap.data() || {};
+    const who = ((d.answers && d.answers.name) || '').trim();
+    const hi = `<p class="script">Dziękuję${who ? ', ' + esc(who) : ''}</p>`;
+    const again = `<p class="note"><button type="button" class="btn" id="again">Wypełnij od nowa</button></p>`;
+    if (d.portrait) {
+      const href = /^https:\/\//.test(d.portrait) || /^[\w\/.-]+\.html$/.test(d.portrait) ? d.portrait : '';
+      card.innerHTML = `<div class="done"><div class="label">Gotowe</div><p class="script">${who ? esc(who) + ', ' : ''}Twój portret czeka</p>
+        <p>Najlepiej wygląda na komputerze, ale zadziała też na telefonie.</p>
+        ${href ? `<p><button type="button" class="btn primary" id="open" data-href="${esc(href)}">Otwórz portret</button></p><p class="err" id="openerr" hidden>Nie udało się otworzyć portretu. Spróbuj ponownie za chwilę.</p>` : ''}${again}</div>`;
+    } else if (d.status === 'error') {
+      card.innerHTML = `<div class="done"><div class="label">Chwila przerwy</div>${hi}<p>Portret nie powstał tym razem. Twoje odpowiedzi są bezpieczne. Spróbujemy ponownie, a link pojawi się tutaj.</p>${again}</div>`;
+    } else {
+      card.innerHTML = `<div class="done"><div class="label">${d.status === 'working' ? 'Portret powstaje' : 'Odpowiedzi zapisane'}</div>${hi}
+        <p>Teraz powstaje Twój portret. Zwykle trwa to kilkanaście minut. Poczekaj tutaj: link do Twojego portretu pojawi się na tej stronie, kiedy tylko będzie gotowy.</p>
+        <p class="wait" aria-hidden="true"><i></i><i></i><i></i></p>${again}</div>`;
+    }
+    const o = document.getElementById('open');
+    if (o) o.addEventListener('click', () => openPortrait(o));
+    const a = document.getElementById('again');
+    if (a) a.addEventListener('click', () => { if (unwatch) unwatch(); unwatch = null; S.step = 0; render(); });
+  }, () => {});
+}
+
+/* The portrait is a page published next to this one. claude.ai blocks navigating to it, so load it and swap it in
+   place of the questionnaire, in this same frame. */
+async function openPortrait(btn) {
+  const err = document.getElementById('openerr');
+  btn.disabled = true; btn.textContent = 'Otwieram…'; if (err) err.hidden = true;
+  try {
+    const r = await fetch(btn.dataset.href, { credentials: 'same-origin' });
+    if (!r.ok) throw new Error(r.status);
+    const html = await r.text();
+    if (!/<html|<!doctype/i.test(html.slice(0, 500))) throw new Error('not a page');
+    if (unwatch) unwatch();
+    document.open(); document.write(html); document.close();
+    scrollTo(0, 0);
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Otwórz portret'; if (err) err.hidden = false;
+  }
+}
+
+/* returning visitor: if this person already sent answers, show their status instead of an empty form */
+(async () => {
+  try {
+    const [db, user] = await Promise.all([dbP, userP]);
+    const uid = user ? await user.id() : null;
+    if (!db || !uid) return;
+    const ref = db.doc('responses/' + uid), snap = await ref.get();
+    if (snap.exists && S.step === 0 && !Object.keys(S.a).length) { const d = snap.data() || {}; if (d.answers) S.a = JSON.parse(JSON.stringify(d.answers)); watch(ref); }   // snapshots are frozen: copy before editing
+  } catch (e) {}
+})();
+
+function done(saved, text) {
+  progress.innerHTML = ''; nav.innerHTML = '';
+  const who = (S.a.name || '').trim();
+  card.innerHTML = saved
+    ? ''
+    : `<div class="done"><div class="label">Prawie gotowe</div><p class="script">Dziękuję${who ? ', ' + esc(who) : ''}</p>
+       <p>Nie udało się zapisać odpowiedzi w tym widoku. Skopiuj je poniżej i odeślij osobie, która przesłała Ci link.</p>
+       <pre class="copy" id="copytext">${esc(text)}</pre><button type="button" class="btn primary" id="copy">Kopiuj odpowiedzi</button><p class="note" id="copied"></p></div>`;
+  const c = document.getElementById('copy');
+  if (c) c.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(text); document.getElementById('copied').textContent = 'Skopiowano.'; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById('copytext')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.getElementById('copied').textContent = 'Zaznaczyłam tekst, skopiuj go skrótem Ctrl+C.'; }
+  });
+  scrollTo({ top:0, behavior:'smooth' });
+}
+
+render();
+</script>
