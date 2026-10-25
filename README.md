@@ -2,15 +2,15 @@
 
 Skills for [Claude Code](https://claude.com/claude-code).
 
-## fragrance-advisor: Portret zapachowy (Scent Portrait)
+## fragrance-advisor: Scent Portrait
 
 A personal perfume advisor. Instead of answering questions in chat, you fill in a styled questionnaire. Once you send it, Claude:
 
 - builds your scent profile for day, work and evening,
 - searches Fragrantica (note pyramids, "People who like this also like") and shops for matching perfumes,
-- prepares an interactive **Portret zapachowy**: note pyramids, a scent family chart and 18 perfumes. Each mode has three perfumes across three price tiers (budget, designer, niche), in two variants: exact and similar match.
+- prepares an interactive **Scent Portrait**: note pyramids, a scent family chart and 18 perfumes. Each mode has three perfumes across three price tiers (budget, designer, niche), in two variants: exact and similar match.
 
-The portrait appears in the same place as the questionnaire, usually after 15–30 minutes. The questionnaire and the portrait are in Polish.
+The portrait appears in the same place as the questionnaire, usually after 15–30 minutes.
 
 ### Requirements
 
@@ -42,8 +42,8 @@ On Windows you can also download the repository as a ZIP (Code → Download ZIP)
 Write something like **"Help me pick a perfume"**, "I'm looking for a scent as a gift" or "Something similar to my favourite perfume".
 
 1. Claude gives you a link to the questionnaire and also opens it in the side panel.
-2. Fill it in and click **Wyślij** (Send).
-3. Keep the session open and wait on the questionnaire page. An **Otwórz portret** (Open portrait) button will appear there.
+2. Fill it in and click **Send**.
+3. Keep the session open and wait on the questionnaire page. An **Open portrait** button will appear there.
 
 On first use Claude will ask for permission to use the browser, PowerShell and publish Artifacts.
 
