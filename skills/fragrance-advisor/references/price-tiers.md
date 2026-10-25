@@ -4,13 +4,13 @@ The interview doesn't ask about budget. Instead, every mode in the report shows 
 
 ## Tiers
 
-Prices are for 100 ml (scale smaller bottles up). Use the user's currency; the EUR/USD column is a rough equivalent.
+Prices are for 100 ml (scale smaller bottles up). Use the user's currency and convert these bounds roughly.
 
-| Tier | PLN / 100 ml | ≈ EUR / USD | What it is |
-|---|---|---|---|
-| **Budget** | up to ~200 zł | up to ~45 | Mass-market, high-street and Middle-Eastern houses; also good "inspired by" scents |
-| **Designer** | ~200–700 zł | ~45–160 | Fashion and beauty houses sold in every perfumery |
-| **Niche** | over ~700 zł | over ~160 | Independent and luxury perfume houses |
+| Tier | EUR / USD per 100 ml | What it is |
+|---|---|---|
+| **Budget** | up to ~45 | Mass-market, high-street and Middle-Eastern houses; also good "inspired by" scents |
+| **Designer** | ~45–160 | Fashion and beauty houses sold in every perfumery |
+| **Niche** | over ~160 | Independent and luxury perfume houses |
 
 **Assign the tier by the price you actually found.** If you couldn't check the price, use the brand lists below and write "price not checked". Prices vary by shop and concentration (EDT is usually cheaper than EDP), so a perfume near a boundary goes into the tier its typical 100 ml EDP/EDT price falls into; say so if it's borderline.
 

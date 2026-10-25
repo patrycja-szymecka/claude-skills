@@ -20,7 +20,7 @@ Second call:
 7. **Perfumes you love or have loved** — free text. If they name one, offer the "something like X" shortcut from SKILL.md.
 8. **Notes or perfumes you can't stand** — free text, e.g. "too sweet", "oud", "smells like my grandmother". Translate vague dislikes into notes or families using [profile-to-notes.md](profile-to-notes.md); these become exclusions.
 
-9. **Name** — "What name should go on your portrait?" (for a gift: the recipient's name). Optional; it appears on the cover and in the running head. If they skip it, the cover shows only "Portret zapachowy". Never take a name from an email address, account or anywhere else they didn't give it.
+9. **Name** — "What name should go on your portrait?" (for a gift: the recipient's name). Optional; it appears on the cover and in the running head. If they skip it, the cover shows only "Scent Portrait". Never take a name from an email address, account or anywhere else they didn't give it.
 
 For 7, 8 and 9, free text works better in chat than in `AskUserQuestion`, so ask them together as one plain message.
 

@@ -48,8 +48,8 @@ Trust order for notes: Fragrantica ≈ Parfumo ≈ brand site > shops > blogs. I
 Prices: take them from shops in the user's country and currency, for the 100 ml (or nearest) size, and write down the shop and today's date. If only another size is sold, give that price and the per-100 ml equivalent. Don't guess a price; if you couldn't check, write "price not checked", optionally with a foreign price you did find ("≈ 216 € / 100 ml in NL").
 
 Getting prices is the slowest part, so be pragmatic:
-- Run one web search per candidate, all in the same turn (`<Brand> <Perfume> 100 ml cena zł`, or the user's currency).
-- Big shops and price comparison sites (Notino, Douglas, Ceneo) often block `WebFetch` (403) or show a bot check in the browser. Don't try to get past a bot check; take what the search results show and move on.
+- Run one web search per candidate, all in the same turn (`<Brand> <Perfume> 100 ml price`, in the user's currency).
+- Big shops and price comparison sites (Notino, Douglas, idealo) often block `WebFetch` (403) or show a bot check in the browser. Don't try to get past a bot check; take what the search results show and move on.
 - Smaller niche shops (e.g. niche-beauty.com) and brand sites are often readable.
 
 ---
