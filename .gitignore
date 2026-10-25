@@ -3,4 +3,4 @@ work/
 test-output/
 dist/
 *.built.html
-portret-*.html
+portrait-*.html
