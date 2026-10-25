@@ -1,4 +1,4 @@
-<title>Ankieta zapachowa</title>
+<title>Scent Questionnaire</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=Jost:wght@400;500&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -62,9 +62,9 @@
 
 <main class="wrap">
   <header class="intro">
-    <div class="label">Portret zapachowy</div>
-    <h1>Zanim powstanie<br>Twój portret</h1>
-    <p class="muted">Kilka pytań o Ciebie, Twoje dni i zapachy, do których wracasz. Nie ma tu złych odpowiedzi. Każde pytanie możesz pominąć.</p>
+    <div class="label">Scent Portrait</div>
+    <h1>Before your<br>portrait is made</h1>
+    <p class="muted">A few questions about you, your days and the scents you keep coming back to. There are no wrong answers, and you can skip any question.</p>
   </header>
   <div class="progress" id="progress" aria-hidden="true"></div>
   <section class="card" id="card" aria-live="polite"></section>
@@ -74,55 +74,55 @@
 <script>
 /* ---------- questions (mirror the fragrance-advisor interview) ---------- */
 const TREE = {
-  A:{ t:'Przyciągać', d:'Uwodzić, czarować, intrygować', kids:{
-    A1:{ t:'Uwodzić', d:'Zmysłowo, z myślą o bliskości', leaves:['Blisko skóry, tylko dla kogoś, kto się nachyli','Wyraźny ślad, który odwraca głowy','Mrocznie, z odrobiną ryzyka','„Chcę cię spróbować”, słodko i jadalnie'] },
-    A2:{ t:'Czarować', d:'Ciepło i sympatycznie', leaves:['Słoneczne ciepło, wakacyjny uśmiech','Miękkie otulenie, jak kaszmirowy sweter','Lekki, zabawny flirt'] },
-    A3:{ t:'Romantycznie', d:'Czule i marzycielsko', leaves:['Klasyczny romantyzm, róże i list','Marzycielsko, lekko i nierealnie','Nostalgiczna słodycz, stara toaletka'] },
-    A4:{ t:'Intrygować', d:'Tajemniczo, żeby ktoś zapytał', leaves:['Chłodny dym, z dystansem','Aksamitna ciemność, głęboko i ciepło','Nieuchwytnie, zmienia się na skórze'] } } },
-  B:{ t:'Robić wrażenie', d:'Klasa, autorytet, luksus', kids:{
-    B1:{ t:'Autorytet', d:'Szacunek bez słów', leaves:['Cichy autorytet, który nie musi podnosić głosu','Wyraźna obecność, która wypełnia salę','Klasyka „old money”, ponadczasowo'] },
-    B2:{ t:'Profesjonalnie', d:'Uporządkowanie, zaufanie', leaves:['Rześko i czysto, świeżo wyprasowana koszula','Precyzyjnie, z wyraźną strukturą','Ciepło i godnie zaufania'] },
-    B3:{ t:'Elegancja', d:'Wyrafinowany styl', leaves:['Paryski szyk, od niechcenia','Wieczorowy glamour','Minimalistyczny luksus, beż i kaszmir'] },
-    B4:{ t:'Luksus', d:'Pachnieć drogo', leaves:['Orientalny przepych, złoto i szafran','„Drogi” czysty zapach, jak po kąpieli w hotelu'] } } },
-  C:{ t:'Czuć się dobrze', d:'Zapach dla siebie', kids:{
-    C1:{ t:'Energia', d:'Lekkość i radość', leaves:['Cytrusowy zastrzyk','Morska bryza','Zieleń, ogród po deszczu','Owocowa beztroska'] },
-    C2:{ t:'Czystość', d:'Świeżo i schludnie', leaves:['Dobre mydło','Pranie suszone na słońcu','Twoja skóra, tylko lepsza'] },
-    C3:{ t:'Komfort', d:'Otulenie i ciepło', leaves:['Koc, herbata i książka','Słodkie otulenie z kuchni','Kominek, drewno i wełna'] },
-    C4:{ t:'Spokój', d:'Wyciszenie', leaves:['Medytacyjnie, kadzidło i drewno','Ziołowo, lawenda i rumianek','Spacer po lesie'] } } },
-  D:{ t:'Wyróżniać się', d:'Zostać zapamiętaną', kids:{
-    D1:{ t:'Zwracać uwagę', d:'Komplementy, wyraźna projekcja', leaves:['Magnes na komplementy','Odważna deklaracja','Słodki ślad za mną'] },
-    D2:{ t:'Oryginalność', d:'Nie to, co nosi każdy', leaves:['Konceptualnie, mineralnie, abstrakcyjnie','Buntowniczo, skóra i dym','Awangardowa, gorzka zieleń'] },
-    D3:{ t:'Zapach-podpis', d:'Jeden zapach, który kojarzą ze mną', leaves:['Rozpoznawalny, ale noszalny','Miękka baza z jednym wyraźnym akcentem'] },
-    D4:{ t:'Opowieść', d:'Miejsce, wspomnienie, nastrój', leaves:['Daleka podróż, przyprawy i tropiki','Śródziemnomorskie lato','Vintage, lata pięćdziesiąte','Dzieciństwo, migdały i krem do rąk'] } } }
+  A:{ t:'Attract', d:'Seduce, charm, intrigue', kids:{
+    A1:{ t:'Seduce', d:'Sensual, meant for closeness', leaves:['Close to the skin, only for someone who leans in','A clear trail that turns heads','Dark, with a hint of risk','"I want to taste you", sweet and edible'] },
+    A2:{ t:'Charm', d:'Warm and likeable', leaves:['Sunny warmth, a holiday smile','A soft embrace, like a cashmere jumper','A light, playful flirt'] },
+    A3:{ t:'Romance', d:'Tender and dreamy', leaves:['Classic romance, roses and a love letter','Dreamy, light and unreal','Nostalgic sweetness, an old dressing table'] },
+    A4:{ t:'Intrigue', d:'Mysterious, so someone asks', leaves:['Cool smoke, at a distance','Velvet darkness, deep and warm','Elusive, changing on the skin'] } } },
+  B:{ t:'Impress', d:'Class, authority, luxury', kids:{
+    B1:{ t:'Authority', d:'Respect without words', leaves:['Quiet authority that never raises its voice','A strong presence that fills the room','"Old money" classic, timeless'] },
+    B2:{ t:'Professional', d:'Order and trust', leaves:['Crisp and clean, a freshly pressed shirt','Precise, with a clear structure','Warm and trustworthy'] },
+    B3:{ t:'Elegance', d:'Refined style', leaves:['Effortless Parisian chic','Evening glamour','Minimalist luxury, beige and cashmere'] },
+    B4:{ t:'Luxury', d:'Smell expensive', leaves:['Oriental opulence, gold and saffron','An "expensive" clean scent, like after a hotel bath'] } } },
+  C:{ t:'Feel good', d:'A scent for yourself', kids:{
+    C1:{ t:'Energy', d:'Lightness and joy', leaves:['A citrus boost','Sea breeze','Green, a garden after rain','Carefree fruit'] },
+    C2:{ t:'Cleanliness', d:'Fresh and neat', leaves:['Good soap','Laundry dried in the sun','Your skin, only better'] },
+    C3:{ t:'Comfort', d:'Warm and enveloping', leaves:['A blanket, tea and a book','A sweet hug from the kitchen','Fireplace, wood and wool'] },
+    C4:{ t:'Calm', d:'Quiet and still', leaves:['Meditative, incense and wood','Herbal, lavender and chamomile','A walk in the forest'] } } },
+  D:{ t:'Stand out', d:'Be remembered', kids:{
+    D1:{ t:'Get noticed', d:'Compliments, strong projection', leaves:['A compliment magnet','A bold statement','A sweet trail behind me'] },
+    D2:{ t:'Originality', d:'Not what everyone wears', leaves:['Conceptual, mineral, abstract','Rebellious, leather and smoke','Avant-garde bitter green'] },
+    D3:{ t:'Signature scent', d:'One scent people link to me', leaves:['Recognisable but wearable','A soft base with one clear accent'] },
+    D4:{ t:'A story', d:'A place, a memory, a mood', leaves:['A faraway journey, spices and tropics','A Mediterranean summer','Vintage, the fifties','Childhood, almonds and hand cream'] } } }
 };
 
 const STEPS = [
-  { title:'Kilka słów na początek', qs:[
-    { id:'name', type:'text', t:'Jak masz na imię?', h:'Pojawi się na Twoim portrecie. Możesz podać zdrobnienie.' },
-    { id:'forWhom', type:'one', t:'Dla kogo szukamy zapachu?', o:['Dla mnie','Na prezent'] },
-    { id:'line', type:'one', t:'Która linia zapachów jest Ci najbliższa?', o:['Damska','Męska','Tylko unisex','Bez znaczenia'] },
-    { id:'age', type:'one', t:'Przedział wieku', o:['Poniżej 25','25–40','40–55','55+'] } ] },
-  { title:'Gdzie i kiedy', qs:[
-    { id:'setting', type:'one', t:'Gdzie najczęściej będziesz nosić ten zapach?', o:['Biuro, praca formalna','Praca kreatywna lub swobodna','Praca w bliskim kontakcie z ludźmi','Wieczory i wyjścia'], other:true },
-    { id:'seasons', type:'many', t:'W jakich porach roku?', o:['Wiosna','Lato','Jesień','Zima'] },
-    { id:'time', type:'one', t:'O jakiej porze dnia?', o:['Dzień','Wieczór i noc','Jedno i drugie'] } ] },
-  { title:'Zapachy, które znasz', qs:[
-    { id:'loved', type:'area', t:'Jakie perfumy lubisz albo kiedyś lubiłaś?', h:'Nazwy albo opis, np. „coś jak mydło”, „ciepłe i słodkie”.' },
-    { id:'disliked', type:'area', t:'Czego nie znosisz w zapachach?', h:'Konkretne nuty lub perfumy albo wrażenie, np. „za słodkie”, „babciny”, „boli mnie od tego głowa”.' } ] },
-  { title:'Co ma robić Twój zapach', qs:[
+  { title:'A few words to start', qs:[
+    { id:'name', type:'text', t:'What is your name?', h:'It will appear on your portrait. A nickname is fine.' },
+    { id:'forWhom', type:'one', t:'Who is the scent for?', o:['For me','A gift'] },
+    { id:'line', type:'one', t:'Which line of fragrances feels closest to you?', o:["Women's","Men's",'Unisex only',"Doesn't matter"] },
+    { id:'age', type:'one', t:'Age range', o:['Under 25','25–40','40–55','55+'] } ] },
+  { title:'Where and when', qs:[
+    { id:'setting', type:'one', t:'Where will you wear this scent most often?', o:['Office, formal work','Creative or casual work','Work in close contact with people','Evenings and going out'], other:true },
+    { id:'seasons', type:'many', t:'In which seasons?', o:['Spring','Summer','Autumn','Winter'] },
+    { id:'time', type:'one', t:'At what time of day?', o:['Day','Evening and night','Both'] } ] },
+  { title:'Scents you know', qs:[
+    { id:'loved', type:'area', t:'Which perfumes do you like, or used to like?', h:'Names or a description, e.g. "something like soap", "warm and sweet".' },
+    { id:'disliked', type:'area', t:"What can't you stand in a scent?", h:'Specific notes or perfumes, or an impression, e.g. "too sweet", "old-fashioned", "gives me a headache".' } ] },
+  { title:'What your scent should do', qs:[
     { id:'dir', type:'tree' } ] },
-  { title:'Jak ma się zmieniać na skórze', qs:[
-    { id:'arc', type:'one', t:'Od pierwszego psiknięcia do wieczora…', tall:true, o:[
-      ['Taki sam przez cały dzień','Stały, przewidywalny charakter'],
-      ['Od świeżego do ciepłego','Jasne otwarcie, przytulne zakończenie'],
-      ['Od niewinnego do zmysłowego','Czysto i biało na początek, ciemno i zmysłowo na koniec'],
-      ['Od mocnego do miękkiego','Głośne wejście, a potem zapach blisko skóry'] ], other:true } ] },
-  { title:'Trochę o Tobie', qs:[
-    { id:'h1', type:'one', t:'Twój idealny wolny dzień?', o:['Ze znajomymi, kiedy coś się dzieje','Dom, książka, kawa i cisza','Nowe miejsce, wycieczka','Plan, porządek, sport'] },
-    { id:'h2', type:'one', t:'Które trzy słowa pasują do Ciebie najbardziej?', o:['Ciepła, troskliwa, empatyczna','Ambitna, zdecydowana, konkretna','Kreatywna, ciekawa, nieprzewidywalna','Spokojna, rozważna, wyważona'] },
-    { id:'h5', type:'one', t:'Jaką tkaninę nosisz najchętniej?', o:['Len, bawełna','Kaszmir, wełna','Jedwab, satyna','Skóra, denim'] },
-    { id:'h6', type:'one', t:'Jakie kolory nosisz najczęściej?', o:['Biel, beż, pastele','Ziemiste, zielenie','Głęboka czerwień, bordo, złoto','Czerń, granat, szarość'] },
-    { id:'bday', type:'bday', t:'Kiedy masz urodziny?', h:'Wystarczy dzień i miesiąc.' } ] }
+  { title:'How it should change on the skin', qs:[
+    { id:'arc', type:'one', t:'From the first spray to the evening…', tall:true, o:[
+      ['The same all day','A steady, predictable character'],
+      ['From fresh to warm','A bright opening, a cosy finish'],
+      ['From innocent to sensual','Clean and white at first, dark and sensual at the end'],
+      ['From loud to soft','A big entrance, then close to the skin'] ], other:true } ] },
+  { title:'A little about you', qs:[
+    { id:'h1', type:'one', t:'Your ideal day off?', o:['With friends, when something is going on','Home, a book, coffee and quiet','A new place, a trip','A plan, order, sport'] },
+    { id:'h2', type:'one', t:'Which three words fit you best?', o:['Warm, caring, empathetic','Ambitious, decisive, direct','Creative, curious, unpredictable','Calm, thoughtful, balanced'] },
+    { id:'h5', type:'one', t:'Which fabric do you like wearing most?', o:['Linen, cotton','Cashmere, wool','Silk, satin','Leather, denim'] },
+    { id:'h6', type:'one', t:'Which colours do you wear most often?', o:['White, beige, pastels','Earthy tones, greens','Deep red, burgundy, gold','Black, navy, grey'] },
+    { id:'bday', type:'bday', t:'When is your birthday?', h:'Day and month are enough.' } ] }
 ];
 
 /* ---------- state + rendering ---------- */
@@ -137,28 +137,28 @@ function renderQ(q) {
   if (q.type === 'text') return `<label class="q"><span class="qt">${q.t}</span>${q.h ? `<span class="qh">${q.h}</span>` : ''}<input class="field" id="f-${q.id}" data-f="${q.id}" maxlength="40" autocomplete="given-name" value="${esc(v || '')}"></label>`;
   if (q.type === 'area') return `<label class="q"><span class="qt">${q.t}</span>${q.h ? `<span class="qh">${q.h}</span>` : ''}<textarea class="field" id="f-${q.id}" data-f="${q.id}" maxlength="800">${esc(v || '')}</textarea></label>`;
   if (q.type === 'bday') {
-    const months = ['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const b = v || {};
     return `<div class="q"><span class="qt">${q.t}</span><span class="qh">${q.h}</span><div class="row">
-      <select class="field" id="f-bday-d" data-b="d" aria-label="Dzień"><option value="">dzień</option>${Array.from({ length:31 }, (_, i) => `<option${b.d == i + 1 ? ' selected' : ''}>${i + 1}</option>`).join('')}</select>
-      <select class="field" id="f-bday-m" data-b="m" aria-label="Miesiąc"><option value="">miesiąc</option>${months.map((m, i) => `<option value="${i + 1}"${b.m == i + 1 ? ' selected' : ''}>${m}</option>`).join('')}</select></div></div>`;
+      <select class="field" id="f-bday-d" data-b="d" aria-label="Day"><option value="">day</option>${Array.from({ length:31 }, (_, i) => `<option${b.d == i + 1 ? ' selected' : ''}>${i + 1}</option>`).join('')}</select>
+      <select class="field" id="f-bday-m" data-b="m" aria-label="Month"><option value="">month</option>${months.map((m, i) => `<option value="${i + 1}"${b.m == i + 1 ? ' selected' : ''}>${m}</option>`).join('')}</select></div></div>`;
   }
   if (q.type === 'tree') return renderTree();
   const many = q.type === 'many', sel = many ? (v || []) : v;
   const opts = q.o.map(o => { const [label, sub] = Array.isArray(o) ? o : [o, '']; return optBtn(q.id, label, label, sub, many ? sel.includes(label) : sel === label, q.tall); }).join('');
-  const other = q.other ? `<input class="field" style="margin-top:10px" id="f-${q.id}-other" data-f="${q.id}_other" maxlength="200" placeholder="Albo opisz własnymi słowami" value="${esc(S.a[q.id + '_other'] || '')}">` : '';
+  const other = q.other ? `<input class="field" style="margin-top:10px" id="f-${q.id}-other" data-f="${q.id}_other" maxlength="200" placeholder="Or describe it in your own words" value="${esc(S.a[q.id + '_other'] || '')}">` : '';
   return `<div class="q"><span class="qt">${q.t}</span>${q.h ? `<span class="qh">${q.h}</span>` : ''}<div class="opts" role="group">${opts}</div>${other}</div>`;
 }
 
 function renderTree() {
   const a = S.a, main = a.dirMain, second = a.dirSecond, l2 = a.dirL2;
-  let h = `<div class="q"><span class="qt">Najważniejsze: co ten zapach ma robić?</span><div class="opts">${Object.entries(TREE).map(([k, n]) => optBtn('dirMain', k, n.t, n.d, main === k, true)).join('')}</div></div>`;
+  let h = `<div class="q"><span class="qt">Most important: what should this scent do?</span><div class="opts">${Object.entries(TREE).map(([k, n]) => optBtn('dirMain', k, n.t, n.d, main === k, true)).join('')}</div></div>`;
   if (main) {
     const node = TREE[main];
-    h += `<div class="q"><span class="qt">${node.t}, ale w jaki sposób?</span><div class="opts">${Object.entries(node.kids).map(([k, n]) => optBtn('dirL2', k, n.t, n.d, l2 === k, true)).join('')}</div></div>`;
-    if (l2 && node.kids[l2]) h += `<div class="q"><span class="qt">Który odcień jest Ci najbliższy?</span><div class="opts">${node.kids[l2].leaves.map(t => optBtn('dirLeaf', t, t, '', a.dirLeaf === t, true)).join('')}</div>
-      <input class="field" style="margin-top:10px" id="f-dirOwn" data-f="dirOwn" maxlength="300" placeholder="Albo opisz własnymi słowami" value="${esc(a.dirOwn || '')}"></div>`;
-    h += `<div class="q"><span class="qt">A na drugim miejscu?</span><span class="qh">Nieobowiązkowe.</span><div class="opts">${Object.entries(TREE).filter(([k]) => k !== main).map(([k, n]) => optBtn('dirSecond', k, n.t, '', second === k, false)).join('')}</div></div>`;
+    h += `<div class="q"><span class="qt">${node.t}, but in what way?</span><div class="opts">${Object.entries(node.kids).map(([k, n]) => optBtn('dirL2', k, n.t, n.d, l2 === k, true)).join('')}</div></div>`;
+    if (l2 && node.kids[l2]) h += `<div class="q"><span class="qt">Which shade feels closest to you?</span><div class="opts">${node.kids[l2].leaves.map(t => optBtn('dirLeaf', t, t, '', a.dirLeaf === t, true)).join('')}</div>
+      <input class="field" style="margin-top:10px" id="f-dirOwn" data-f="dirOwn" maxlength="300" placeholder="Or describe it in your own words" value="${esc(a.dirOwn || '')}"></div>`;
+    h += `<div class="q"><span class="qt">And in second place?</span><span class="qh">Optional.</span><div class="opts">${Object.entries(TREE).filter(([k]) => k !== main).map(([k, n]) => optBtn('dirSecond', k, n.t, '', second === k, false)).join('')}</div></div>`;
   }
   return h;
 }
@@ -166,10 +166,10 @@ function renderTree() {
 function render() {
   progress.innerHTML = STEPS.map((_, i) => `<i class="${i <= S.step ? 'on' : ''}"></i>`).join('');
   const st = STEPS[S.step];
-  card.innerHTML = `<div class="label">Krok ${S.step + 1} z ${STEPS.length}</div><h2>${st.title}</h2>${st.qs.map(renderQ).join('')}`;
+  card.innerHTML = `<div class="label">Step ${S.step + 1} of ${STEPS.length}</div><h2>${st.title}</h2>${st.qs.map(renderQ).join('')}`;
   const last = S.step === STEPS.length - 1;
-  nav.innerHTML = `<button type="button" class="btn" id="back"${S.step === 0 ? ' disabled' : ''}>Wstecz</button>
-    <button type="button" class="btn primary" id="next">${last ? 'Wyślij' : 'Dalej'}</button>`;
+  nav.innerHTML = `<button type="button" class="btn" id="back"${S.step === 0 ? ' disabled' : ''}>Back</button>
+    <button type="button" class="btn primary" id="next">${last ? 'Send' : 'Next'}</button>`;
 }
 
 /* ---------- interactions ---------- */
@@ -199,14 +199,14 @@ nav.addEventListener('click', e => {
 function summary() {
   const a = S.a, L = [];
   const add = (k, v) => { if (v != null && v !== '' && !(Array.isArray(v) && !v.length)) L.push(`${k}: ${Array.isArray(v) ? v.join(', ') : v}`); };
-  add('Imię', a.name); add('Dla kogo', a.forWhom); add('Linia', a.line); add('Wiek', a.age);
-  add('Gdzie', a.setting); add('Gdzie (własnymi słowami)', a.setting_other); add('Pory roku', a.seasons); add('Pora dnia', a.time);
-  add('Lubiane perfumy', a.loved); add('Czego nie znosi', a.disliked);
-  if (a.dirMain) { const m = TREE[a.dirMain]; add('Efekt główny', m.t); if (a.dirL2) add('Efekt szczegółowo', m.kids[a.dirL2].t); add('Odcień', a.dirLeaf); }
-  add('Efekt (własnymi słowami)', a.dirOwn); if (a.dirSecond) add('Efekt drugi', TREE[a.dirSecond].t);
-  add('Przemiana', a.arc); add('Przemiana (własnymi słowami)', a.arc_other);
-  add('Wolny dzień', a.h1); add('Trzy słowa', a.h2); add('Tkanina', a.h5); add('Kolory', a.h6);
-  if (a.bday && (a.bday.d || a.bday.m)) add('Urodziny (dzień.miesiąc)', `${a.bday.d || '?'}.${a.bday.m || '?'}`);
+  add('Name', a.name); add('For whom', a.forWhom); add('Line', a.line); add('Age', a.age);
+  add('Where', a.setting); add('Where (own words)', a.setting_other); add('Seasons', a.seasons); add('Time of day', a.time);
+  add('Liked perfumes', a.loved); add('Dislikes', a.disliked);
+  if (a.dirMain) { const m = TREE[a.dirMain]; add('Main effect', m.t); if (a.dirL2) add('Effect in detail', m.kids[a.dirL2].t); add('Shade', a.dirLeaf); }
+  add('Effect (own words)', a.dirOwn); if (a.dirSecond) add('Second effect', TREE[a.dirSecond].t);
+  add('Arc', a.arc); add('Arc (own words)', a.arc_other);
+  add('Day off', a.h1); add('Three words', a.h2); add('Fabric', a.h5); add('Colours', a.h6);
+  if (a.bday && (a.bday.d || a.bday.m)) add('Birthday (day.month)', `${a.bday.d || '?'}.${a.bday.m || '?'}`);
   return L.join('\n');
 }
 
@@ -215,7 +215,7 @@ let dbP = null, userP = null;
 try { dbP = window.claude?.use ? claude.use('db') : null; userP = window.claude?.use ? claude.use('user') : null; } catch (e) {}
 
 async function submit() {
-  const next = document.getElementById('next'); next.disabled = true; next.textContent = 'Wysyłam…';
+  const next = document.getElementById('next'); next.disabled = true; next.textContent = 'Sending…';
   const text = summary();
   let saved = false;
   try {
@@ -240,18 +240,18 @@ function watch(ref) {
     if (!snap.exists) return;
     const d = snap.data() || {};
     const who = ((d.answers && d.answers.name) || '').trim();
-    const hi = `<p class="script">Dziękuję${who ? ', ' + esc(who) : ''}</p>`;
-    const again = `<p class="note"><button type="button" class="btn" id="again">Wypełnij od nowa</button></p>`;
+    const hi = `<p class="script">Thank you${who ? ', ' + esc(who) : ''}</p>`;
+    const again = `<p class="note"><button type="button" class="btn" id="again">Start over</button></p>`;
     if (d.portrait) {
       const href = /^https:\/\//.test(d.portrait) || /^[\w\/.-]+\.html$/.test(d.portrait) ? d.portrait : '';
-      card.innerHTML = `<div class="done"><div class="label">Gotowe</div><p class="script">${who ? esc(who) + ', ' : ''}Twój portret czeka</p>
-        <p>Najlepiej wygląda na komputerze, ale zadziała też na telefonie.</p>
-        ${href ? `<p><button type="button" class="btn primary" id="open" data-href="${esc(href)}">Otwórz portret</button></p><p class="err" id="openerr" hidden>Nie udało się otworzyć portretu. Spróbuj ponownie za chwilę.</p>` : ''}${again}</div>`;
+      card.innerHTML = `<div class="done"><div class="label">Ready</div><p class="script">${who ? esc(who) + ', y' : 'Y'}our portrait is waiting</p>
+        <p>It looks best on a computer, but it works on a phone too.</p>
+        ${href ? `<p><button type="button" class="btn primary" id="open" data-href="${esc(href)}">Open portrait</button></p><p class="err" id="openerr" hidden>The portrait could not be opened. Try again in a moment.</p>` : ''}${again}</div>`;
     } else if (d.status === 'error') {
-      card.innerHTML = `<div class="done"><div class="label">Chwila przerwy</div>${hi}<p>Portret nie powstał tym razem. Twoje odpowiedzi są bezpieczne. Spróbujemy ponownie, a link pojawi się tutaj.</p>${again}</div>`;
+      card.innerHTML = `<div class="done"><div class="label">A short pause</div>${hi}<p>The portrait wasn't made this time. Your answers are safe. We'll try again, and the link will appear here.</p>${again}</div>`;
     } else {
-      card.innerHTML = `<div class="done"><div class="label">${d.status === 'working' ? 'Portret powstaje' : 'Odpowiedzi zapisane'}</div>${hi}
-        <p>Teraz powstaje Twój portret. Zwykle trwa to kilkanaście minut. Poczekaj tutaj: link do Twojego portretu pojawi się na tej stronie, kiedy tylko będzie gotowy.</p>
+      card.innerHTML = `<div class="done"><div class="label">${d.status === 'working' ? 'Portrait in progress' : 'Answers saved'}</div>${hi}
+        <p>Your portrait is being made now. It usually takes 15–30 minutes. Wait here: the link to your portrait will appear on this page as soon as it is ready.</p>
         <p class="wait" aria-hidden="true"><i></i><i></i><i></i></p>${again}</div>`;
     }
     const o = document.getElementById('open');
@@ -265,7 +265,7 @@ function watch(ref) {
    place of the questionnaire, in this same frame. */
 async function openPortrait(btn) {
   const err = document.getElementById('openerr');
-  btn.disabled = true; btn.textContent = 'Otwieram…'; if (err) err.hidden = true;
+  btn.disabled = true; btn.textContent = 'Opening…'; if (err) err.hidden = true;
   try {
     const r = await fetch(btn.dataset.href, { credentials: 'same-origin' });
     if (!r.ok) throw new Error(r.status);
@@ -275,7 +275,7 @@ async function openPortrait(btn) {
     document.open(); document.write(html); document.close();
     scrollTo(0, 0);
   } catch (e) {
-    btn.disabled = false; btn.textContent = 'Otwórz portret'; if (err) err.hidden = false;
+    btn.disabled = false; btn.textContent = 'Open portrait'; if (err) err.hidden = false;
   }
 }
 
@@ -295,13 +295,13 @@ function done(saved, text) {
   const who = (S.a.name || '').trim();
   card.innerHTML = saved
     ? ''
-    : `<div class="done"><div class="label">Prawie gotowe</div><p class="script">Dziękuję${who ? ', ' + esc(who) : ''}</p>
-       <p>Nie udało się zapisać odpowiedzi w tym widoku. Skopiuj je poniżej i odeślij osobie, która przesłała Ci link.</p>
-       <pre class="copy" id="copytext">${esc(text)}</pre><button type="button" class="btn primary" id="copy">Kopiuj odpowiedzi</button><p class="note" id="copied"></p></div>`;
+    : `<div class="done"><div class="label">Almost done</div><p class="script">Thank you${who ? ', ' + esc(who) : ''}</p>
+       <p>Your answers couldn't be saved in this view. Copy them below and send them to the person who shared the link with you.</p>
+       <pre class="copy" id="copytext">${esc(text)}</pre><button type="button" class="btn primary" id="copy">Copy answers</button><p class="note" id="copied"></p></div>`;
   const c = document.getElementById('copy');
   if (c) c.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(text); document.getElementById('copied').textContent = 'Skopiowano.'; }
-    catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById('copytext')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.getElementById('copied').textContent = 'Zaznaczyłam tekst, skopiuj go skrótem Ctrl+C.'; }
+    try { await navigator.clipboard.writeText(text); document.getElementById('copied').textContent = 'Copied.'; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById('copytext')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.getElementById('copied').textContent = 'The text is selected. Copy it with Ctrl+C.'; }
   });
   scrollTo({ top:0, behavior:'smooth' });
 }
