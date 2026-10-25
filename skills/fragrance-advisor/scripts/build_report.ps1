@@ -1,5 +1,5 @@
 # Builds the interactive report from a filled template (Windows, no Python needed).
-#   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_report.ps1 -Src work\portret-x.html -Out work\portret-x.built.html
+#   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_report.ps1 -Src work\portrait-x.html -Out work\portrait-x.built.html
 # 1. Downloads missing Fragrantica images for every {{IMG_id}}, {{NOTE_id}}, {{BOT_id}} in -Src into -Cache.
 # 2. Makes one-colour burgundy note icons (eng\<id>.png) and botanical plates (bot\<id>.jpg).
 # 3. Embeds everything as data: URIs and writes a full page (-Out) plus, with -Artifact, a skeleton-free copy for the Artifact tool.
@@ -108,7 +108,7 @@ if ($Artifact) {
   # skeleton-free copy for the Artifact tool's main page: no doctype/head/body, no print button
   $a = [regex]::Replace($c, '(?is)<!doctype html>|<html[^>]*>|</?head>|</body>|</html>|<meta charset="utf-8">|<meta name="viewport"[^>]*>', '')
   $a = [regex]::Replace($a, '<body data-mode="(\w+)">', '<script>document.body.dataset.mode = "$1";</script>')
-  $a = $a.Replace('<button class="pdf" onclick="window.print()">Zapisz PDF</button>', '')
+  $a = $a.Replace('<button class="pdf" onclick="window.print()">Save PDF</button>', '')
   $a = $a.Replace('.switch-wrap { position:sticky; top:0;', '.switch-wrap { position:sticky; top:env(safe-area-inset-top, 0px);').TrimStart()
   [IO.File]::WriteAllText($Artifact, $a, $utf8)
 }

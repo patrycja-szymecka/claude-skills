@@ -1,25 +1,25 @@
 <!doctype html>
 <!--
-  Fragrance report template ("Portret zapachowy"): one interactive page with three modes (day / work / evening).
+  Fragrance report template ("Scent Portrait"): one interactive page with three modes (day / work / evening).
 
-  How to fill it (see SKILL.md, "The HTML report"):
-  1. Edit the visible copy in the markup: the NAME in its Polish case forms (possessive genitive without "dla" in the running head "Portret Anny" and under the cover title "Anny"; the farewell signature also "Anny", never "dla"; vocative "Anno," opening the farewell line). The prologue (first scene) stays generic: no name, notes or perfumes, the cover line, the "Twój portret" section and the farewell note. No dates anywhere.
-     All copy in the user's language; note names in the data stay in English (`name`) with a translation (`pl`).
-  2. Replace the example data in the <script> block: NOTES (give key notes a `bot` drawing and a `why`), P (18 perfumes: per mode one exact + one similar in each tier), MODES (`sel.exact` / `sel.similar`). FAM holds the family colours.
+  How to fill it (see SKILL.md, "Recommend: the interactive report"):
+  1. Edit the visible copy in the markup: the NAME (running head "Anna's Portrait", the name under the cover title, the farewell line opening "Anna, …" and the farewell signature), the cover line, the "Your portrait" section and the farewell note. The prologue (first scene) stays generic: no name, notes or perfumes. No dates anywhere.
+     All copy in the user's language; note names in the data stay in Fragrantica's English (`name`), with the display name in the user's language in `label`.
+  2. Replace the example data in the <script> block: NOTES (give key notes a `bot` drawing and a `why`), P (18 perfumes: per mode one exact + one similar in each tier; optional `price`, e.g. price:'€99 · 80 ml'), MODES (`sel.exact` / `sel.similar`). FAM holds the family colours.
      Every note used in a pyramid, chip or key list must exist in NOTES.
   3. Images are placeholders: {{IMG_<fragrantica perfume id>}} for bottles, {{NOTE_<fragrantica note id>}} for note icons, {{BOT_<note id>}} for the botanical drawing of the signature/key notes.
      Run (Windows):  powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build_report.ps1 -Src report.html -Out report-final.html -Artifact report-artifact.html
      Run (elsewhere): python scripts/fragrantica_images.py embed report.html -o report-final.html
-  4. For an Artifact publish: drop the <!doctype>/<html>/<head>/<body> wrapper, move data-mode="wieczor" into
-     a script (document.body.dataset.mode = "wieczor"), and remove the "Zapisz PDF" button (printing is blocked there).
+  4. For an Artifact publish: drop the <!doctype>/<html>/<head>/<body> wrapper, move data-mode="evening" into
+     a script (document.body.dataset.mode = "evening"), and remove the "Save PDF" button (printing is blocked there).
 
   The example data below is the test profile from development; never ship it as someone's real result.
 -->
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Portret zapachowy</title>
+<title>Scent Portrait</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Jost:wght@400;500&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -37,10 +37,10 @@
   img { max-width:100%; }
 
   .aura { position:fixed; inset:-12%; z-index:-1; filter:blur(70px); opacity:0; transition:opacity .9s ease; pointer-events:none; }
-  .aura.dzien  { background:radial-gradient(34% 30% at 14% 12%, #f6ddb0, transparent 70%), radial-gradient(30% 26% at 86% 20%, #f3cf86, transparent 70%), radial-gradient(34% 30% at 76% 76%, #f1d7c4, transparent 70%), radial-gradient(28% 26% at 12% 86%, #e9e2c6, transparent 70%); }
-  .aura.praca  { background:radial-gradient(34% 30% at 14% 12%, #ecdccb, transparent 70%), radial-gradient(30% 26% at 86% 20%, #dfd4c2, transparent 70%), radial-gradient(34% 30% at 76% 76%, #d8c9bd, transparent 70%), radial-gradient(28% 26% at 12% 86%, #d9d8c8, transparent 70%); }
-  .aura.wieczor{ background:radial-gradient(34% 30% at 14% 12%, #ecc9b2, transparent 70%), radial-gradient(30% 26% at 86% 20%, #d9a37a, transparent 70%), radial-gradient(34% 30% at 76% 76%, #b9848a, transparent 70%), radial-gradient(28% 26% at 12% 86%, #8d6470, transparent 70%); }
-  body[data-mode="dzien"] .aura.dzien, body[data-mode="praca"] .aura.praca, body[data-mode="wieczor"] .aura.wieczor { opacity:.7; }
+  .aura.day  { background:radial-gradient(34% 30% at 14% 12%, #f6ddb0, transparent 70%), radial-gradient(30% 26% at 86% 20%, #f3cf86, transparent 70%), radial-gradient(34% 30% at 76% 76%, #f1d7c4, transparent 70%), radial-gradient(28% 26% at 12% 86%, #e9e2c6, transparent 70%); }
+  .aura.work  { background:radial-gradient(34% 30% at 14% 12%, #ecdccb, transparent 70%), radial-gradient(30% 26% at 86% 20%, #dfd4c2, transparent 70%), radial-gradient(34% 30% at 76% 76%, #d8c9bd, transparent 70%), radial-gradient(28% 26% at 12% 86%, #d9d8c8, transparent 70%); }
+  .aura.evening{ background:radial-gradient(34% 30% at 14% 12%, #ecc9b2, transparent 70%), radial-gradient(30% 26% at 86% 20%, #d9a37a, transparent 70%), radial-gradient(34% 30% at 76% 76%, #b9848a, transparent 70%), radial-gradient(28% 26% at 12% 86%, #8d6470, transparent 70%); }
+  body[data-mode="day"] .aura.day, body[data-mode="work"] .aura.work, body[data-mode="evening"] .aura.evening { opacity:.7; }
 
   /* old-perfumery paper: fine grain + slow mottling + a candle-light vignette, laid over everything */
   :root {
@@ -106,7 +106,7 @@
   .switch svg { width:16px; height:16px; flex:none; }
 
   .mode { display:none; padding-top:24px; animation:fade .6s ease; }
-  body[data-mode="dzien"] .mode[data-mode="dzien"], body[data-mode="praca"] .mode[data-mode="praca"], body[data-mode="wieczor"] .mode[data-mode="wieczor"] { display:block; }
+  body[data-mode="day"] .mode[data-mode="day"], body[data-mode="work"] .mode[data-mode="work"], body[data-mode="evening"] .mode[data-mode="evening"] { display:block; }
   @keyframes fade { from { opacity:.3; transform:translateY(6px); } to { opacity:1; transform:none; } }
   .mode-head { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:end; padding:16px 0 36px; }
   .mode-head h2 { font:400 clamp(48px, 7vw, 76px)/.95 var(--serif); margin:12px 0 0; }
@@ -141,7 +141,7 @@
   .lvl small { display:block; font:italic 300 14px/1.2 var(--text); letter-spacing:0; text-transform:none; color:var(--muted); }
   .pyramid { position:relative; container-type:inline-size; width:100%; max-width:560px; aspect-ratio:100/92; justify-self:center; }
   .tri { position:absolute; inset:0; clip-path:polygon(50% 0, 100% 100%, 0 100%); background:linear-gradient(180deg, rgba(255,251,244,.95) 0%, #f2e5d6 42%, #e7d2c4 68%, #cfb0a8 100%); }
-  body[data-mode="wieczor"] .tri { background:linear-gradient(180deg, rgba(255,251,244,.95) 0%, #efdcca 38%, #d9b7ae 66%, #a87b81 100%); }
+  body[data-mode="evening"] .tri { background:linear-gradient(180deg, rgba(255,251,244,.95) 0%, #efdcca 38%, #d9b7ae 66%, #a87b81 100%); }
   .pnote { position:absolute; background:none; border:0; padding:0; cursor:pointer; text-align:center; }
   .pnote .duo { box-shadow:0 0 0 2px rgba(255,255,255,.95); transition:transform .2s; }
   .pnote:hover .duo, .pnote:focus-visible .duo { transform:scale(1.08); }
@@ -275,7 +275,7 @@
   .view-toggle { position:fixed; left:20px; bottom:20px; z-index:70; font:500 10.5px var(--label); letter-spacing:.16em; text-transform:uppercase; color:var(--bordo); background:rgba(251,248,243,.9); border:1px solid var(--rule); border-radius:999px; padding:9px 14px; cursor:pointer; }
   .view-toggle:hover, .view-toggle:focus-visible { border-color:var(--bordo); outline:none; }
   @media print { .view-toggle { display:none !important; } }
-  body[data-mode="dzien"] { --glow:rgba(246,214,150,.55); } body[data-mode="praca"] { --glow:rgba(226,211,190,.55); } body[data-mode="wieczor"] { --glow:rgba(214,150,128,.42); }
+  body[data-mode="day"] { --glow:rgba(246,214,150,.55); } body[data-mode="work"] { --glow:rgba(226,211,190,.55); } body[data-mode="evening"] { --glow:rgba(214,150,128,.42); }
   @media screen {
     html.depth, html.depth body { height:100%; overflow:hidden; overscroll-behavior:none; }
     html.depth #tour { touch-action:pan-x; }
@@ -323,79 +323,79 @@
   }
 </style>
 </head>
-<body data-mode="wieczor">
-<div class="aura dzien"></div><div class="aura praca"></div><div class="aura wieczor"></div>
+<body data-mode="evening">
+<div class="aura day"></div><div class="aura work"></div><div class="aura evening"></div>
 
 <main class="page" id="tour">
   <!-- prologue: builds anticipation, reveals nothing (no name, notes or perfumes) -->
-  <section class="scene prologue" data-n="" data-name="Prolog"><div class="scene-in">
+  <section class="scene prologue" data-n="" data-name="Prologue"><div class="scene-in">
     <div class="pro">
       <svg class="pro-arch" viewBox="0 0 200 280" aria-hidden="true"><path d="M12 280V108a88 88 0 0 1 176 0v172"/><path d="M30 280V110a70 70 0 0 1 140 0v170"/></svg>
       <div class="pro-text">
-        <p class="pro-line">Zanim wejdziesz</p>
-        <p class="pro-line">Weź głęboki oddech</p>
-        <p class="pro-line">Za tym progiem czeka zapach, którego jeszcze nie znasz</p>
-        <p class="pro-line pro-last">On zna już Ciebie.</p>
+        <p class="pro-line">Before you step in</p>
+        <p class="pro-line">Take a deep breath</p>
+        <p class="pro-line">Past this threshold waits a scent you don't know yet</p>
+        <p class="pro-line pro-last">It already knows you.</p>
       </div>
-      <div class="pro-cue">Przewiń, aby wejść</div>
+      <div class="pro-cue">Scroll to enter</div>
     </div>
   </div></section>
 
-  <section class="scene" data-n="I" data-name="Wejście"><div class="scene-in">
-  <div class="runhead"><span class="label">Analiza indywidualna</span><span class="label bordo">Portret Anny</span><button class="pdf" onclick="window.print()">Zapisz PDF</button></div>
+  <section class="scene" data-n="I" data-name="Entrance"><div class="scene-in">
+  <div class="runhead"><span class="label">Personal analysis</span><span class="label bordo">Anna's Portrait</span><button class="pdf" onclick="window.print()">Save PDF</button></div>
 
   <section class="cover">
     <div>
-      <div class="label bordo" style="margin-bottom:22px">I · Wejście</div>
-      <h1>Portret<br>zapachowy</h1>
-      <div class="name">Anny</div>
+      <div class="label bordo" style="margin-bottom:22px">I · Entrance</div>
+      <h1>Scent<br>Portrait</h1>
+      <div class="name">Anna</div>
       <div class="rule"></div>
-      <div class="label muted">Osobista analiza Twoich preferencji i wybrane zapachy</div>
-      <p class="sub">Dla kogoś, kto wchodzi do pokoju jasno, a zostaje w pamięci na długo.</p>
+      <div class="label muted">A personal analysis of your preferences, with selected scents</div>
+      <p class="sub">For someone who walks into a room brightly and stays in the memory for a long time.</p>
     </div>
     <figure class="plate">
-      <img src="{{BOT_16}}" alt="Rysunek botaniczny kwiatu pomarańczy">
-      <figcaption>Citrus aurantium<br>kwiat pomarańczy</figcaption>
+      <img src="{{BOT_16}}" alt="Botanical drawing of orange blossom">
+      <figcaption>Citrus aurantium<br>orange blossom</figcaption>
     </figure>
   </section>
   </div></section>
 
-  <section class="scene" data-n="II" data-name="Portret"><div class="scene-in">
+  <section class="scene" data-n="II" data-name="Portrait"><div class="scene-in">
   <section class="portrait">
     <div class="reveal">
-      <div class="label bordo">Twój portret</div>
-      <h2>Jasność, która ma cień</h2>
-      <p class="thesis">Kwiat pomarańczy · Kadzidło · Piżmo</p>
-      <p>Masz w sobie dwie temperatury. Pierwsze wrażenie jest ciepłe i otwarte: łatwo nawiązujesz kontakt, a ludzie szybko czują się przy Tobie swobodnie. To jednak tylko pierwsza warstwa. Głębiej jest ktoś, kto ma własne zdanie, nie tłumaczy się ze swoich wyborów i nie potrzebuje, żeby wszyscy rozumieli go od razu.</p>
-      <p>Zapachy, które naprawdę do Ciebie pasują, działają tak samo. Zaczynają się jasno i przyjaźnie, a z czasem odsłaniają coś głębszego. Lubisz ciepło, ale takie, które ma charakter. Słodycz dla samej słodyczy szybko Cię nuży.</p>
+      <div class="label bordo">Your portrait</div>
+      <h2>Brightness with a shadow</h2>
+      <p class="thesis">Orange Blossom · Incense · Musk</p>
+      <p>You carry two temperatures. The first impression is warm and open: you connect easily, and people quickly feel at ease around you. But that is only the first layer. Underneath is someone with their own opinions, who doesn't explain their choices and doesn't need everyone to understand them straight away.</p>
+      <p>The scents that really suit you work the same way. They start bright and friendly, and over time reveal something deeper. You like warmth, but warmth with character. Sweetness for its own sake bores you quickly.</p>
     </div>
     <div class="traits reveal">
-      <div><div class="label bordo">To, co Cię porusza</div><ul><li>Światło, które ma swój cień</li><li>Ciepło bez lukru</li><li>Rzeczy, które odkrywa się z czasem</li><li>Własny styl, którego nie trzeba tłumaczyć</li></ul></div>
-      <div><div class="label bordo">Twój styl zapachowy</div><p>Jasne otwarcie i zmysłowe zakończenie. Kwiaty, ale nigdy grzeczne. Zapach, który działa z bliska i zostaje w pokoju dłużej niż Ty.</p></div>
+      <div><div class="label bordo">What moves you</div><ul><li>Light that has its shadow</li><li>Warmth without the icing</li><li>Things you discover over time</li><li>A style of your own that needs no explaining</li></ul></div>
+      <div><div class="label bordo">Your scent style</div><p>A bright opening and a sensual finish. Flowers, but never polite ones. A scent that works up close and stays in the room longer than you do.</p></div>
     </div>
   </section>
   </div></section>
 
   <div class="switch-wrap">
-    <div class="switch" role="tablist" aria-label="Wariant">
-      <button role="tab" data-to="dzien" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg><span>Na dzień</span></button>
-      <button role="tab" data-to="praca" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18"/></svg><span>Do pracy</span></button>
-      <button role="tab" data-to="wieczor" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><span>Na wieczór</span></button>
+    <div class="switch" role="tablist" aria-label="Mode">
+      <button role="tab" data-to="day" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg><span>Day</span></button>
+      <button role="tab" data-to="work" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18"/></svg><span>Work</span></button>
+      <button role="tab" data-to="evening" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><span>Evening</span></button>
     </div>
   </div>
 
-  <section class="scene" data-n="III" data-name="Pracownia nut"><div class="scene-in" id="m-head"></div></section>
-  <section class="scene" data-n="IV" data-name="Piramida"><div class="scene-in" id="m-twin"></div></section>
-  <section class="scene" data-n="V" data-name="Gabloty"><div class="scene-in" id="m-sel"></div></section>
-  <section class="scene" data-n="VI" data-name="Pożegnanie"><div class="scene-in">
+  <section class="scene" data-n="III" data-name="Note Atelier"><div class="scene-in" id="m-head"></div></section>
+  <section class="scene" data-n="IV" data-name="Pyramid"><div class="scene-in" id="m-twin"></div></section>
+  <section class="scene" data-n="V" data-name="Display Cases"><div class="scene-in" id="m-sel"></div></section>
+  <section class="scene" data-n="VI" data-name="Farewell"><div class="scene-in">
     <section class="closing">
       <article class="note reveal">
         <img class="note-sprig" src="{{BOT_16}}" alt="">
-        <div class="label bordo">Na pożegnanie</div>
-        <p class="note-line">Anno, nie musisz mówić wszystkiego od razu. Twój zapach też nie.</p>
-        <p class="note-body">Wybierz jeden flakon i daj mu cały dzień. Rano poznasz jego jasną stronę, wieczorem tę drugą. Ten, który pod koniec dnia pachnie bardziej jak Ty niż jak perfumy, jest Twój.</p>
-        <p class="note-ps">P.S. Jeśli ktoś zapyta, co masz na sobie, nie musisz od razu zdradzać.</p>
-        <div class="note-sign">Portret zapachowy<span class="who">Anny</span></div>
+        <div class="label bordo">In farewell</div>
+        <p class="note-line">Anna, you don't have to say everything at once. Neither does your scent.</p>
+        <p class="note-body">Pick one bottle and give it a whole day. In the morning you'll meet its bright side, in the evening the other one. The one that smells more like you than like perfume by the end of the day is yours.</p>
+        <p class="note-ps">P.S. If someone asks what you're wearing, you don't have to tell them right away.</p>
+        <div class="note-sign">Scent Portrait<span class="who">Anna</span></div>
       </article>
     </section>
   </div></section>
@@ -403,140 +403,140 @@
 
 <!-- depth-tour chrome: scroll track, room label, room dots, hint -->
 <div id="track" aria-hidden="true"></div>
-<nav class="hud" aria-label="Sale">
+<nav class="hud" aria-label="Rooms">
   <div class="hud-room"><span class="hud-n"></span><span class="hud-name"></span></div>
   <ol class="hud-dots"></ol>
-  <div class="hud-hint">Przewiń, żeby wejść dalej</div>
+  <div class="hud-hint">Scroll to go further in</div>
 </nav>
 <dialog id="sheet"><div class="sheet" id="sheet-body"></div></dialog>
 
 <script>
 /* ===================== DATA (filled per user) ===================== */
 const NOTES = {
-  bergamot:{ name:'Bergamot', pl:'Bergamota', img:'{{NOTE_75}}', smell:'Włoski cytrus o gorzkawej, herbacianej świeżości. To on pachnie w herbacie Earl Grey.', why:'Daje pierwszy oddech. W dzień to on sprawia, że zapach wchodzi lekko, zanim pojawią się kwiaty.' },
-  mandarin:{ name:'Mandarin Orange', pl:'Mandarynka', img:'{{NOTE_82}}', smell:'Słodsza i bardziej soczysta niż pomarańcza, z nutą skórki.' },
-  neroli:{ name:'Neroli', pl:'Neroli', img:'{{NOTE_17}}', bot:'{{BOT_17}}', smell:'Olejek z kwiatów gorzkiej pomarańczy, destylowany parą. Jasny, zielono-miodowy, jak skórka i płatki naraz.', why:'Twoja jasna strona: czysta, otwarta, bez wysiłku. Od niej zaczyna się każda wersja portretu.' },
-  orangeblossom:{ name:'Orange Blossom', pl:'Kwiat pomarańczy', img:'{{NOTE_16}}', bot:'{{BOT_16}}', smell:'Absolut z tych samych kwiatów co neroli, ale cieplejszy i bardziej zmysłowy: miodowy, lekko indolowy, jak skóra po słońcu.', why:'Nić, która łączy wszystkie zapachy, do których wracasz. Ciepła i zmysłowa jednocześnie, tak jak Ty, kiedy ktoś pozna Cię bliżej.' },
-  jasmine:{ name:'Jasmine', pl:'Jaśmin', img:'{{NOTE_14}}', bot:'{{BOT_14}}', smell:'Biały kwiat o bogatym, lekko owocowym i zmysłowym zapachu. Wieczorem nabiera głębi.', why:'Wieczorem łączy jasne serce z ciemną bazą. To on robi z kwiatu pomarańczy coś bardziej zmysłowego.' },
-  rose:{ name:'Rose', pl:'Róża', img:'{{NOTE_105}}', smell:'Klasyczna, aksamitna, lekko cytrynowa. Dodaje kompozycji elegancji.' },
-  iris:{ name:'Iris', pl:'Irys', img:'{{NOTE_11}}', smell:'Pudrowy, chłodny korzeń. Pachnie jak drogi kosmetyk i zamszowe rękawiczki.' },
-  tuberose:{ name:'Tuberose', pl:'Tuberoza', img:'{{NOTE_25}}', smell:'Kremowa, odurzająca biała kwiatowa nuta. Wieczorowa z natury.' },
-  musk:{ name:'Musk', pl:'Piżmo', img:'{{NOTE_4}}', bot:'{{BOT_4}}', smell:'Dziś zawsze syntetyczne. Pachnie czystą skórą, świeżym praniem i ciepłem bliskości.', why:'Sprawia, że zapach zostaje blisko skóry. W pracy właśnie o to chodzi: czuje go osoba obok, a nie cała sala.' },
-  cedar:{ name:'Cedar', pl:'Cedr', img:'{{NOTE_41}}', bot:'{{BOT_41}}', smell:'Suche, ołówkowe drewno. Porządkuje kompozycję i daje jej kręgosłup.', why:'W wersji do pracy zastępuje słodką bazę spokojnym drewnem. Porządkuje i dodaje pewności.' },
-  vetiver:{ name:'Vetiver', pl:'Wetiweria', img:'{{NOTE_2}}', smell:'Korzeń trawy: ziemisty, lekko dymny, elegancko wytrawny.' },
-  patchouli:{ name:'Patchouli', pl:'Paczula', img:'{{NOTE_34}}', bot:'{{BOT_34}}', smell:'Liście o zapachu wilgotnej ziemi, kakao i lekkiego dymu.', why:'Pozwala zejść w ciemność bez cukru. Daje głębię, której szukasz zamiast pralin i karmelu.' },
-  incense:{ name:'Incense', pl:'Kadzidło', img:'{{NOTE_68}}', bot:'{{BOT_68}}', smell:'Żywica olibanum: chłodny, cytrynowo-dymny zapach starego kościoła i nagrzanego kamienia.', why:'Twój tajemniczy finał. Nadaje białym kwiatom cień, nie odbierając im światła.' },
-  leather:{ name:'Leather', pl:'Skóra', img:'{{NOTE_156}}', smell:'Miękka, lekko dymna. Kojarzy się z rękawiczkami i starą torebką.' },
-  myrrh:{ name:'Myrrh', pl:'Mirra', img:'{{NOTE_98}}', smell:'Żywica o ciepłym, gorzkawym, lekko anyżowym zapachu.' },
-  petitgrain:{ name:'Petitgrain', pl:'Petitgrain', img:'{{NOTE_3}}', smell:'Olejek z liści i gałązek drzewa pomarańczowego: zielony, gorzkawy, rześki.' },
-  cacao:{ name:'Cacao', pl:'Kakao', img:'{{NOTE_135}}', smell:'Wytrawne, pudrowe kakao, bardziej ziarno niż czekolada.' },
-  tobacco:{ name:'Tobacco', pl:'Tytoń', img:'{{NOTE_96}}', smell:'Suche liście tytoniu, miodowe i lekko dymne.' }
+  bergamot:{ name:'Bergamot', label:'Bergamot', img:'{{NOTE_75}}', smell:'An Italian citrus with a bitter, tea-like freshness. It is what you smell in Earl Grey.', why:'The first breath. In the day it lets the scent come in lightly, before the flowers arrive.' },
+  mandarin:{ name:'Mandarin Orange', label:'Mandarin', img:'{{NOTE_82}}', smell:'Sweeter and juicier than orange, with a hint of peel.' },
+  neroli:{ name:'Neroli', label:'Neroli', img:'{{NOTE_17}}', bot:'{{BOT_17}}', smell:'Steam-distilled oil of bitter orange flowers. Bright, green and honeyed, like peel and petals at once.', why:'Your bright side: clean, open, effortless. Every version of the portrait starts from it.' },
+  orangeblossom:{ name:'Orange Blossom', label:'Orange Blossom', img:'{{NOTE_16}}', bot:'{{BOT_16}}', smell:'An absolute from the same flowers as neroli, but warmer and more sensual: honeyed, slightly indolic, like skin after the sun.', why:'The thread that ties together all the scents you keep coming back to. Warm and sensual at once, like you once someone gets to know you.' },
+  jasmine:{ name:'Jasmine', label:'Jasmine', img:'{{NOTE_14}}', bot:'{{BOT_14}}', smell:'A white flower with a rich, slightly fruity, sensual scent. It deepens in the evening.', why:'In the evening it links the bright heart to the dark base. It turns orange blossom into something more sensual.' },
+  rose:{ name:'Rose', label:'Rose', img:'{{NOTE_105}}', smell:'Classic, velvety, slightly lemony. It adds elegance to a composition.' },
+  iris:{ name:'Iris', label:'Iris', img:'{{NOTE_11}}', smell:'A powdery, cool root. It smells like expensive cosmetics and suede gloves.' },
+  tuberose:{ name:'Tuberose', label:'Tuberose', img:'{{NOTE_25}}', smell:'A creamy, heady white floral note. Made for the evening.' },
+  musk:{ name:'Musk', label:'Musk', img:'{{NOTE_4}}', bot:'{{BOT_4}}', smell:'Always synthetic today. It smells of clean skin, fresh laundry and the warmth of closeness.', why:'It keeps the scent close to the skin. At work that is the point: the person next to you notices it, not the whole room.' },
+  cedar:{ name:'Cedar', label:'Cedar', img:'{{NOTE_41}}', bot:'{{BOT_41}}', smell:'Dry, pencil-shaving wood. It gives a composition order and a backbone.', why:'In the work version it replaces the sweet base with calm wood. It brings order and confidence.' },
+  vetiver:{ name:'Vetiver', label:'Vetiver', img:'{{NOTE_2}}', smell:'A grass root: earthy, slightly smoky, elegantly dry.' },
+  patchouli:{ name:'Patchouli', label:'Patchouli', img:'{{NOTE_34}}', bot:'{{BOT_34}}', smell:'Leaves that smell of damp earth, cocoa and a little smoke.', why:'It lets the scent go dark without sugar. It gives the depth you look for instead of praline and caramel.' },
+  incense:{ name:'Incense', label:'Incense', img:'{{NOTE_68}}', bot:'{{BOT_68}}', smell:'Olibanum resin: the cool, lemony, smoky smell of an old church and sun-warmed stone.', why:'Your mysterious finish. It gives the white flowers a shadow without taking away their light.' },
+  leather:{ name:'Leather', label:'Leather', img:'{{NOTE_156}}', smell:'Soft and slightly smoky. It brings to mind gloves and an old handbag.' },
+  myrrh:{ name:'Myrrh', label:'Myrrh', img:'{{NOTE_98}}', smell:'A resin with a warm, bitter, slightly aniseed scent.' },
+  petitgrain:{ name:'Petitgrain', label:'Petitgrain', img:'{{NOTE_3}}', smell:'Oil from the leaves and twigs of the orange tree: green, bitter, crisp.' },
+  cacao:{ name:'Cacao', label:'Cacao', img:'{{NOTE_135}}', smell:'Dry, powdery cocoa, more bean than chocolate.' },
+  tobacco:{ name:'Tobacco', label:'Tobacco', img:'{{NOTE_96}}', smell:'Dry tobacco leaves, honeyed and slightly smoky.' }
 };
 
 const P = {
   /* day */
-  candid:{ name:'Candid', brand:'Maison Alhambra', img:'{{IMG_93542}}', tint:'#f3e6cf', tier:'Budżetowe', match:'exact',
+  candid:{ name:'Candid', brand:'Maison Alhambra', img:'{{IMG_93542}}', tint:'#f3e6cf', tier:'Budget', match:'exact',
     top:'Bergamot, Citruses, Pineapple', heart:'Orange Blossom, Jasmine, Rose', base:'Patchouli, Vanilla, Tonka Bean', chips:['bergamot','orangeblossom','jasmine','patchouli'],
-    desc:'Jasny, cytrusowy start, a potem kwiat pomarańczy, jaśmin i róża. Paczula na końcu daje mu elegancję, której nie spodziewasz się w tej cenie. Dobry kandydat na flakon, który zawsze masz przy sobie.',
-    wear:'Wiosna i jesień, dzień. 2–3 psiknięcia.', mismatch:'Ananas w otwarciu bywa przez pierwsze minuty trochę landrynkowy.', test:'Czy po kwadransie owoc ustępuje kwiatom.' },
-  nuit:{ name:"Nuit d'Oranger", brand:'Chloé', img:'{{IMG_96454}}', tint:'#f3e3c4', tier:'Designerskie', match:'exact',
+    desc:'A bright citrus start, then orange blossom, jasmine and rose. Patchouli at the end gives it an elegance you would not expect at this price. A good candidate for the bottle you always carry.',
+    wear:'Spring and autumn, daytime. 2–3 sprays.', mismatch:'The pineapple in the opening can feel a little like boiled sweets for the first few minutes.', test:'Whether the fruit gives way to the flowers after fifteen minutes.' },
+  nuit:{ name:"Nuit d'Oranger", brand:'Chloé', img:'{{IMG_96454}}', tint:'#f3e3c4', tier:'Designer', match:'exact',
     top:'Petitgrain, Bergamot, Pink Pepper', heart:'Orange Blossom, Neroli', base:'Vanilla, Mate, Patchouli', chips:['orangeblossom','neroli','petitgrain','patchouli'],
-    desc:'Zaczyna się jak poranek w ogrodzie pomarańczowym: zielony petitgrain, bergamota, szczypta różowego pieprzu. Potem kwiat pomarańczy i neroli miękną, a mate z paczulą dodaje im ziemi. Jasny, ale z charakterem.',
-    wear:'Wiosna i wczesna jesień, dzień. 3–4 psiknięcia.', mismatch:'Wanilia w bazie jest delikatna, ale jest. Po kilku godzinach może zrobić się słodziej, niż lubisz.', test:'Po godzinie: czy mate i paczula dają głębię, czy zapach po prostu znika.' },
-  sens:{ name:'Eau des Sens', brand:'Diptyque', img:'{{IMG_35678}}', tint:'#e6e2cf', tier:'Niszowe', match:'exact',
+    desc:'It starts like a morning in an orange grove: green petitgrain, bergamot, a pinch of pink pepper. Then orange blossom and neroli soften, and mate with patchouli gives them some earth. Bright, but with character.',
+    wear:'Spring and early autumn, daytime. 3–4 sprays.', mismatch:'The vanilla in the base is delicate, but it is there. After a few hours it may turn sweeter than you like.', test:'After an hour: do mate and patchouli give depth, or does the scent simply fade?' },
+  sens:{ name:'Eau des Sens', brand:'Diptyque', img:'{{IMG_35678}}', tint:'#e6e2cf', tier:'Niche', match:'exact',
     top:'Orange Blossom, Bitter Orange', heart:'Juniper Berries', base:'Angelica, Patchouli', chips:['orangeblossom','patchouli'],
-    desc:'Kwiat pomarańczy i gorzka pomarańcza z jałowcem: rześko, trochę gorzko, bardzo dorośle. Zapach dnia, który zaczyna się od kawy na balkonie, a kończy przy dobrej książce.',
-    wear:'Wiosna i lato, dzień. 4 psiknięcia, bo to EDT.', mismatch:'Jałowiec i dzięgiel są zielone i lekko ziołowe. Może zabraknąć Ci kremowości.', test:'Czy ziołowe otwarcie Cię nie chłodzi.' },
-  emaan:{ name:'Emaan', brand:'Lattafa', img:'{{IMG_85091}}', tint:'#f2e2d6', tier:'Budżetowe', match:'similar',
+    desc:'Orange blossom and bitter orange with juniper: crisp, a little bitter, very grown-up. The scent of a day that starts with coffee on the balcony and ends with a good book.',
+    wear:'Spring and summer, daytime. 4 sprays, as it is an EDT.', mismatch:'Juniper and angelica are green and slightly herbal. You may miss some creaminess.', test:'Whether the herbal opening leaves you feeling cold.' },
+  emaan:{ name:'Emaan', brand:'Lattafa', img:'{{IMG_85091}}', tint:'#f2e2d6', tier:'Budget', match:'similar',
     top:'Orange Blossom, Black Currant, Bergamot', heart:'Tuberose, Jasmine, Marigold', base:'Musk, Vanilla, Cedarwood, Patchouli', chips:['orangeblossom','tuberose','jasmine','musk'],
-    desc:'Kwiat pomarańczy na powitanie, a potem bujny bukiet białych kwiatów z tuberozą. Bardziej kwiatowy i promienny niż Twój portret, ale z tą samą ciepłą nicią. Na dni, kiedy chcesz, żeby ktoś zapytał, co masz na sobie.',
-    wear:'Wiosna i lato, dzień. 2 psiknięcia.', mismatch:'Tuberoza jest tu wyraźna. W ciepły dzień może być za dużo kwiatów naraz.', test:'Czy po godzinie robi się kremowo, czy duszno.' },
-  love:{ name:'Love Story', brand:'Chloé', img:'{{IMG_26227}}', tint:'#f2e2db', tier:'Designerskie', match:'similar',
+    desc:'Orange blossom to greet you, then a lush bouquet of white flowers with tuberose. More floral and radiant than your portrait, but with the same warm thread. For days when you want someone to ask what you are wearing.',
+    wear:'Spring and summer, daytime. 2 sprays.', mismatch:'The tuberose is prominent here. On a warm day it can be too many flowers at once.', test:'After an hour, does it turn creamy or stuffy?' },
+  love:{ name:'Love Story', brand:'Chloé', img:'{{IMG_26227}}', tint:'#f2e2db', tier:'Designer', match:'similar',
     top:'Neroli, Pear, Bergamot, Grapefruit, Lemon', heart:'Orange Blossom, Stephanotis, Rose, Peach, Black Currant', base:'Musk, Cedar, Cashmere Wood, Patchouli', chips:['neroli','orangeblossom','musk','cedar'],
-    desc:'Neroli i soczysta gruszka przechodzą w kwiat pomarańczy i stefanotis, a potem w czyste piżmo z cedrem. Jasny, uporządkowany, ze spokojnym uśmiechem. Lżejsza, dzienna wersja Ciebie.',
-    wear:'Wiosna, dzień. 3 psiknięcia.', mismatch:'Owoce w otwarciu mogą wydać się zbyt grzeczne przy Twojej potrzebie oryginalności.', test:'Czy po pół godzinie zostaje bardziej kwiat, czy owoc.' },
-  wneroli:{ name:'White Neroli', brand:'Mizensir', img:'{{IMG_39214}}', tint:'#f1e7d6', tier:'Niszowe', match:'similar',
+    desc:'Neroli and juicy pear move into orange blossom and stephanotis, then into clean musk with cedar. Bright, orderly, with a calm smile. A lighter, daytime version of you.',
+    wear:'Spring, daytime. 3 sprays.', mismatch:'The fruit in the opening may feel too well-behaved for your wish for originality.', test:'After half an hour, is it more flower or more fruit?' },
+  wneroli:{ name:'White Neroli', brand:'Mizensir', img:'{{IMG_39214}}', tint:'#f1e7d6', tier:'Niche', match:'similar',
     top:'Tunisian Neroli, Calabrian Bergamot', heart:'Orange Blossom', base:'White Musk, Incense', chips:['neroli','bergamot','orangeblossom','incense'],
-    desc:'Najczystsza wersja Twojego portretu: neroli i bergamota, kwiat pomarańczy, a na końcu białe piżmo z cieniem kadzidła. Jak lniana koszula, w której ktoś jednak ma tajemnicę.',
-    wear:'Cały rok, dzień. 3 psiknięcia.', mismatch:'Bardzo lekki. Może szybko zejść do skóry.', test:'Ile zostaje po trzech godzinach.' },
+    desc:'The purest version of your portrait: neroli and bergamot, orange blossom, and at the end white musk with a shadow of incense. Like a linen shirt worn by someone who still has a secret.',
+    wear:'All year, daytime. 3 sprays.', mismatch:'Very light. It may settle into the skin quickly.', test:'How much is left after three hours.' },
   /* work */
-  mazaaji:{ name:'Mazaaji', brand:'Lattafa', img:'{{IMG_80296}}', tint:'#f0dcd3', tier:'Budżetowe', match:'exact',
+  mazaaji:{ name:'Mazaaji', brand:'Lattafa', img:'{{IMG_80296}}', tint:'#f0dcd3', tier:'Budget', match:'exact',
     top:'Orange Blossom, Mandarin Orange', heart:'Bulgarian Rose, Turkish Rose, Jasmine', base:'Patchouli, Vanilla, Amber, Sandalwood', chips:['orangeblossom','mandarin','rose','patchouli'],
-    desc:'Kwiat pomarańczy i mandarynka na powitanie, róże i jaśmin w sercu, ciepła paczula na koniec. Pewny siebie i uporządkowany, a przy tym w cenie, przy której nie trzeba go oszczędzać.',
-    wear:'Jesień i zima, praca. Jedno psiknięcie, najwyżej dwa.', mismatch:'Projekcja jest mocniejsza, niż wypada w biurze. Przy dwóch psiknięciach może wypełnić salę.', test:'Psiknij raz i zapytaj kogoś przy biurku obok, czy go czuje.' },
-  nrher:{ name:'For Her', brand:'Narciso Rodriguez', img:'{{IMG_209}}', tint:'#efe0de', tier:'Designerskie', match:'exact',
+    desc:'Orange blossom and mandarin to greet you, roses and jasmine at the heart, warm patchouli at the end. Confident and orderly, at a price that means you never have to save it.',
+    wear:'Autumn and winter, work. One spray, two at most.', mismatch:'The projection is stronger than suits an office. With two sprays it can fill a room.', test:'Spray once and ask someone at the next desk whether they can smell it.' },
+  nrher:{ name:'For Her', brand:'Narciso Rodriguez', img:'{{IMG_209}}', tint:'#efe0de', tier:'Designer', match:'exact',
     top:'African Orange Flower, Osmanthus, Bergamot', heart:'Musk, Amber', base:'Vetiver, Patchouli, Vanilla', chips:['orangeblossom','musk','vetiver','patchouli'],
-    desc:'Kwiat pomarańczy i osmantus otulone piżmem. Ten zapach nie wchodzi przed Tobą do sali, tylko zostaje po Tobie w pamięci. Najbardziej „Twoja skóra, tylko lepsza”.',
-    wear:'Cały rok, praca. 2 psiknięcia.', mismatch:'Piżmo bywa dla niektórych nosów prawie niewyczuwalne. Możesz go po prostu nie czuć na sobie.', test:'Poproś kogoś bliskiego, żeby powiedział, czy czuje go po dwóch godzinach.' },
-  rubik:{ name:'Rubikona No. 11', brand:'Puredistance', img:'{{IMG_63017}}', tint:'#eadfd0', tier:'Niszowe', match:'exact',
+    desc:'Orange blossom and osmanthus wrapped in musk. This scent does not walk into the room ahead of you; it stays in the memory after you leave. The most "your skin, only better" of them all.',
+    wear:'All year, work. 2 sprays.', mismatch:'Some noses barely pick up musk. You may simply not smell it on yourself.', test:'Ask someone close whether they can smell it after two hours.' },
+  rubik:{ name:'Rubikona No. 11', brand:'Puredistance', img:'{{IMG_63017}}', tint:'#eadfd0', tier:'Niche', match:'exact',
     top:'Grapefruit, Mandarin Orange, Bergamot', heart:'Orange Blossom, Ylang-Ylang, Clove, Rose, Iris', base:'Patchouli, Musk, Solar Notes, Vanilla, Cedar', chips:['orangeblossom','iris','patchouli','musk'],
-    desc:'Cytrusy, potem kwiat pomarańczy z goździkiem, różą i irysem, a na końcu ciepła paczula z piżmem. Dyskretnie bogaty, jak dobrze skrojony płaszcz bez widocznego logo.',
-    wear:'Jesień, praca i ważne spotkania. 2 psiknięcia.', mismatch:'Goździk w sercu jest lekko przyprawowy i nie każdemu pasuje w biurze.', test:'Czy goździk nie przeważa w drugiej godzinie.' },
-  glamour:{ name:'Far Away Glamour', brand:'Avon', img:'{{IMG_56179}}', tint:'#efe0d6', tier:'Budżetowe', match:'similar',
+    desc:'Citrus, then orange blossom with clove, rose and iris, and finally warm patchouli with musk. Quietly rich, like a well-cut coat with no visible logo.',
+    wear:'Autumn, work and important meetings. 2 sprays.', mismatch:'The clove at the heart is slightly spicy and not for every office.', test:'Whether the clove takes over in the second hour.' },
+  glamour:{ name:'Far Away Glamour', brand:'Avon', img:'{{IMG_56179}}', tint:'#efe0d6', tier:'Budget', match:'similar',
     top:'Black Currant, Grapefruit, Pink Pepper', heart:'Madagascar Vanilla, Orris, Orange Blossom', base:'Patchouli, Black Musk', chips:['orangeblossom','iris','patchouli','musk'],
-    desc:'Pudrowy irys i kwiat pomarańczy na miękkim piżmie. Cichy, otulający, jak kaszmirowy sweter pod marynarką. Na dni, kiedy w pracy chcesz czuć się po prostu dobrze.',
-    wear:'Jesień i zima, praca. 2 psiknięcia.', mismatch:'Wanilia w sercu jest wyraźniejsza niż w Twoim portrecie. Sprawdź, czy nie robi się zbyt słodko.', test:'Czy po godzinie dominuje puder, czy wanilia.' },
-  gris:{ name:'Gris Montaigne', brand:'Dior', img:'{{IMG_17842}}', tint:'#e9e2da', tier:'Designerskie', match:'similar',
+    desc:'Powdery iris and orange blossom on soft musk. Quiet and enveloping, like a cashmere jumper under a blazer. For days when you simply want to feel good at work.',
+    wear:'Autumn and winter, work. 2 sprays.', mismatch:'The vanilla at the heart is more noticeable than in your portrait. Check that it does not get too sweet.', test:'After an hour, does powder or vanilla lead?' },
+  gris:{ name:'Gris Montaigne', brand:'Dior', img:'{{IMG_17842}}', tint:'#e9e2da', tier:'Designer', match:'similar',
     top:'Bergamot, Grapefruit', heart:'Rose, Strawberry, Jasmine, Orange Blossom, Ylang-Ylang', base:'Patchouli, Oakmoss, Sandalwood, Amber, Cedar, White Musk', chips:['bergamot','rose','orangeblossom','patchouli'],
-    desc:'Szypr w szarym kostiumie: bergamota, róża i kwiat pomarańczy na mchu i paczuli. Elegancki bez wysiłku, z odrobiną dystansu, który dobrze robi w ważny dzień.',
-    wear:'Jesień, praca. 2 psiknięcia.', mismatch:'Mech dębowy daje nutę klasyczną i nieco poważną. Może wydać się bardziej formalny, niż się czujesz.', test:'Czy po godzinie jest elegancko, czy surowo.' },
-  hacivat:{ name:'Hacivat X', brand:'Nishane', img:'{{IMG_80462}}', tint:'#e7e2d2', tier:'Niszowe', match:'similar',
+    desc:'A chypre in a grey suit: bergamot, rose and orange blossom on moss and patchouli. Effortlessly elegant, with a touch of distance that serves you well on an important day.',
+    wear:'Autumn, work. 2 sprays.', mismatch:'Oakmoss gives a classic, somewhat serious note. It may feel more formal than you do.', test:'After an hour, is it elegant or severe?' },
+  hacivat:{ name:'Hacivat X', brand:'Nishane', img:'{{IMG_80462}}', tint:'#e7e2d2', tier:'Niche', match:'similar',
     top:'Pineapple, Bergamot, Pink Pepper', heart:'Lime, Tunisian Orange Blossom, Jasmine', base:'Haitian Vetiver, Patchouli, Cedar', chips:['bergamot','orangeblossom','vetiver','cedar'],
-    desc:'Świeży, wytrawny, z kwiatem pomarańczy schowanym między cytrusami a wetiwerią. Brzmi jak pewność siebie w białej koszuli: jasno, czysto i trochę nieoczywiście.',
-    wear:'Wiosna i lato, praca. 2 psiknięcia.', mismatch:'Bardziej drzewny i cytrusowy niż kwiatowy. Kwiatu pomarańczy jest tu mniej, niż lubisz.', test:'Czy kwiat pomarańczy w ogóle się u Ciebie pojawia.' },
+    desc:'Fresh and dry, with orange blossom tucked between the citrus and the vetiver. It reads like confidence in a white shirt: bright, clean and a little unexpected.',
+    wear:'Spring and summer, work. 2 sprays.', mismatch:'More woody and citrus than floral. There is less orange blossom here than you like.', test:'Whether the orange blossom shows up on you at all.' },
   /* evening */
-  intrude:{ name:"L'Intrude", brand:'Maison Alhambra', img:'{{IMG_93651}}', tint:'#f1ddd2', tier:'Budżetowe', match:'exact',
+  intrude:{ name:"L'Intrude", brand:'Maison Alhambra', img:'{{IMG_93651}}', tint:'#f1ddd2', tier:'Budget', match:'exact',
     top:'Pear, Bergamot', heart:'Tuberose, Orange Blossom, Jasmine Sambac', base:'Patchouli, Ambroxan, Vanilla, Vetiver', chips:['orangeblossom','tuberose','jasmine','patchouli'],
-    desc:'Gruszka i bergamota, a potem tuberoza, kwiat pomarańczy i jaśmin na ciemnej paczuli. Wieczorowy i pewny siebie, a przy tym przystępny. Dobry sposób, żeby sprawdzić, czy ten kierunek jest Twój.',
-    wear:'Jesień i zima, wieczór. 2–3 psiknięcia.', mismatch:'Ambroxan w bazie jest dość syntetyczny i długo trzyma się ubrań.', test:'Czy po trzech godzinach baza jest ciepła, czy płaska.' },
-  rouge:{ name:"L'Interdit Rouge Ultime", brand:'Givenchy', img:'{{IMG_83865}}', tint:'#f0d6cf', tier:'Designerskie', match:'exact', price:'434 zł · 80 ml',
+    desc:'Pear and bergamot, then tuberose, orange blossom and jasmine on dark patchouli. Made for the evening and confident, yet easy to wear. A good way to find out whether this direction is yours.',
+    wear:'Autumn and winter, evening. 2–3 sprays.', mismatch:'The Ambroxan in the base is fairly synthetic and clings to clothes for a long time.', test:'After three hours, is the base warm or flat?' },
+  rouge:{ name:"L'Interdit Rouge Ultime", brand:'Givenchy', img:'{{IMG_83865}}', tint:'#f0d6cf', tier:'Designer', match:'exact',
     top:'Orange Blossom, Jasmine Sambac, Neroli', heart:'Tuberose, Cacao Pod', base:'Patchouli Leaf, Tobacco, Ambroxan, Vetiver', chips:['orangeblossom','tuberose','cacao','patchouli'],
-    desc:'Kwiat pomarańczy na otwarcie jest jak uśmiech na powitanie: ciepły, bez dystansu. Im później, tym bliżej skóry robi się ciemno: kakao, tytoń, paczula. Ktoś, kto stanie obok Ciebie pod koniec wieczoru, pozna inną wersję Ciebie niż ta, która weszła.',
-    wear:'Jesień i zima, wieczór. 2–3 psiknięcia.', mismatch:'Kakao i tuberoza dają w sercu wyraźną słodycz. Przy Twojej niechęci do lepkich nut to punkt do sprawdzenia.', test:'Po 30–60 minutach: czy słodycz pozostaje kremowa, czy robi się mdła.' },
-  golestan:{ name:'Golestan', brand:'Tauer Perfumes', img:'{{IMG_77252}}', tint:'#efe0c8', tier:'Niszowe', match:'exact',
+    desc:'Orange blossom at the opening is like a smile on arrival: warm, no distance. The later it gets, the darker it turns close to the skin: cacao, tobacco, patchouli. Whoever stands next to you at the end of the evening meets a different you than the one who walked in.',
+    wear:'Autumn and winter, evening. 2–3 sprays.', mismatch:'Cacao and tuberose give the heart a clear sweetness. Given your dislike of sticky notes, this is the thing to check.', test:'After 30–60 minutes: does the sweetness stay creamy or turn cloying?' },
+  golestan:{ name:'Golestan', brand:'Tauer Perfumes', img:'{{IMG_77252}}', tint:'#efe0c8', tier:'Niche', match:'exact',
     top:'Ylang-Ylang, Lemon Zest, Bergamot', heart:'Tuberose, Orange Blossom, Jasmine, Damask Rose', base:'Ambergris, Vanilla, Woody Notes, Patchouli, Cistus', chips:['orangeblossom','tuberose','rose','patchouli'],
-    desc:'Ogród białych kwiatów nocą: tuberoza, kwiat pomarańczy, jaśmin i róża osadzone na ambrze i żywicznym czystku. Bogaty, ale nie lepki. Zapach na wieczory, które pamięta się latami.',
-    wear:'Jesień, wieczór. 1–2 psiknięcia, to ekstrakt.', mismatch:'Bardzo bogaty bukiet. Przy pierwszym kontakcie może przytłoczyć.', test:'Nałóż jedno psiknięcie i oceń dopiero po godzinie.' },
-  zara:{ name:'Golden Decade Winter', brand:'Zara', img:'{{IMG_84761}}', tint:'#f0dcc2', tier:'Budżetowe', match:'similar',
+    desc:'A garden of white flowers at night: tuberose, orange blossom, jasmine and rose set on ambergris and resinous cistus. Rich, but not sticky. A scent for evenings you remember for years.',
+    wear:'Autumn, evening. 1–2 sprays, as it is an extrait.', mismatch:'A very rich bouquet. On first contact it can overwhelm.', test:'Apply one spray and judge it only after an hour.' },
+  zara:{ name:'Golden Decade Winter', brand:'Zara', img:'{{IMG_84761}}', tint:'#f0dcc2', tier:'Budget', match:'similar',
     top:'Tangerine, Bergamot', heart:'Orange Blossom, Jasmine, Lavender, Incense', base:'Vanilla, Amber, Tonka Bean, Vetiver, Musk', chips:['orangeblossom','jasmine','incense','musk'],
-    desc:'Ta sama droga od kwiatu pomarańczy do kadzidła i ambry, w cenie, przy której można sobie pozwolić na odwagę. Ciepły, otulający, z odrobiną dymu.',
-    wear:'Jesień i zima, wieczór. 3–4 psiknięcia.', mismatch:'Tonka i wanilia w bazie: przy Twojej niechęci do słodyczy sprawdź koniec wieczoru.', test:'Czy po trzech godzinach ambra nie robi się płaska.' },
-  smoke:{ name:'Orange Smoke', brand:'Dries Van Noten', img:'{{IMG_78408}}', tint:'#f1e2c9', tier:'Designerskie', match:'similar', price:'1078 zł · 200 ml',
+    desc:'The same path from orange blossom to incense and amber, at a price that lets you be bold. Warm and enveloping, with a touch of smoke.',
+    wear:'Autumn and winter, evening. 3–4 sprays.', mismatch:'Tonka and vanilla in the base: given your dislike of sweetness, check the end of the evening.', test:'After three hours, does the amber go flat?' },
+  smoke:{ name:'Orange Smoke', brand:'Dries Van Noten', img:'{{IMG_78408}}', tint:'#f1e2c9', tier:'Designer', match:'similar',
     top:'Neroli, Mandarin Orange, Petitgrain', heart:'Incense, Orange Blossom, Jasmine', base:'Myrrh, Musk', chips:['neroli','incense','orangeblossom','myrrh'],
-    desc:'Pierwsze minuty są jasne i spokojne: neroli, skórka pomarańczy, coś bardzo czystego. Potem, niepostrzeżenie, pojawia się kadzidło. Nie przytłacza, tylko pogłębia. Zapach na wieczory, kiedy chcesz, żeby ludzie zapamiętali rozmowę z Tobą.',
-    wear:'Jesień, wieczór, ale też dzień. 4–5 psiknięć, bo to EDT.', mismatch:'Nie ma tu waniliowej poduszki. Może wydać się chłodniejszy, niż się spodziewasz.', test:'Po dwóch godzinach: czy dym nie przykrywa kwiatu pomarańczy.' },
-  imitation:{ name:'Imitation Woman', brand:'Amouage', img:'{{IMG_49851}}', tint:'#eadbd8', tier:'Niszowe', match:'similar',
+    desc:'The first minutes are bright and calm: neroli, orange peel, something very clean. Then, almost unnoticed, incense appears. It does not overwhelm, it deepens. A scent for evenings when you want people to remember the conversation with you.',
+    wear:'Autumn, evening, but daytime too. 4–5 sprays, as it is an EDT.', mismatch:'There is no vanilla cushion here. It may feel cooler than you expect.', test:'After two hours: does the smoke cover the orange blossom?' },
+  imitation:{ name:'Imitation Woman', brand:'Amouage', img:'{{IMG_49851}}', tint:'#eadbd8', tier:'Niche', match:'similar',
     top:'Ylang-Ylang, Orange Blossom, Jasmine, Rose', heart:'Black Currant, Aldehydes, Licorice', base:'Incense, Patchouli, Sandalwood', chips:['orangeblossom','jasmine','incense','patchouli'],
-    desc:'Otwiera się bukietem białych kwiatów, potem czarna porzeczka i aldehydy dodają mu blasku jak lampa na wieczór, a na końcu zostaje kadzidło z paczulą. Oryginalny, z klasą, której nie trzeba tłumaczyć.',
-    wear:'Jesień, wieczór. 2 psiknięcia.', mismatch:'Aldehydy i lukrecja dają nutę „vintage”. Jeśli kojarzą Ci się z perfumami z dawnych lat, możesz go odrzucić na starcie.', test:'Daj mu godzinę: kadzidło wychodzi dopiero później.' }
+    desc:'It opens with a bouquet of white flowers, then blackcurrant and aldehydes add a glow like a lamp in the evening, and at the end incense and patchouli remain. Original, with a class that needs no explaining.',
+    wear:'Autumn, evening. 2 sprays.', mismatch:'Aldehydes and licorice give a "vintage" note. If they remind you of perfumes from years past, you may reject it straight away.', test:'Give it an hour: the incense only comes through later.' }
 };
 
-const FAM = { white:['Białe kwiaty','#d9c09f'], citrus:['Cytrusy','#dfb25a'], floral:['Kwiaty','#cf9597'], green:['Zielone','#a7ab89'], wood:['Drewno','#8b6a59'], amber:['Ambra i żywice','#c2884e'], musk:['Piżmo','#b7aaa2'], leather:['Skóra i dym','#5c4148'], powder:['Pudrowe','#c7b0c1'], fruity:['Owocowe','#d9997a'], gourmand:['Gourmand','#b98b6e'], aquatic:['Wodne','#9db4b8'], spicy:['Przyprawowe','#b5674f'], other:['Inne','#d6ccc0'] };
+const FAM = { white:['White florals','#d9c09f'], citrus:['Citrus','#dfb25a'], floral:['Florals','#cf9597'], green:['Green','#a7ab89'], wood:['Woods','#8b6a59'], amber:['Amber and resins','#c2884e'], musk:['Musk','#b7aaa2'], leather:['Leather and smoke','#5c4148'], powder:['Powdery','#c7b0c1'], fruity:['Fruity','#d9997a'], gourmand:['Gourmand','#b98b6e'], aquatic:['Aquatic','#9db4b8'], spicy:['Spicy','#b5674f'], other:['Other','#d6ccc0'] };
 
 const MODES = {
-  dzien:{ label:'Na dzień', title:'Światło<br><em>na skórze</em>', sillage:'Projekcja: lekka do umiarkowanej',
-    mood:'Na dzień zostawiamy z Twojego portretu to, co najjaśniejsze: neroli, bergamotę i kwiat pomarańczy. Ciemna baza jest tu tylko cieniem. Wystarczy, żeby zapach nie był grzeczny, ale nie przytłoczy słonecznego dnia.',
-    keys:[['neroli','Jasność, od której wszystko się zaczyna'],['orangeblossom','Nić, która łączy cały portret'],['bergamot','Oddech, zanim pojawią się kwiaty']],
+  day:{ label:'Day', title:'Light<br><em>on the skin</em>', sillage:'Projection: light to moderate',
+    mood:'For the day we keep the brightest part of your portrait: neroli, bergamot and orange blossom. The dark base is only a shadow here. Enough to keep the scent from being too polite, but it won\'t weigh down a sunny day.',
+    keys:[['neroli','The brightness where it all begins'],['orangeblossom','The thread that ties the whole portrait together'],['bergamot','A breath before the flowers arrive']],
     pyr:[['bergamot','mandarin'],['neroli','orangeblossom','jasmine'],['musk','vetiver','cedar','patchouli']],
     fam:[['citrus',30],['white',26],['musk',10],['floral',8],['green',8],['wood',8],['amber',4],['other',6]],
     sel:{ exact:['candid','nuit','sens'], similar:['emaan','love','wneroli'] } },
-  praca:{ label:'Do pracy', title:'Blisko,<br><em>ale nie za blisko</em>', sillage:'Projekcja: przy skórze',
-    mood:'W pracy Twój kwiat pomarańczy przechodzi w piżmo i suche drewno. Zapach ma odkryć osoba obok, nie cały open space. Pewność siebie bez słowa.',
-    keys:[['orangeblossom','To samo serce, tylko ciszej'],['musk','Czysta skóra, która zostaje w pamięci'],['cedar','Spokojny kręgosłup zamiast słodkiej bazy']],
+  work:{ label:'Work', title:'Close,<br><em>but not too close</em>', sillage:'Projection: close to the skin',
+    mood:'At work your orange blossom moves into musk and dry wood. The scent is for the person next to you to discover, not the whole open-plan office. Confidence without a word.',
+    keys:[['orangeblossom','The same heart, only quieter'],['musk','Clean skin that stays in the memory'],['cedar','A calm backbone instead of a sweet base']],
     pyr:[['bergamot','neroli'],['orangeblossom','iris','rose'],['musk','cedar','vetiver','patchouli']],
     fam:[['white',24],['musk',22],['wood',16],['citrus',14],['powder',8],['floral',8],['other',8]],
     sel:{ exact:['mazaaji','nrher','rubik'], similar:['glamour','gris','hacivat'] } },
-  wieczor:{ label:'Na wieczór', title:'Biel,<br><em>która ciemnieje</em>', sillage:'Projekcja: wyraźna',
-    mood:'Wieczorem przemiana wybrzmiewa w pełni: od jasnego kwiatu pomarańczy do kadzidła, paczuli i skóry. Pierwsze wrażenie jest ciepłe i otwarte, a to ostatnie zostaje w pamięci.',
-    keys:[['jasmine','Zmysłowość białych kwiatów'],['incense','Cień, który zostaje po Tobie'],['patchouli','Głębia bez cukru']],
+  evening:{ label:'Evening', title:'White<br><em>that darkens</em>', sillage:'Projection: noticeable',
+    mood:'In the evening the change plays out in full: from bright orange blossom to incense, patchouli and leather. The first impression is warm and open, and the last one stays in the memory.',
+    keys:[['jasmine','The sensuality of white flowers'],['incense','The shadow you leave behind'],['patchouli','Depth without sugar']],
     pyr:[['neroli','bergamot'],['orangeblossom','jasmine','tuberose'],['patchouli','incense','leather','myrrh']],
     fam:[['white',24],['amber',20],['leather',12],['wood',12],['citrus',10],['floral',10],['musk',6],['other',6]],
     sel:{ exact:['intrude','rouge','golestan'], similar:['zara','smoke','imitation'] } }
 };
 /* ================================================================== */
 
-const TIER_ORDER = ['Budżetowe', 'Designerskie', 'Niszowe'];
-const MATCH = { exact:'Dokładne dopasowanie', similar:'Podobny klimat' };
+const TIER_ORDER = ['Budget', 'Designer', 'Niche'];
+const MATCH = { exact:'Exact match', similar:'Similar mood' };
 const duo = k => `<span class="duo"><img src="${NOTES[k].img}" alt=""></span>`;
 
 /* Fit rows of note medallions inside the triangle. Units: 1 = 1% of the pyramid's width; box 100 × 92. */
@@ -564,7 +564,7 @@ function arcPath(cx, cy, r0, r1, a0, a1) {
 }
 function ringsSVG(fam) {
   const cx = 150, cy = 150, scaleMax = Math.ceil(Math.max(...fam.map(f => f[1])) / 5) * 5, sweep = Math.PI * 1.5, step = Math.min(15, 104 / fam.length);
-  let s = `<svg class="v-rings" viewBox="4 4 292 292" role="img" aria-label="Proporcje rodzin zapachowych">`;
+  let s = `<svg class="v-rings" viewBox="4 4 292 292" role="img" aria-label="Scent family proportions">`;
   fam.forEach(([f, v], i) => {
     const r = 132 - i * step, w = step * 0.36;
     s += `<path d="${arcPath(cx, cy, r - w, r + w, 0, sweep)}" fill="var(--track)"/>`;
@@ -578,48 +578,48 @@ function renderMode(id, m) {
   const keySet = new Set(m.keys.map(k => k[0]));
   const keys = m.keys.map((k, i) => `
     <button class="key reveal" data-note="${k[0]}">${duo(k[0])}
-      <span><span class="n">0${i + 1}</span><h3>${NOTES[k[0]].pl}</h3><p>${k[1]}</p><span class="more">Dowiedz się więcej</span></span>
+      <span><span class="n">0${i + 1}</span><h3>${NOTES[k[0]].label}</h3><p>${k[1]}</p><span class="more">Learn more</span></span>
     </button>`).join('');
-  const lv = [['Głowa', 'pierwsze minuty'], ['Serce', 'pierwsze godziny'], ['Baza', 'do końca dnia']];
+  const lv = [['Top', 'first minutes'], ['Heart', 'first hours'], ['Base', 'to the end of the day']];
   const L = layoutPyramid(m.pyr.map(r => r.length));
   const pyr = `<div class="pyr-wrap">
     <div class="pyr-labels">${lv.map((l, i) => `<div class="lvl" style="top:${L.rowCentre[i]}%">${l[0]}<small>${l[1]}</small></div>`).join('')}</div>
     <div class="pyramid"><div class="tri"></div>
-      ${m.pyr.map((row, i) => row.map((k, j) => { const p = L.cells[i][j]; return `<button class="pnote ${keySet.has(k) ? 'is-key' : ''}" data-note="${k}" aria-label="${NOTES[k].pl}" style="left:${p.left}%;top:${p.top}%;width:${p.size}%">${duo(k)}<span class="nm">${NOTES[k].pl}</span></button>`; }).join('')).join('')}
+      ${m.pyr.map((row, i) => row.map((k, j) => { const p = L.cells[i][j]; return `<button class="pnote ${keySet.has(k) ? 'is-key' : ''}" data-note="${k}" aria-label="${NOTES[k].label}" style="left:${p.left}%;top:${p.top}%;width:${p.size}%">${duo(k)}<span class="nm">${NOTES[k].label}</span></button>`; }).join('')).join('')}
     </div></div>`;
   const legend = m.fam.map(([f, v], i) => `<li data-fi="${i}"><i style="background:${FAM[f][1]}"></i>${FAM[f][0]}<b>${v}%</b></li>`).join('');
   const chart = `<div class="panel chart-box reveal">
-      <div class="chart-head"><div class="label bordo">Proporcje rodzin</div></div>
+      <div class="chart-head"><div class="label bordo">Family proportions</div></div>
       ${ringsSVG(m.fam)}
       <ul class="legend">${legend}</ul>
-      <p class="hint">Proporcje orientacyjne, wynikające z Twoich odpowiedzi. Najedź lub dotknij, żeby wyróżnić rodzinę.</p></div>`;
+      <p class="hint">Approximate proportions, based on your answers. Hover or tap to highlight a family.</p></div>`;
   const card = pid => { const p = P[pid]; return `
     <button class="card reveal" data-perfume="${pid}">
-      <div class="arch" style="--tint:${p.tint}"><img src="${p.img}" alt="Flakon ${p.name}"></div>
+      <div class="arch" style="--tint:${p.tint}"><img src="${p.img}" alt="Bottle of ${p.name}"></div>
       <div class="body">
         <div class="meta"><span class="t">${p.tier}</span><span>${MATCH[p.match]}</span></div>
         <h4>${p.name}</h4><div class="brand">${p.brand}</div>
         <p>${p.desc}</p>
-        <div class="chips">${p.chips.map(k => `<span class="chip">${duo(k)}${NOTES[k].pl}</span>`).join('')}</div>
-        <div class="extra"><b>Możliwy zgrzyt:</b> ${p.mismatch}<br><b>W teście:</b> ${p.test}</div>
-        <div class="foot"><span>${p.price || ''}</span><span class="open">Szczegóły</span></div>
+        <div class="chips">${p.chips.map(k => `<span class="chip">${duo(k)}${NOTES[k].label}</span>`).join('')}</div>
+        <div class="extra"><b>Possible mismatch:</b> ${p.mismatch}<br><b>When testing:</b> ${p.test}</div>
+        <div class="foot"><span>${p.price || ''}</span><span class="open">Details</span></div>
       </div>
     </button>`; };
   const sortTier = ids => ids.slice().sort((a, b) => TIER_ORDER.indexOf(P[a].tier) - TIER_ORDER.indexOf(P[b].tier));
   const sets = ['exact', 'similar'].map(s => `<div class="sel-set" data-set="${s}">
-      <p class="set-note">${s === 'exact' ? 'Ich piramida odpowiada Twojej poziom po poziomie.' : 'Inna budowa, ale ten sam nastrój i podobne nuty.'}</p>
+      <p class="set-note">${s === 'exact' ? 'Their pyramid matches yours level by level.' : 'A different build, but the same mood and similar notes.'}</p>
       <div class="grid">${sortTier(m.sel[s]).map(card).join('')}</div></div>`).join('');
   return {
     head: `<div class="mode" data-mode="${id}">
       <div class="mode-head">
-        <div><div class="label bordo">Wariant · ${m.label}</div><h2>${m.title}</h2></div>
+        <div><div class="label bordo">Mode · ${m.label}</div><h2>${m.title}</h2></div>
         <div><p>${m.mood}</p><div class="label muted sillage">${m.sillage}</div></div>
       </div>
       <div class="keys">${keys}</div></div>`,
-    twin: `<div class="mode" data-mode="${id}"><div class="twin"><div class="panel reveal"><div class="label bordo">Twoja piramida</div>${pyr}</div>${chart}</div></div>`,
+    twin: `<div class="mode" data-mode="${id}"><div class="twin"><div class="panel reveal"><div class="label bordo">Your pyramid</div>${pyr}</div>${chart}</div></div>`,
     sel: `<div class="mode" data-mode="${id}" data-match="exact">
-      <div class="sel-head"><h3>Twoja selekcja</h3>
-        <div class="match-switch"><button data-match="exact" aria-pressed="true">Dokładne</button><button data-match="similar" aria-pressed="false">Podobne</button></div></div>
+      <div class="sel-head"><h3>Your selection</h3>
+        <div class="match-switch"><button data-match="exact" aria-pressed="true">Exact</button><button data-match="similar" aria-pressed="false">Similar</button></div></div>
       ${sets}</div>`
   };
 }
@@ -652,13 +652,13 @@ if (motionOK) {
 /* The walk is driven by the visitor's own scrolling, so it stays on even when the system asks for reduced motion;
    a button lets anyone switch to the plain scrolling view (remembered per browser). */
 const depthMQ = matchMedia('(min-width: 760px) and (min-height: 460px)');
-const viewPref = (() => { try { return localStorage.getItem('portret-view'); } catch (e) { return null; } })();
+const viewPref = (() => { try { return localStorage.getItem('portrait-view'); } catch (e) { return null; } })();
 let wantFlat = viewPref === 'flat', depthOn = false;
 const viewBtn = document.createElement('button');
 viewBtn.className = 'view-toggle';
-const syncBtn = () => { viewBtn.textContent = depthOn ? 'Widok przewijany' : 'Spacer w głąb'; viewBtn.hidden = !depthMQ.matches; };
+const syncBtn = () => { viewBtn.textContent = depthOn ? 'Scrolling view' : 'Walk inside'; viewBtn.hidden = !depthMQ.matches; };
 viewBtn.addEventListener('click', () => {
-  wantFlat = depthOn; try { localStorage.setItem('portret-view', wantFlat ? 'flat' : 'depth'); } catch (e) {}
+  wantFlat = depthOn; try { localStorage.setItem('portrait-view', wantFlat ? 'flat' : 'depth'); } catch (e) {}
   if (depthOn) location.reload(); else initDepth();
 });
 document.body.appendChild(viewBtn);
@@ -669,7 +669,7 @@ function initDepth() {
   if (depthOn) return; depthOn = true;
   const root = document.documentElement; root.classList.add('depth');
   const dots = document.querySelector('.hud-dots');
-  dots.innerHTML = scenes.map((s, i) => s.dataset.n ? `<li><button data-go="${i}" aria-label="Sala ${s.dataset.n}: ${s.dataset.name}">${s.dataset.n}</button></li>` : '').join('');
+  dots.innerHTML = scenes.map((s, i) => s.dataset.n ? `<li><button data-go="${i}" aria-label="Room ${s.dataset.n}: ${s.dataset.name}">${s.dataset.n}</button></li>` : '').join('');
   scenes.forEach((s, i) => {
     s.style.zIndex = 100 - i;
     s.insertAdjacentHTML('afterbegin', '<div class="room-bg"></div>');
@@ -765,42 +765,42 @@ document.addEventListener('pointerout', e => { if (e.pointerType === 'touch') re
 function setMode(id) {
   document.body.dataset.mode = id;
   document.querySelectorAll('.switch button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.to === id)));
-  try { localStorage.setItem('portret-mode', id); } catch (e) {}
+  try { localStorage.setItem('portrait-mode', id); } catch (e) {}
   if (window.refit) requestAnimationFrame(window.refit);
 }
-try { const saved = localStorage.getItem('portret-mode'); if (saved && MODES[saved]) setMode(saved); } catch (e) {}
+try { const saved = localStorage.getItem('portrait-mode'); if (saved && MODES[saved]) setMode(saved); } catch (e) {}
 
 /* ---- detail sheet ---- */
 const dlg = document.getElementById('sheet'), body = document.getElementById('sheet-body');
-const closeBtn = '<button class="close" aria-label="Zamknij" data-close>×</button>';
+const closeBtn = '<button class="close" aria-label="Close" data-close>×</button>';
 const show = () => { if (!dlg.open) dlg.showModal(); dlg.scrollTop = 0; };
 function openNote(k) {
   const n = NOTES[k];
   const inP = Object.entries(P).filter(([, p]) => p.chips.includes(k) || [p.top, p.heart, p.base].join(' ').toLowerCase().includes(n.name.toLowerCase()));
   body.innerHTML = `${closeBtn}
     ${n.bot ? `<span class="botan"><img src="${n.bot}" alt=""></span>` : `<span class="eng">${duo(k)}</span>`}
-    <div class="label bordo">Nuta</div>
-    <h3>${n.pl}</h3><div class="label muted">${n.name}</div>
-    <h5>Jak pachnie</h5><p>${n.smell}</p>
-    ${n.why ? `<h5>Dlaczego jest w Twoim portrecie</h5><p>${n.why}</p>` : ''}
-    ${inP.length ? `<h5>Znajdziesz ją w</h5><div class="links">${inP.map(([id, p]) => `<button data-perfume="${id}">${p.name}</button>`).join('')}</div>` : ''}`;
+    <div class="label bordo">Note</div>
+    <h3>${n.label}</h3><div class="label muted">${n.name}</div>
+    <h5>How it smells</h5><p>${n.smell}</p>
+    ${n.why ? `<h5>Why it is in your portrait</h5><p>${n.why}</p>` : ''}
+    ${inP.length ? `<h5>You'll find it in</h5><div class="links">${inP.map(([id, p]) => `<button data-perfume="${id}">${p.name}</button>`).join('')}</div>` : ''}`;
   show();
 }
 function openPerfume(id) {
   const p = P[id];
   body.innerHTML = `${closeBtn}
-    <div class="frame" style="--tint:${p.tint}"><img src="${p.img}" alt="Flakon ${p.name}"></div>
+    <div class="frame" style="--tint:${p.tint}"><img src="${p.img}" alt="Bottle of ${p.name}"></div>
     <div class="label bordo">${p.tier} · ${MATCH[p.match]}</div>
     <h3>${p.name}</h3><div class="label muted">${p.brand}${p.price ? ' · ' + p.price : ''}</div>
-    <h5>Dlaczego dla Ciebie</h5><p>${p.desc}</p>
-    <h5>Piramida</h5>
-    <div class="lv"><span>Głowa</span><span>${p.top}</span></div>
-    <div class="lv"><span>Serce</span><span>${p.heart}</span></div>
-    <div class="lv"><span>Baza</span><span>${p.base}</span></div>
-    <h5>Jak nosić</h5><p>${p.wear}</p>
-    <h5>Możliwy zgrzyt</h5><p class="warn">${p.mismatch}</p>
-    <h5>W teście</h5><p>${p.test}</p>
-    <h5>Nuty z Twojego portretu</h5><div class="links">${p.chips.map(k => `<button data-note="${k}">${NOTES[k].pl}</button>`).join('')}</div>`;
+    <h5>Why it suits you</h5><p>${p.desc}</p>
+    <h5>Pyramid</h5>
+    <div class="lv"><span>Top</span><span>${p.top}</span></div>
+    <div class="lv"><span>Heart</span><span>${p.heart}</span></div>
+    <div class="lv"><span>Base</span><span>${p.base}</span></div>
+    <h5>How to wear it</h5><p>${p.wear}</p>
+    <h5>Possible mismatch</h5><p class="warn">${p.mismatch}</p>
+    <h5>When testing</h5><p>${p.test}</p>
+    <h5>Notes from your portrait</h5><div class="links">${p.chips.map(k => `<button data-note="${k}">${NOTES[k].label}</button>`).join('')}</div>`;
   show();
 }
 
@@ -817,13 +817,13 @@ document.addEventListener('click', e => {
   const p = t.closest('[data-perfume]'); if (p) { openPerfume(p.dataset.perfume); return; }
 });
 
-/* deep links: #dzien / #praca / #wieczor, #p-<perfume>, #n-<note>, #podobne */
+/* deep links: #day / #work / #evening, #p-<perfume>, #n-<note>, #similar, #room-<n> */
 (() => { const h = location.hash.slice(1);
   if (MODES[h]) setMode(h);
-  const room = h.match(/^sala-([\d.]+)$/); if (room && window.refit) { window.forcedT = parseFloat(room[1]) - 1; window.refit(); }
+  const room = h.match(/^room-([\d.]+)$/); if (room && window.refit) { window.forcedT = parseFloat(room[1]) - 1; window.refit(); }
   if (h.startsWith('p-') && P[h.slice(2)]) openPerfume(h.slice(2));
   if (h.startsWith('n-') && NOTES[h.slice(2)]) openNote(h.slice(2));
-  if (h === 'podobne') document.querySelectorAll('.mode').forEach(m => { m.dataset.match = 'similar'; m.querySelectorAll('.match-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.match === 'similar'))); });
+  if (h === 'similar') document.querySelectorAll('.mode').forEach(m => { m.dataset.match = 'similar'; m.querySelectorAll('.match-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.match === 'similar'))); });
 })();
 </script>
 </body>

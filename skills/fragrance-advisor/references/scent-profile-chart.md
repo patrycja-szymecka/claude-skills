@@ -48,9 +48,9 @@ The base profile is who they are; the modes are how it shifts across a day. Star
 
 | Mode | Raise (×1.5) | Lower (×0.5) | Sillage cap |
 |---|---|---|---|
-| **Day** (`dzien`) | Citrus, Green/Aromatic, Aquatic/Ozonic, White Floral | Amber, Leather/Smoky, Gourmand | moderate |
-| **Work** (`praca`) | Musky, Woody, Powdery | Gourmand, Leather/Smoky, Amber; any note the setting excludes | skin (close-contact work) or moderate |
-| **Evening** (`wieczor`) | Amber, Leather/Smoky, White Floral, Woody | Citrus, Aquatic/Ozonic, Green/Aromatic | strong (capped by setting) |
+| **Day** (`day`) | Citrus, Green/Aromatic, Aquatic/Ozonic, White Floral | Amber, Leather/Smoky, Gourmand | moderate |
+| **Work** (`work`) | Musky, Woody, Powdery | Gourmand, Leather/Smoky, Amber; any note the setting excludes | skin (close-contact work) or moderate |
+| **Evening** (`evening`) | Amber, Leather/Smoky, White Floral, Woody | Citrus, Aquatic/Ozonic, Green/Aromatic | strong (capped by setting) |
 
 - If the user's arc answer ([effects-tree.md](effects-tree.md)) describes a change over time, the evening mode carries the full arc and the day mode keeps only its opening.
 - Dislikes and exclusions apply to every mode.
@@ -72,7 +72,7 @@ Charts and pyramids go into the report's data block (`MODES` in [assets/report-t
 - `pyr`: three arrays of note keys (2, 3, 4).
 - `keys`: three `[noteKey, one-line hook]` pairs.
 
-Translate family names into the user's language (in `FAM`); note names stay in English in `name`, with a translation in `pl`. If you can't produce the report at all, fall back to a text table per mode in chat (one █ per 5%, rounded) plus the pyramid.
+Translate family names into the user's language (in `FAM`); note names stay in English in `name`, with the display name in the user's language in `label`. If you can't produce the report at all, fall back to a text table per mode in chat (one █ per 5%, rounded) plus the pyramid.
 
 ### Family colours
 
