@@ -12,6 +12,10 @@ A personal perfume advisor. Instead of answering questions in chat, you fill in 
 
 The portrait appears in the same place as the questionnaire, usually after 15–30 minutes.
 
+![fragrance-advisor Scent Portrait: the evening selection with a budget, designer and niche perfume, each an exact match](docs/fragrance-advisor-report.jpg)
+
+*Demo report built from the example profile in `assets/report-template.html`. The person is fictional; the perfumes and images are real Fragrantica entries.*
+
 ### Requirements
 
 - **Claude Code in the Claude desktop app**. The built-in browser is needed for Fragrantica, which blocks plain requests. Claude in Chrome works instead.
