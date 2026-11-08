@@ -74,6 +74,10 @@ Paste a link to an online offer and Claude checks which marketing tactics and co
 - finds the same product elsewhere and comparable alternatives,
 - builds an HTML **dashboard**: a manipulation-risk gauge, the share of each bias, how each one works and how to resist it, a price chart, alternatives, and a verdict (buy / buy elsewhere / wait / skip).
 
+![mindful-shopping dashboard: offer summary, manipulation-risk gauge, verdict, bias shares and survey context](docs/mindful-shopping-dashboard.png)
+
+*Demo report built from `assets/sample_analysis.json`. The product, shops and prices are fictional.*
+
 The skill's instructions and the dashboard are currently in Polish.
 
 ### Requirements
