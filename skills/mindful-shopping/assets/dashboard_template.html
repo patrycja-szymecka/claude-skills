@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Świadome Zakupy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f4f4f1;
+  --surface: #fcfcfb;
+  --surface-2: #f1f0ec;
+  --border: #e3e2dc;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --text-3: #7a7974;
+  --track: #e8e7e2;
+  --accent: #2a78d6;
+  --s-offer: #2a78d6;
+  --s-context: #eb6834;
+  --s-both: #1baf7a;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321; --border: #2e2e2b;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86; --track: #2c2c29;
+    --accent: #3987e5; --s-offer: #3987e5; --s-context: #d95926; --s-both: #199e70;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321; --border: #2e2e2b;
+  --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86; --track: #2c2c29;
+  --accent: #3987e5; --s-offer: #3987e5; --s-context: #d95926; --s-both: #199e70;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--page); color: var(--text);
+  font: 14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 16px 48px; }
+
+/* top bar */
+.topbar { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topbar .wrap { display: flex; align-items: center; gap: 12px; padding-top: 12px; padding-bottom: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; }
+.brand-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--text); color: var(--page);
+  display: grid; place-items: center; font-size: 15px; }
+.brand small { display: block; font-weight: 400; color: var(--text-3); font-size: 12px; }
+.topbar .spacer { flex: 1; }
+.btn { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 8px;
+  padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { background: var(--surface-2); }
+
+/* grid & cards */
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 16px; margin-top: 16px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+  box-shadow: var(--shadow); min-width: 0; }
+.span-4 { grid-column: span 4; } .span-5 { grid-column: span 5; } .span-6 { grid-column: span 6; }
+.span-7 { grid-column: span 7; } .span-8 { grid-column: span 8; } .span-12 { grid-column: span 12; }
+@media (max-width: 1000px) {
+  .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+}
+.card h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-2); margin: 0 0 4px; }
+.card .sub { color: var(--text-3); font-size: 13px; margin: 0 0 16px; }
+.muted { color: var(--text-3); }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 999px;
+  padding: 2px 10px; font-size: 12px; color: var(--text-2); background: var(--surface-2); white-space: nowrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+
+/* offer */
+.offer-title { font-size: 20px; font-weight: 600; letter-spacing: -.015em; line-height: 1.3; margin: 8px 0 4px; }
+.offer-store { color: var(--text-2); font-size: 13px; }
+.price-now { font-size: 36px; font-weight: 700; letter-spacing: -.02em; margin-top: 16px; line-height: 1.1; }
+.price-old { color: var(--text-3); text-decoration: line-through; font-size: 16px; margin-left: 8px; font-weight: 500; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin-top: 16px; font-size: 13px; }
+.kv dt { color: var(--text-3); } .kv dd { margin: 0; color: var(--text); text-align: right; }
+.specs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+
+/* gauge */
+.gauge-box { display: flex; flex-direction: column; align-items: center; }
+.gauge-box svg { width: 100%; max-width: 340px; height: auto; display: block; }
+.gauge-value { font-size: 48px; font-weight: 700; letter-spacing: -.03em; line-height: 1; margin-top: -6px; }
+.gauge-value span { font-size: 22px; font-weight: 600; color: var(--text-2); }
+.zone-chip { margin-top: 8px; font-weight: 600; font-size: 13px; color: var(--text); }
+.kpis { width: 100%; margin-top: 18px; display: grid; gap: 12px; }
+.kpi-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: baseline; }
+.kpi-row .lbl { font-size: 13px; color: var(--text-2); }
+.kpi-row .val { font-weight: 600; font-size: 14px; }
+.meter { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
+.meter > i { display: block; height: 100%; border-radius: 3px; }
+
+/* verdict */
+.verdict-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 700;
+  letter-spacing: -.02em; text-transform: capitalize; margin-top: 8px; }
+.verdict-badge .ico { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; font-size: 16px; }
+.verdict-head { font-size: 15px; font-weight: 500; margin: 10px 0 12px; line-height: 1.45; }
+ul.clean { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+ul.clean li { position: relative; padding-left: 18px; font-size: 13px; color: var(--text-2); }
+ul.clean li::before { content: ""; position: absolute; left: 4px; top: 8px; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--text-3); }
+.target { margin-top: 16px; padding: 12px; border-radius: 10px; background: var(--surface-2); font-size: 13px; }
+.target b { font-size: 18px; display: block; color: var(--text); }
+
+/* bias bars */
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-2); margin-bottom: 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: minmax(120px, 210px) 1fr 52px; gap: 12px; align-items: center;
+  cursor: default; border-radius: 6px; padding: 2px 0; }
+.bar-row:hover .bar-fill { filter: brightness(1.08); }
+.bar-name { font-size: 13px; line-height: 1.25; }
+.bar-name small { display: block; color: var(--text-3); font-size: 11px; }
+.bar-track { height: 14px; background: var(--track); border-radius: 0 4px 4px 0; position: relative; }
+.bar-fill { height: 100%; border-radius: 0 4px 4px 0; min-width: 2px; }
+.bar-pct { text-align: right; font-weight: 600; font-size: 13px; }
+@media (max-width: 560px) { .bar-row { grid-template-columns: 1fr 52px; } .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+
+/* survey */
+.survey { display: grid; gap: 10px; }
+.sv-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.sv-row:last-child { border-bottom: 0; }
+.sv-q { font-size: 12px; color: var(--text-3); }
+.sv-a { font-size: 13px; font-weight: 500; }
+.sv-risk { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: 12px; color: var(--text-2);
+  display: inline-flex; align-items: center; gap: 6px; }
+.quote { margin: 0 0 16px; padding: 12px 14px; border-left: 3px solid var(--border); background: var(--surface-2);
+  border-radius: 0 10px 10px 0; font-size: 13px; color: var(--text-2); font-style: italic; }
+
+/* bias detail */
+.bias-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; align-items: start; }
+@media (max-width: 860px) { .bias-grid { grid-template-columns: 1fr; } }
+details.bias { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+details.bias[open] { background: var(--surface); }
+details.bias summary { list-style: none; cursor: pointer; padding: 14px 16px; display: grid;
+  grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+details.bias summary::-webkit-details-marker { display: none; }
+.rank { width: 26px; height: 26px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center;
+  font-size: 12px; font-weight: 600; color: var(--text-2); }
+.b-title { font-weight: 600; font-size: 14px; line-height: 1.3; }
+.b-title small { display: block; font-weight: 400; color: var(--text-3); font-size: 12px; }
+.b-meta { text-align: right; }
+.b-share { font-weight: 700; font-size: 16px; }
+.intensity { display: inline-flex; gap: 3px; margin-top: 2px; }
+.intensity i { width: 14px; height: 4px; border-radius: 2px; background: var(--track); display: block; }
+.intensity i.on { background: var(--text-2); }
+.b-body { padding: 0 16px 16px; display: grid; gap: 14px; }
+.b-sec h4 { margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 600; }
+.b-sec p { margin: 0; font-size: 13px; color: var(--text-2); }
+.evidence li { font-size: 13px; color: var(--text); }
+.amp { font-size: 12px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); color: var(--text-2); }
+.defense { background: color-mix(in srgb, var(--good) 9%, var(--surface)); border: 1px solid color-mix(in srgb, var(--good) 30%, var(--border));
+  border-radius: 10px; padding: 10px 12px; }
+.defense h4 { color: var(--text-2) !important; }
+.defense li { color: var(--text) !important; }
+.chev { display: inline-block; transition: transform .2s; color: var(--text-3); font-size: 14px; margin-left: 6px; }
+details[open] .chev { transform: rotate(180deg); }
+
+/* price */
+#priceChart { width: 100%; height: 300px; position: relative; }
+#priceChart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.facts { display: grid; gap: 12px; }
+.fact { padding: 12px 14px; border-radius: 10px; background: var(--surface-2); }
+.fact .k { font-size: 12px; color: var(--text-3); }
+.fact .v { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.fact .n { font-size: 12px; color: var(--text-2); }
+.cmp { display: grid; gap: 6px; margin-top: 8px; }
+.cmp-row { display: grid; grid-template-columns: 90px 1fr 44px; gap: 8px; align-items: center; font-size: 12px; color: var(--text-2); }
+.cmp-row .bar-track { height: 10px; }
+.pattern { font-size: 13px; color: var(--text-2); margin-top: 14px; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-2); margin-top: 8px; }
+.chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend svg { flex: none; }
+
+/* table */
+.tbl-wrap { overflow-x: auto; margin: 0 -4px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+th { text-align: left; font-weight: 500; color: var(--text-3); font-size: 12px; padding: 8px; border-bottom: 1px solid var(--border); }
+td { padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+tr.current td { background: var(--surface-2); }
+.delta { font-weight: 600; }
+.arrow-good { color: var(--good); } .arrow-bad { color: var(--critical); }
+td .note { color: var(--text-3); font-size: 12px; margin-top: 2px; }
+
+/* checklist */
+.check { display: grid; gap: 8px; }
+.check label { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; font-size: 13px;
+  padding: 10px 12px; border-radius: 10px; background: var(--surface-2); cursor: pointer; }
+.check input { width: 16px; height: 16px; margin: 1px 0 0; accent-color: var(--good); }
+.check label:has(input:checked) span { color: var(--text-3); text-decoration: line-through; }
+.progress { font-size: 12px; color: var(--text-2); margin-bottom: 10px; }
+
+/* misc */
+.method { font-size: 13px; color: var(--text-2); }
+.method code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+.method summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.err { background: color-mix(in srgb, var(--critical) 12%, var(--surface)); border: 1px solid var(--critical);
+  color: var(--text); border-radius: 12px; padding: 14px 16px; margin-top: 16px; font-size: 13px; }
+#tip { position: fixed; z-index: 50; pointer-events: none; background: var(--text); color: var(--page);
+  padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.4; max-width: 260px; opacity: 0;
+  transition: opacity .12s; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+#tip b { font-weight: 600; }
+footer { margin-top: 24px; font-size: 12px; color: var(--text-3); text-align: center; }
+@media print {
+  .topbar .btn { display: none; } .topbar { position: static; }
+  body { background: #fff; } .card { box-shadow: none; break-inside: avoid; }
+  details.bias { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><div class="brand-mark" aria-hidden="true">◐</div>
+      <div>Świadome Zakupy<small>Raport analizy oferty</small></div></div>
+    <div class="spacer"></div>
+    <span class="chip" id="confChip"></span>
+    <button class="btn" id="themeBtn" type="button" title="Przełącz motyw">◑ Motyw</button>
+    <button class="btn" type="button" onclick="window.print()">Drukuj / PDF</button>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const DATA = /*__ANALYSIS_DATA__*/null;
+
+window.addEventListener("error", (e) => {
+  const app = document.getElementById("app");
+  if (app) app.insertAdjacentHTML("afterbegin", '<div class="err"><b>Błąd renderowania danych:</b> ' +
+    String(e.message).replace(/[<>&]/g, "") + " — sprawdź format JSON (references/data-schema.md).</div>");
+});
+
+(function () {
+  "use strict";
+  const app = document.getElementById("app");
+  const tip = document.getElementById("tip");
+
+  /* ---------- helpers ---------- */
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const safeUrl = (u) => (typeof u === "string" && /^https?:\/\//i.test(u) ? u : null);
+  const num = (v) => (typeof v === "number" && isFinite(v) ? v : null);
+  const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+  const mean = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
+  const link = (u, text) => { const s = safeUrl(u); return s ? `<a href="${esc(s)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>` : esc(text); };
+
+  function showTip(html, ev) {
+    tip.innerHTML = html; tip.style.opacity = "1";
+    const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = ev.clientX + pad, y = ev.clientY + pad;
+    if (x + w > window.innerWidth - 8) x = ev.clientX - w - pad;
+    if (y + h > window.innerHeight - 8) y = ev.clientY - h - pad;
+    tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+  }
+  const hideTip = () => { tip.style.opacity = "0"; };
+
+  /* theme toggle */
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    const root = document.documentElement;
+    const isDark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = isDark ? "light" : "dark";
+    try { localStorage.setItem("ms-theme", root.dataset.theme); } catch (e) {}
+    if (window.__redraw) window.__redraw();
+  });
+  try { const t = localStorage.getItem("ms-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+
+  if (!DATA) {
+    app.innerHTML = `<div class="err"><b>Brak danych analizy.</b> Ten plik to szablon — zbuduj dashboard skryptem <code>scripts/build_dashboard.py</code> (patrz SKILL.md).</div>`;
+    return;
+  }
+
+  const meta = DATA.meta || {};
+  const LOCALE = meta.locale || "pl-PL";
+  const CUR = meta.currency || "PLN";
+  const money = (v, dec) => num(v) == null ? "—" : new Intl.NumberFormat(LOCALE, { style: "currency", currency: CUR, maximumFractionDigits: dec == null ? (Math.abs(v) % 1 ? 2 : 0) : dec }).format(v);
+  const pct = (v, d = 0) => num(v) == null ? "—" : new Intl.NumberFormat(LOCALE, { maximumFractionDigits: d }).format(v) + "%";
+  const dateFmt = (d, opts) => { const t = new Date(d + "T00:00:00"); return isNaN(t) ? esc(d) : t.toLocaleDateString(LOCALE, opts || { day: "numeric", month: "short", year: "numeric" }); };
+
+  const ZONES = [
+    { max: 25, key: "good", label: "Niski", icon: "✓" },
+    { max: 50, key: "warning", label: "Umiarkowany", icon: "!" },
+    { max: 75, key: "serious", label: "Wysoki", icon: "▲" },
+    { max: 101, key: "critical", label: "Bardzo wysoki", icon: "✕" },
+  ];
+  const zoneOf = (v) => ZONES.find((z) => v < z.max);
+  const riskLevel = (r) => r < 0.35 ? { key: "good", label: "niskie" } : r < 0.65 ? { key: "warning", label: "średnie" } : { key: "critical", label: "wysokie" };
+  const SOURCE = {
+    offer: { label: "Taktyka oferty", color: "var(--s-offer)" },
+    context: { label: "Twój kontekst", color: "var(--s-context)" },
+    both: { label: "Oferta + kontekst", color: "var(--s-both)" },
+  };
+
+  /* ---------- scores ----------
+     Source of truth: scripts/scoring.py, which embeds its results as DATA.scores.
+     computeScores() is only a fallback for data embedded without the script —
+     keep it in sync with scoring.py and references/scoring.md. */
+  function fromPython(D, sc) {
+    const byId = new Map((D.biases || []).map((b) => [b.id, b]));
+    const biases = (sc.biases || []).map((s) => {
+      const b = byId.get(s.id) || { id: s.id, name: s.name };
+      return { ...b, _w: num(b.weight) ?? 1, _it: clamp(num(b.intensity) ?? 0, 0, 3), _amp: clamp(num(b.amplifier) ?? 1, 0.5, 2),
+        _raw: s.raw, _share: s.share, _src: SOURCE[b.source] ? b.source : "offer" };
+    });
+    const w = sc.weights || {};
+    return {
+      biases, T: sc.tactics, B: sc.price_risk, P: sc.vulnerability, index: sc.index,
+      Bparts: (sc.price_parts || []).map((p) => ({ k: p.name, v: p.value })),
+      weights: { wT: w.tactics, wB: w.price, wP: w.vulnerability },
+      realDiscount: sc.real_discount_pct, claimed: sc.claimed_discount_pct,
+      bestAlt: sc.best_alternative_price, ref: sc.reference_price,
+    };
+  }
+  function computeScores(D) {
+    const offer = D.offer || {}, price = D.price || {};
+    const biases = (D.biases || []).map((b) => {
+      const w = num(b.weight) ?? 1, it = clamp(num(b.intensity) ?? 0, 0, 3), amp = clamp(num(b.amplifier) ?? 1, 0.5, 2);
+      return { ...b, _w: w, _it: it, _amp: amp, _raw: w * it * amp, _src: SOURCE[b.source] ? b.source : "offer" };
+    });
+    const totalRaw = biases.reduce((a, b) => a + b._raw, 0);
+    biases.forEach((b) => (b._share = totalRaw ? (b._raw / totalRaw) * 100 : 0));
+    biases.sort((a, b) => b._share - a._share);
+
+    const tacticSum = biases.filter((b) => b._src !== "context").reduce((a, b) => a + b._w * b._it, 0);
+    const T = 100 * (1 - Math.exp(-tacticSum / 12));
+
+    const cur = num(offer.current_price);
+    const ref = num(offer.lowest_30d_price) ?? num(price.typical_price);
+    const realDiscount = cur != null && ref ? ((ref - cur) / ref) * 100 : null;
+    const claimed = num(offer.claimed_discount_pct) ?? (num(offer.claimed_old_price) && cur != null ? ((offer.claimed_old_price - cur) / offer.claimed_old_price) * 100 : null);
+    const parts = [];
+    if (claimed != null && realDiscount != null) parts.push({ k: "Fałszywy rabat", v: clamp((claimed - realDiscount) * 2.5) });
+    if (num(price.promos_per_year) != null) parts.push({ k: "Wieczna promocja", v: clamp(price.promos_per_year * 6) });
+    const same = (D.alternatives || []).filter((a) => a.type === "ten sam produkt" && num(a.price) != null);
+    const bestAlt = same.length ? Math.min(...same.map((a) => a.price)) : null;
+    if (bestAlt != null && cur != null) parts.push({ k: "Drożej niż konkurencja", v: clamp(((cur - bestAlt) / bestAlt) * 100 * 4) });
+    const low = num(price.historical_low);
+    if (low != null && cur != null) parts.push({ k: "Drożej niż minimum historyczne", v: clamp(((cur - low) / low) * 100 * 3) });
+    const B = parts.length ? mean(parts.map((p) => p.v)) : null;
+
+    const risks = (D.survey || []).map((s) => num(s.risk)).filter((r) => r != null).map((r) => clamp(r, 0, 1));
+    const P = risks.length ? mean(risks) * 100 : null;
+
+    let wT = 0.45, wB = B == null ? 0 : 0.30, wP = P == null ? 0 : 0.25;
+    const sumW = wT + wB + wP;
+    const index = (wT * T + wB * (B ?? 0) + wP * (P ?? 0)) / sumW;
+    return { biases, T, B, Bparts: parts, P, index, weights: { wT: wT / sumW, wB: wB / sumW, wP: wP / sumW }, realDiscount, claimed, bestAlt, ref };
+  }
+
+  const S = DATA.scores && Array.isArray(DATA.scores.biases) ? fromPython(DATA, DATA.scores) : computeScores(DATA);
+  const offer = DATA.offer || {}, price = DATA.price || {}, verdict = DATA.verdict || {};
+
+  /* ---------- confidence chip ---------- */
+  const confColor = { "wysoka": "good", "średnia": "warning", "niska": "critical" }[String(meta.confidence || "").toLowerCase()] || "warning";
+  const confChip = document.getElementById("confChip");
+  confChip.innerHTML = `<span class="dot" style="background:var(--${confColor})"></span>Pewność danych: ${esc(meta.confidence || "—")}`;
+  confChip.title = meta.confidence_note || "";
+
+  /* ---------- gauge ---------- */
+  function arcPath(cx, cy, r, v0, v1) {
+    const a0 = Math.PI * (1 - v0 / 100), a1 = Math.PI * (1 - v1 / 100);
+    const x0 = cx + r * Math.cos(a0), y0 = cy - r * Math.sin(a0), x1 = cx + r * Math.cos(a1), y1 = cy - r * Math.sin(a1);
+    return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+  }
+  function gaugeSVG(v) {
+    const cx = 160, cy = 168, z = zoneOf(v);
+    let s = `<svg viewBox="0 0 320 196" role="img" aria-label="Wskaźnik ryzyka manipulacji ${Math.round(v)}%, strefa ${z.label}">`;
+    [[0, 25, "good"], [25, 50, "warning"], [50, 75, "serious"], [75, 100, "critical"]].forEach(([a, b, k]) => {
+      s += `<path d="${arcPath(cx, cy, 142, a + 0.7, b - 0.7)}" stroke="var(--${k})" stroke-width="7" fill="none"/>`;
+    });
+    s += `<path d="${arcPath(cx, cy, 120, 0, 100)}" stroke="var(--track)" stroke-width="20" fill="none" stroke-linecap="round"/>`;
+    if (v > 0.5) s += `<path d="${arcPath(cx, cy, 120, 0, v)}" stroke="var(--${z.key})" stroke-width="20" fill="none" stroke-linecap="round"/>`;
+    [25, 50, 75].forEach((t) => {
+      const a = Math.PI * (1 - t / 100);
+      s += `<text x="${(cx + 158 * Math.cos(a)).toFixed(1)}" y="${(cy - 158 * Math.sin(a) + 4).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--text-3)">${t}</text>`;
+    });
+    s += `<text x="${cx - 142}" y="${cy + 20}" text-anchor="middle" font-size="11" fill="var(--text-3)">0</text>`;
+    s += `<text x="${cx + 142}" y="${cy + 20}" text-anchor="middle" font-size="11" fill="var(--text-3)">100</text>`;
+    const a = Math.PI * (1 - v / 100);
+    s += `<line x1="${cx}" y1="${cy}" x2="${(cx + 98 * Math.cos(a)).toFixed(2)}" y2="${(cy - 98 * Math.sin(a)).toFixed(2)}" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="8" fill="var(--text)" stroke="var(--surface)" stroke-width="3"/>`;
+    return s + `</svg>`;
+  }
+  const kpi = (label, v, hint) => {
+    if (v == null) return `<div class="kpi-row" title="${esc(hint)}"><span class="lbl">${esc(label)}</span><span class="val muted">brak danych</span><div class="meter"></div></div>`;
+    const z = zoneOf(v);
+    return `<div class="kpi-row" title="${esc(hint)}"><span class="lbl">${esc(label)}</span><span class="val">${Math.round(v)}%</span><div class="meter"><i style="width:${clamp(v)}%;background:var(--${z.key})"></i></div></div>`;
+  };
+
+  /* ---------- verdict ---------- */
+  const VERDICT = {
+    "kup": { k: "good", i: "✓" }, "kup gdzie indziej": { k: "good", i: "↗" },
+    "poczekaj": { k: "warning", i: "⏸" }, "odpuść": { k: "critical", i: "✕" },
+  };
+  const vd = VERDICT[String(verdict.decision || "").toLowerCase()] || { k: "warning", i: "?" };
+
+  /* ---------- build HTML ---------- */
+  const z = zoneOf(S.index);
+  const claimedOld = num(offer.claimed_old_price);
+  let html = "";
+
+  // Row 1: offer | gauge | verdict
+  html += `<section class="grid">`;
+  html += `<article class="card span-4">
+    <h2>Analizowana oferta</h2>
+    <div class="offer-title">${link(offer.url, offer.title || "Oferta")}</div>
+    <div class="offer-store">${esc(offer.store || "")}${offer.category ? " · " + esc(offer.category) : ""}</div>
+    <div class="price-now">${money(offer.current_price)}${claimedOld ? `<span class="price-old">${money(claimedOld)}</span>` : ""}</div>
+    <dl class="kv">
+      <dt>Rabat deklarowany</dt><dd>${S.claimed != null ? "−" + pct(S.claimed) : "—"}</dd>
+      <dt>Rabat realny</dt><dd><b>${S.realDiscount != null ? (S.realDiscount >= 0 ? "−" : "+") + pct(Math.abs(S.realDiscount), 1) : "—"}</b></dd>
+      <dt>Najniższa z 30 dni</dt><dd>${money(offer.lowest_30d_price)}${offer.omnibus_shown === false ? ` <span class="chip" style="margin-left:4px"><span class="dot" style="background:var(--critical)"></span>sklep nie podał</span>` : ""}</dd>
+      ${offer.shipping ? `<dt>Dostawa</dt><dd>${esc(offer.shipping)}</dd>` : ""}
+      <dt>Stan na</dt><dd>${dateFmt(offer.captured_at || meta.generated_at)}</dd>
+    </dl>
+    ${(offer.key_specs || []).length ? `<div class="specs">${offer.key_specs.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div>` : ""}
+  </article>`;
+
+  html += `<article class="card span-4">
+    <h2>Ryzyko manipulacji</h2>
+    <p class="sub">Jak mocno ta oferta i Twoja sytuacja sprzyjają decyzji pod wpływem marketingu.</p>
+    <div class="gauge-box">
+      ${gaugeSVG(S.index)}
+      <div class="gauge-value">${Math.round(S.index)}<span>%</span></div>
+      <div class="zone-chip"><span class="chip"><span class="dot" style="background:var(--${z.key})"></span>${z.icon} Poziom: ${z.label}</span></div>
+      <div class="kpis">
+        ${kpi("Taktyki sprzedażowe na stronie", S.T, "Siła technik perswazji wykrytych w ofercie")}
+        ${kpi("Nierzetelność ceny i promocji", S.B, "Fałszywy rabat, częstotliwość promocji, cena vs konkurencja i minimum historyczne")}
+        ${kpi("Twoja podatność (z ankiety)", S.P, "Na ile Twoja sytuacja, emocje i sposób trafienia na ofertę zwiększają ryzyko")}
+      </div>
+    </div>
+  </article>`;
+
+  html += `<article class="card span-4">
+    <h2>Werdykt</h2>
+    <div class="verdict-badge"><span class="ico" style="background:var(--${vd.k})">${vd.i}</span>${esc(verdict.decision || "—")}</div>
+    <p class="verdict-head">${esc(verdict.headline || "")}</p>
+    <ul class="clean">${(verdict.reasons || []).map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+    ${num(verdict.target_price) != null || verdict.wait_for ? `<div class="target">${num(verdict.target_price) != null ? `<span class="muted">Cena, przy której warto kupić</span><b>${money(verdict.target_price)}</b>` : ""}${verdict.wait_for ? `<div style="margin-top:4px">${esc(verdict.wait_for)}</div>` : ""}</div>` : ""}
+  </article>`;
+  html += `</section>`;
+
+  // Row 2: bias shares | survey
+  const srcPresent = [...new Set(S.biases.map((b) => b._src))];
+  html += `<section class="grid">
+    <article class="card span-7">
+      <h2>Udział efektów i błędów poznawczych</h2>
+      <p class="sub">Którym mechanizmom najbardziej możesz ulec przy tym zakupie. Udział = waga efektu × intensywność na stronie × Twoje wzmocnienie z ankiety.</p>
+      ${srcPresent.length > 1 ? `<div class="legend">${srcPresent.map((k) => `<span><span class="dot" style="background:${SOURCE[k].color}"></span>${SOURCE[k].label}</span>`).join("")}</div>` : ""}
+      <div class="bars">${S.biases.map((b, i) => `
+        <div class="bar-row" data-bias="${i}" tabindex="0">
+          <div class="bar-name">${esc(b.name)}<small>${esc(b.name_en || "")}</small></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(b._share / (S.biases[0]._share || 1)) * 100}%;background:${SOURCE[b._src].color}"></div></div>
+          <div class="bar-pct">${pct(b._share)}</div>
+        </div>`).join("")}</div>
+    </article>
+    <article class="card span-5">
+      <h2>Twój kontekst zakupu</h2>
+      <p class="sub">Odpowiedzi z ankiety i to, jak wpływają na ryzyko.</p>
+      ${DATA.user_reason ? `<blockquote class="quote">„${esc(DATA.user_reason)}”</blockquote>` : ""}
+      <div class="survey">${(DATA.survey || []).map((s) => {
+        const r = num(s.risk); const lv = r == null ? null : riskLevel(r);
+        return `<div class="sv-row"><div class="sv-q">${esc(s.question)}</div>
+          <div class="sv-risk">${lv ? `<span class="dot" style="background:var(--${lv.key})"></span>ryzyko ${lv.label}` : ""}</div>
+          <div class="sv-a">${esc(s.answer)}${s.note ? ` <span class="muted">— ${esc(s.note)}</span>` : ""}</div></div>`;
+      }).join("")}</div>
+    </article>
+  </section>`;
+
+  // Row 3: bias details
+  html += `<section class="grid"><article class="card span-12">
+    <h2>Jak działają te efekty — i jak się nie dać</h2>
+    <p class="sub">Rozwiń kartę, żeby zobaczyć dowody z tej oferty, mechanizm psychologiczny i konkretne sposoby obrony.</p>
+    <div class="bias-grid">${S.biases.map((b, i) => `
+      <details class="bias" id="bias-${i}" ${i < 2 ? "open" : ""}>
+        <summary>
+          <span class="rank">${i + 1}</span>
+          <span class="b-title">${esc(b.name)}<small>${esc(b.name_en || "")} · <span class="dot" style="background:${SOURCE[b._src].color}"></span> ${SOURCE[b._src].label}</small></span>
+          <span class="b-meta"><span class="b-share">${pct(b._share)}</span><span class="chev">▾</span><br>
+            <span class="intensity" title="Intensywność na stronie: ${b._it}/3">${[1, 2, 3].map((n) => `<i class="${n <= b._it ? "on" : ""}"></i>`).join("")}</span></span>
+        </summary>
+        <div class="b-body">
+          ${(b.evidence || []).length ? `<div class="b-sec"><h4>Co zauważyłem w ofercie</h4><ul class="clean evidence">${b.evidence.map((e) => `<li>${esc(e)}</li>`).join("")}</ul></div>` : ""}
+          ${b.how_it_works ? `<div class="b-sec"><h4>Jak to działa</h4><p>${esc(b.how_it_works)}</p></div>` : ""}
+          ${b.why ? `<div class="b-sec"><h4>Dlaczego to działa na mózg</h4><p>${esc(b.why)}</p></div>` : ""}
+          ${b.amplifier_reason ? `<div class="amp"><b>Twoje wzmocnienie ×${b._amp.toFixed(1)}</b> — ${esc(b.amplifier_reason)}</div>` : ""}
+          ${(b.defense || []).length ? `<div class="b-sec defense"><h4>Jak się nie dać</h4><ul class="clean">${b.defense.map((d) => `<li>${esc(d)}</li>`).join("")}</ul></div>` : ""}
+        </div>
+      </details>`).join("")}</div>
+  </article></section>`;
+
+  // Row 4: price chart | facts
+  const hist = (price.history || []).filter((p) => num(p.price) != null && p.date).sort((a, b) => a.date.localeCompare(b.date));
+  const low = num(price.historical_low);
+  const aboveLow = low != null && num(offer.current_price) != null ? ((offer.current_price - low) / low) * 100 : null;
+  html += `<section class="grid">
+    <article class="card span-8">
+      <h2>Historia ceny</h2>
+      <p class="sub">Znalezione punkty cenowe na tle ceny przekreślonej przez sklep. Najedź na wykres, aby zobaczyć szczegóły.</p>
+      ${hist.length >= 2 ? `<div id="priceChart"></div><div class="chart-legend" id="chartLegend"></div>` : `<p class="muted">Za mało punktów historii cen, by narysować wykres.</p>`}
+      ${price.promo_pattern ? `<p class="pattern"><b>Wzorzec promocji:</b> ${esc(price.promo_pattern)}</p>` : ""}
+    </article>
+    <article class="card span-4">
+      <h2>Prawda o cenie</h2>
+      <p class="sub">Rabat liczony od najniższej ceny z 30 dni${num(offer.lowest_30d_price) == null && num(price.typical_price) != null ? " (brak — użyto ceny typowej)" : ""}.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">Rabat deklarowany vs realny</div>
+          <div class="cmp">
+            <div class="cmp-row"><span>Deklarowany</span><div class="bar-track"><div class="bar-fill" style="width:${clamp(S.claimed ?? 0)}%;background:var(--text-3)"></div></div><b>${pct(S.claimed)}</b></div>
+            <div class="cmp-row"><span>Realny</span><div class="bar-track"><div class="bar-fill" style="width:${clamp(S.realDiscount ?? 0)}%;background:var(--accent)"></div></div><b>${pct(S.realDiscount, 1)}</b></div>
+          </div></div>
+        <div class="fact"><div class="k">Minimum historyczne</div><div class="v">${money(low)}</div>
+          <div class="n">${price.historical_low_date ? dateFmt(price.historical_low_date) + " · " : ""}${aboveLow != null ? (aboveLow > 0 ? "obecna cena wyższa o " + pct(aboveLow, 1) : "obecna cena = minimum") : ""}</div></div>
+        <div class="fact"><div class="k">Typowa cena</div><div class="v">${money(price.typical_price)}</div></div>
+        <div class="fact"><div class="k">Promocje w ciągu roku</div><div class="v">${num(price.promos_per_year) != null ? price.promos_per_year + "×" : "—"}</div>
+          <div class="n">${num(price.promos_per_year) != null ? (price.promos_per_year >= 8 ? "Promocja to raczej norma niż wyjątek" : price.promos_per_year >= 4 ? "Promocje pojawiają się regularnie" : "Promocje są rzadkie") : ""}</div></div>
+      </div>
+    </article>
+  </section>`;
+
+  // Row 5: alternatives | checklist
+  const alts = (DATA.alternatives || []).filter((a) => a && a.name).slice().sort((a, b) => (num(a.price) ?? 1e12) - (num(b.price) ?? 1e12));
+  const curP = num(offer.current_price);
+  html += `<section class="grid">
+    <article class="card span-7">
+      <h2>Podobne oferty i alternatywy</h2>
+      <p class="sub">Ten sam produkt w innych sklepach i porównywalne opcje, posortowane od najtańszej.</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Produkt</th><th>Sklep</th><th>Typ</th><th class="num">Cena</th><th class="num">vs ta oferta</th></tr></thead>
+        <tbody>
+          <tr class="current"><td><b>${esc(offer.title || "Ta oferta")}</b><div class="note">Analizowana oferta</div></td><td>${esc(offer.store || "")}</td><td>—</td><td class="num"><b>${money(curP)}</b></td><td class="num">—</td></tr>
+          ${alts.map((a) => {
+            const d = num(a.price) != null && curP != null ? a.price - curP : null;
+            const delta = d == null ? "—" : d < 0 ? `<span class="arrow-good">▼</span> <span class="delta">${money(Math.abs(d))} taniej</span>` : d > 0 ? `<span class="arrow-bad">▲</span> <span class="delta">${money(d)} drożej</span>` : "tyle samo";
+            return `<tr><td>${link(a.url, a.name)}${a.note ? `<div class="note">${esc(a.note)}</div>` : ""}</td><td>${esc(a.store || "")}</td><td>${esc(a.type || "")}</td><td class="num">${money(a.price)}</td><td class="num">${delta}</td></tr>`;
+          }).join("")}
+        </tbody></table></div>
+    </article>
+    <article class="card span-5">
+      <h2>Zanim klikniesz „Kup”</h2>
+      <p class="sub">Odhacz każdy punkt. Jeśli któryś budzi wątpliwość — to sygnał, żeby poczekać.</p>
+      <div class="progress" id="chkProg"></div>
+      <div class="check" id="chk">${(DATA.checklist || []).map((c, i) => `<label><input type="checkbox" data-i="${i}"><span>${esc(c)}</span></label>`).join("")}</div>
+    </article>
+  </section>`;
+
+  // Row 6: method, sources, limitations
+  const w = S.weights;
+  html += `<section class="grid">
+    <article class="card span-6 method">
+      <h2>Metodologia</h2>
+      <details><summary>Jak liczony jest wskaźnik</summary>
+        <p>Wskaźnik = <code>${(w.wT * 100).toFixed(0)}% × Taktyki</code> + <code>${(w.wB * 100).toFixed(0)}% × Nierzetelność ceny</code> + <code>${(w.wP * 100).toFixed(0)}% × Podatność</code>.</p>
+        <p><b>Taktyki</b> = 100 × (1 − e<sup>−Σ(waga × intensywność)/12</sup>) dla efektów pochodzących z oferty — wynik: ${Math.round(S.T)}%.</p>
+        <p><b>Nierzetelność ceny</b> = średnia z: ${S.Bparts.length ? S.Bparts.map((p) => `${esc(p.k)} ${Math.round(p.v)}%`).join(", ") : "brak danych"}.</p>
+        <p><b>Podatność</b> = średnie ryzyko odpowiedzi z ankiety × 100 — wynik: ${S.P != null ? Math.round(S.P) + "%" : "brak danych"}.</p>
+        <p><b>Udział efektu</b> = waga × intensywność (0–3) × wzmocnienie z ankiety (0,8–1,5), znormalizowane do 100%.</p>
+        <p class="muted">Wskaźnik to narzędzie edukacyjne i szacunek, a nie pomiar naukowy. Służy do zatrzymania się i namysłu.</p>
+      </details>
+      ${meta.confidence_note ? `<p style="margin-top:12px"><b>Pewność danych (${esc(meta.confidence || "")}):</b> ${esc(meta.confidence_note)}</p>` : ""}
+    </article>
+    <article class="card span-6">
+      <h2>Źródła i ograniczenia</h2>
+      <ul class="clean" style="margin-top:12px">${[...(DATA.sources || []), ...((price.sources) || [])].filter((s, i, arr) => arr.findIndex((x) => x.url === s.url && x.label === s.label) === i).map((s) => `<li>${link(s.url, s.label || s.url)}</li>`).join("") || `<li>Brak źródeł</li>`}</ul>
+      ${(DATA.limitations || []).length ? `<h2 style="margin-top:18px">Ograniczenia</h2><ul class="clean" style="margin-top:8px">${DATA.limitations.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>` : ""}
+    </article>
+  </section>
+  <footer>Wygenerowano ${dateFmt(meta.generated_at || new Date().toISOString().slice(0, 10))} · Świadome Zakupy — narzędzie edukacyjne, decyzja zawsze należy do Ciebie.</footer>`;
+
+  app.innerHTML = html;
+  document.title = "Świadome Zakupy · " + (offer.title || "analiza");
+
+  /* ---------- interactions ---------- */
+  document.querySelectorAll(".bar-row").forEach((row) => {
+    const b = S.biases[+row.dataset.bias];
+    const t = `<b>${esc(b.name)}</b><br>Udział: ${pct(b._share, 1)}<br>Intensywność: ${b._it}/3 · waga ${b._w} · wzmocnienie ×${b._amp.toFixed(1)}<br><span style="opacity:.75">Kliknij, aby zobaczyć wyjaśnienie</span>`;
+    row.addEventListener("mousemove", (e) => showTip(t, e));
+    row.addEventListener("mouseleave", hideTip);
+    row.addEventListener("click", () => { const d = document.getElementById("bias-" + row.dataset.bias); d.open = true; d.scrollIntoView({ behavior: "smooth", block: "center" }); });
+    row.addEventListener("keydown", (e) => { if (e.key === "Enter") row.click(); });
+  });
+
+  const chk = document.getElementById("chk"), prog = document.getElementById("chkProg");
+  const updProg = () => { const all = chk.querySelectorAll("input"), on = chk.querySelectorAll("input:checked"); prog.textContent = all.length ? `Odhaczono ${on.length} z ${all.length}` : ""; };
+  chk.addEventListener("change", updProg); updProg();
+
+  /* ---------- price chart ---------- */
+  function drawPrice() {
+    const box = document.getElementById("priceChart");
+    if (!box) return;
+    const W = Math.max(280, box.clientWidth), H = box.clientHeight || 300;
+    const m = { l: 64, r: 16, t: 14, b: 30 };
+    const pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const pts = hist.map((p) => ({ ...p, t: new Date(p.date + "T00:00:00").getTime() }));
+    const refs = [];
+    if (claimedOld) refs.push({ v: claimedOld, label: "Cena przekreślona", color: "var(--critical)", dash: "6 4" });
+    if (num(offer.lowest_30d_price) != null) refs.push({ v: offer.lowest_30d_price, label: "Najniższa z 30 dni", color: "var(--text-2)", dash: "4 4" });
+    if (low != null) refs.push({ v: low, label: "Minimum historyczne", color: "var(--text-3)", dash: "1 4" });
+    if (num(verdict.target_price) != null && verdict.target_price !== low) refs.push({ v: verdict.target_price, label: "Cena docelowa", color: "var(--good)", dash: "6 4" });
+    const allV = pts.map((p) => p.price).concat(refs.map((r) => r.v));
+    let yMin = Math.min(...allV), yMax = Math.max(...allV);
+    const span = yMax - yMin || yMax * 0.1 || 1;
+    const step = niceStep(span / 4);
+    yMin = Math.floor((yMin - span * 0.06) / step) * step; yMax = Math.ceil((yMax + span * 0.06) / step) * step;
+    const t0 = pts[0].t, t1 = pts[pts.length - 1].t || t0 + 1;
+    const x = (t) => m.l + ((t - t0) / (t1 - t0 || 1)) * pw;
+    const y = (v) => m.t + (1 - (v - yMin) / (yMax - yMin)) * ph;
+
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Wykres historii ceny">`;
+    for (let v = yMin; v <= yMax + 1e-9; v += step) {
+      s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border)" stroke-width="1"/>`;
+      s += `<text x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--text-3)">${money(v, 0)}</text>`;
+    }
+    const nT = Math.min(6, Math.max(2, Math.floor(pw / 110)));
+    for (let i = 0; i <= nT; i++) {
+      const t = t0 + ((t1 - t0) * i) / nT;
+      const lbl = new Date(t).toLocaleDateString(LOCALE, { month: "short", year: "2-digit" });
+      s += `<text x="${x(t)}" y="${H - 8}" text-anchor="${i === 0 ? "start" : i === nT ? "end" : "middle"}" font-size="11" fill="var(--text-3)">${esc(lbl)}</text>`;
+    }
+    // reference lines with collision-avoiding labels
+    const placed = [];
+    refs.slice().sort((a, b) => b.v - a.v).forEach((r) => {
+      const yy = y(r.v);
+      s += `<line x1="${m.l}" x2="${W - m.r}" y1="${yy}" y2="${yy}" stroke="${r.color}" stroke-width="1.5" stroke-dasharray="${r.dash}"/>`;
+      let ly = yy - 5;
+      placed.forEach((p) => { if (Math.abs(p - ly) < 13) ly = p + 13; });
+      placed.push(ly);
+      s += `<text x="${W - m.r - 4}" y="${ly}" text-anchor="end" font-size="11" fill="var(--text-2)" paint-order="stroke" stroke="var(--surface)" stroke-width="4">${esc(r.label)} ${money(r.v)}</text>`;
+    });
+    // price line
+    s += `<path d="${pts.map((p, i) => (i ? "L" : "M") + x(p.t).toFixed(1) + " " + y(p.price).toFixed(1)).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    pts.forEach((p, i) => {
+      const isLast = i === pts.length - 1;
+      s += `<circle cx="${x(p.t)}" cy="${y(p.price)}" r="${isLast ? 6 : p.promo ? 4.5 : 3}" fill="${p.promo || isLast ? "var(--accent)" : "var(--surface)"}" stroke="${isLast ? "var(--surface)" : "var(--accent)"}" stroke-width="2"/>`;
+    });
+    s += `<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${m.t + ph}" stroke="var(--text-3)" stroke-width="1" opacity="0"/>`;
+    s += `<rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="transparent" id="hit"/>`;
+    box.innerHTML = s + `</svg>`;
+
+    const svg = box.querySelector("svg"), xh = svg.querySelector("#xh"), hit = svg.querySelector("#hit");
+    hit.addEventListener("mousemove", (e) => {
+      const r = svg.getBoundingClientRect(); const mx = ((e.clientX - r.left) / r.width) * W;
+      let best = pts[0]; pts.forEach((p) => { if (Math.abs(x(p.t) - mx) < Math.abs(x(best.t) - mx)) best = p; });
+      xh.setAttribute("x1", x(best.t)); xh.setAttribute("x2", x(best.t)); xh.setAttribute("opacity", "1");
+      showTip(`<b>${money(best.price)}</b> · ${dateFmt(best.date)}${best.label ? "<br>" + esc(best.label) : ""}${best.promo ? "<br>Promocja" : ""}${best.source ? `<br><span style="opacity:.75">Źródło: ${esc(best.source)}</span>` : ""}`, e);
+    });
+    hit.addEventListener("mouseleave", () => { xh.setAttribute("opacity", "0"); hideTip(); });
+
+    const lg = document.getElementById("chartLegend");
+    if (lg) lg.innerHTML =
+      `<span><svg width="22" height="10"><line x1="0" x2="22" y1="5" y2="5" stroke="var(--accent)" stroke-width="2"/><circle cx="11" cy="5" r="3" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/></svg>Cena</span>` +
+      `<span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="var(--accent)"/></svg>Promocja / ta oferta</span>` +
+      refs.map((r) => `<span><svg width="22" height="10"><line x1="0" x2="22" y1="5" y2="5" stroke="${r.color}" stroke-width="1.5" stroke-dasharray="${r.dash}"/></svg>${esc(r.label)}</span>`).join("");
+  }
+  function niceStep(raw) {
+    const p = Math.pow(10, Math.floor(Math.log10(raw))); const f = raw / p;
+    return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+  }
+  window.__redraw = drawPrice;
+  if (hist.length >= 2) {
+    drawPrice();
+    let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawPrice, 120); });
+  }
+})();
+</script>
+</body>
+</html>

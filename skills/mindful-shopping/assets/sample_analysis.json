@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "generated_at": "2026-11-08",
+    "currency": "PLN",
+    "locale": "pl-PL",
+    "confidence": "średnia",
+    "confidence_note": "PRZYKŁAD DEMONSTRACYJNY — dane fikcyjne. W prawdziwej analizie: historia cen z porównywarki (9 punktów, 12 mies.), częstotliwość promocji z serwisu okazji, cena z 30 dni ze strony sklepu."
+  },
+  "offer": {
+    "title": "Słuchawki bezprzewodowe AuraSound Q9 ANC (przykład)",
+    "store": "SklepTech (przykład)",
+    "url": "https://example.com/aurasound-q9",
+    "category": "Słuchawki nauszne z ANC",
+    "current_price": 1299,
+    "claimed_old_price": 1899,
+    "claimed_discount_pct": 32,
+    "lowest_30d_price": 1349,
+    "omnibus_shown": true,
+    "shipping": "Darmowa dostawa od 199 zł",
+    "key_specs": ["Aktywna redukcja szumów", "30 h pracy", "Bluetooth 5.3", "Multipoint"],
+    "captured_at": "2026-11-08"
+  },
+  "user_reason": "Moje obecne słuchawki działają, ale dużo jeżdżę pociągiem i chciałabym lepszą redukcję szumów. Zobaczyłam reklamę na Instagramie z odliczaniem i trochę się boję, że promocja ucieknie.",
+  "survey": [
+    { "question": "Cel zakupu", "answer": "Ulepszenie tego, co mam", "risk": 0.6 },
+    { "question": "Skąd oferta", "answer": "Influencer / social media", "risk": 0.9 },
+    { "question": "Presja czasu", "answer": "Trochę — promocja się kończy", "risk": 0.5 },
+    { "question": "Budżet", "answer": "Na granicy", "risk": 0.5 },
+    { "question": "Czy masz podobną rzecz", "answer": "Tak, działa", "risk": 0.8 },
+    { "question": "Jak długo rozważasz", "answer": "Kilka dni", "risk": 0.4 },
+    { "question": "Nastrój", "answer": "Stres / zmęczenie", "risk": 0.8, "note": "Intensywny okres w pracy" },
+    { "question": "Porównywanie", "answer": "Pobieżnie", "risk": 0.5 }
+  ],
+  "biases": [
+    {
+      "id": "anchoring", "name": "Efekt zakotwiczenia", "name_en": "Anchoring",
+      "weight": 1.3, "intensity": 3, "amplifier": 1.1,
+      "amplifier_reason": "Porównywałaś ceny tylko pobieżnie, więc przekreślona kwota jest głównym punktem odniesienia.",
+      "source": "offer",
+      "evidence": ["Duża przekreślona cena 1899 zł obok ceny 1299 zł", "Najniższa cena z 30 dni to 1349 zł — produkt od tygodni nie kosztował 1899 zł"],
+      "how_it_works": "Kwota 1899 zł ustawia w głowie punkt odniesienia, przez co 1299 zł wygląda jak oszczędność 600 zł. W rzeczywistości w ostatnim miesiącu słuchawki kosztowały 1349 zł, więc realna różnica to 50 zł.",
+      "why": "Mózg nie wycenia rzeczy w próżni — dostosowuje się od pierwszej liczby, którą zobaczy, i robi to niewystarczająco. Działa to nawet wtedy, gdy wiemy, że kotwica jest sztuczna.",
+      "defense": ["Zakryj przekreśloną cenę i zapytaj: czy 1299 zł to dla mnie dobra cena za te funkcje?", "Porównuj z najniższą ceną z 30 dni (1349 zł) i ceną u konkurencji, nie z 1899 zł."]
+    },
+    {
+      "id": "urgency_fomo", "name": "Presja czasu / FOMO", "name_en": "Urgency / FOMO",
+      "weight": 1.3, "intensity": 3, "amplifier": 1.3,
+      "amplifier_reason": "Deklarujesz, że boisz się, że promocja ucieknie, a ofertę zobaczyłaś w reklamie z odliczaniem.",
+      "source": "both",
+      "evidence": ["Licznik „Oferta kończy się za 05:42:17” na górze strony", "Reklama na Instagramie z hasłem „tylko 48 h”"],
+      "how_it_works": "Licznik skraca czas na myślenie i porównywanie. Ten model był w podobnej cenie 9 razy w ciągu roku, więc termin jest w dużej mierze sztuczny.",
+      "why": "Pod presją czasu przełączamy się z myślenia analitycznego na szybkie i emocjonalne. Obawa przed przegapieniem okazji jest odczuwana mocniej niż korzyść z namysłu.",
+      "defense": ["Sprawdź wykres cen w raporcie — promocja wraca średnio co 6 tygodni.", "Zastosuj zasadę 72 godzin: dodaj produkt do listy życzeń i wróć po weekendzie."]
+    },
+    {
+      "id": "scarcity", "name": "Efekt niedoboru", "name_en": "Scarcity",
+      "weight": 1.2, "intensity": 2, "amplifier": 1.0,
+      "amplifier_reason": "Brak dodatkowych czynników z ankiety.",
+      "source": "offer",
+      "evidence": ["Komunikat „Zostały tylko 4 sztuki w tej cenie”"],
+      "how_it_works": "Informacja o kilku sztukach sugeruje, że produkt jest rozchwytywany i cenny. Ten sam model jest dostępny w co najmniej trzech innych sklepach.",
+      "why": "Rzadkość od zawsze była sygnałem wartości, a ograniczenie wyboru wywołuje reaktancję — chcemy czegoś bardziej, gdy ktoś nam to odbiera.",
+      "defense": ["Zapytaj: czy chciałabym to tak samo, gdyby było 500 sztuk?", "Sprawdź dostępność u konkurencji (tabela alternatyw)."]
+    },
+    {
+      "id": "social_proof", "name": "Społeczny dowód słuszności", "name_en": "Social proof",
+      "weight": 1.0, "intensity": 2, "amplifier": 1.3,
+      "amplifier_reason": "Ofertę poleciła influencerka — popularność i sympatia dla polecającego wzmacniają efekt.",
+      "source": "both",
+      "evidence": ["„Ponad 2 300 osób kupiło w tym miesiącu”", "Pop-up „Kasia z Gdańska właśnie kupiła”", "Post sponsorowany influencerki"],
+      "how_it_works": "Liczniki zakupów i powiadomienia o kupujących sugerują, że wybór jest sprawdzony. Post influencerki był oznaczony jako współpraca reklamowa.",
+      "why": "W niepewności zakładamy, że inni wiedzą lepiej. To skuteczny skrót myślowy, dlatego bywa wykorzystywany — liczniki bywają generowane, a polecenia opłacone.",
+      "defense": ["Przeczytaj recenzje 2–3★ i niezależne testy redukcji szumów.", "Pamiętaj, że polecenie z oznaczeniem #współpraca to reklama."]
+    },
+    {
+      "id": "pain_of_paying", "name": "Rozmycie bólu płacenia (raty, BNPL)", "name_en": "Pain of paying",
+      "weight": 1.2, "intensity": 2, "amplifier": 1.1,
+      "amplifier_reason": "Budżet jest na granicy — rata może ukryć, że zakup go przekracza.",
+      "source": "offer",
+      "evidence": ["„Już od 108 zł/mies. — raty 0%”", "Przycisk „Zapłać za 30 dni”"],
+      "how_it_works": "Kwota 108 zł miesięcznie odczuwa się znacznie lżej niż 1299 zł naraz, choć łączny koszt jest ten sam.",
+      "why": "Płacenie wywołuje dyskomfort; im mniej odczuwalny moment zapłaty, tym łatwiej wydać więcej.",
+      "defense": ["Licz pełną kwotę: 1299 zł.", "Zapytaj: czy kupiłabym to dziś, płacąc całość z konta?"]
+    },
+    {
+      "id": "emotional_spending", "name": "Zakupy pod wpływem emocji", "name_en": "Hot–cold empathy gap",
+      "weight": 1.0, "intensity": 2, "amplifier": 1.3,
+      "amplifier_reason": "Deklarujesz stres i zmęczenie — zakup może obiecywać szybką ulgę.",
+      "source": "context",
+      "evidence": ["Ankieta: nastrój „stres / zmęczenie”", "Hasło na stronie: „Zasługujesz na ciszę”"],
+      "how_it_works": "Zmęczenie sprawia, że obietnica spokoju w pociągu jest szczególnie kusząca, a analityczne myślenie słabsze.",
+      "why": "W stanie emocjonalnym przeceniamy, jak długo zakup poprawi nastrój, i nie doceniamy, jak bardzo emocje wpływają na decyzję.",
+      "defense": ["Nazwij emocję i wróć do decyzji w spokojniejszym momencie.", "Sprawdź, czy obecne słuchawki z dobrymi nakładkami nie wystarczą na kilka tygodni."]
+    },
+    {
+      "id": "zero_price", "name": "Efekt „za darmo”", "name_en": "Zero-price effect",
+      "weight": 1.0, "intensity": 1, "amplifier": 1.0,
+      "amplifier_reason": "Brak dodatkowych czynników z ankiety.",
+      "source": "offer",
+      "evidence": ["„Etui gratis do zamówienia”"],
+      "how_it_works": "Gratisowe etui podnosi atrakcyjność oferty, choć w innych sklepach etui jest w zestawie standardowo.",
+      "why": "„Za darmo” nie niesie ryzyka straty, więc emocjonalnie wygrywa z obiektywnie lepszą ofertą.",
+      "defense": ["Sprawdź, czy alternatywy nie mają etui w standardzie."]
+    },
+    {
+      "id": "default_effect", "name": "Efekt domyślności", "name_en": "Default effect",
+      "weight": 0.9, "intensity": 1, "amplifier": 1.0,
+      "amplifier_reason": "Brak dodatkowych czynników z ankiety.",
+      "source": "offer",
+      "evidence": ["W koszyku domyślnie zaznaczona „Ochrona+ 24 mies.” za 149 zł"],
+      "how_it_works": "Dodatkowa ochrona jest dodana automatycznie — żeby jej nie kupić, trzeba ją aktywnie odznaczyć.",
+      "why": "To, co jest ustawione domyślnie, zwykle zostaje: zmiana wymaga wysiłku i wygląda jak odejście od normy.",
+      "defense": ["Przed płatnością przejrzyj każdy zaznaczony dodatek w koszyku."]
+    }
+  ],
+  "price": {
+    "history": [
+      { "date": "2025-11-10", "price": 1599, "source": "porównywarka", "promo": false },
+      { "date": "2025-11-28", "price": 1199, "source": "porównywarka", "promo": true, "label": "Black Friday" },
+      { "date": "2026-01-05", "price": 1549, "source": "porównywarka", "promo": false },
+      { "date": "2026-02-14", "price": 1299, "source": "serwis okazji", "promo": true, "label": "Walentynki" },
+      { "date": "2026-03-20", "price": 1499, "source": "porównywarka", "promo": false },
+      { "date": "2026-05-04", "price": 1299, "source": "serwis okazji", "promo": true },
+      { "date": "2026-06-15", "price": 1449, "source": "porównywarka", "promo": false },
+      { "date": "2026-08-25", "price": 1249, "source": "serwis okazji", "promo": true, "label": "Powrót do szkoły" },
+      { "date": "2026-10-10", "price": 1349, "source": "porównywarka", "promo": false },
+      { "date": "2026-11-08", "price": 1299, "source": "strona oferty", "promo": true, "label": "Ta oferta" }
+    ],
+    "historical_low": 1199,
+    "historical_low_date": "2025-11-28",
+    "typical_price": 1449,
+    "promos_per_year": 9,
+    "promo_pattern": "Promocja w okolicach 1249–1299 zł wraca średnio co 6 tygodni. Najgłębsza obniżka (1199 zł) była w Black Friday 2025. Cena 1899 zł nie występuje w historii z ostatnich 12 miesięcy.",
+    "sources": [
+      { "label": "Porównywarka cen — historia (przykład)", "url": "https://example.com/historia" }
+    ]
+  },
+  "alternatives": [
+    { "name": "AuraSound Q9 ANC", "store": "ElektroMarket (przykład)", "price": 1249, "url": "https://example.com/alt1", "type": "ten sam produkt", "note": "Ten sam model, 50 zł taniej, etui w zestawie." },
+    { "name": "AuraSound Q9 ANC — outlet", "store": "SklepTech Outlet (przykład)", "price": 1049, "url": "https://example.com/alt2", "type": "ten sam produkt", "note": "Egzemplarz po zwrocie, pełna gwarancja 24 mies." },
+    { "name": "AuraSound Q8 ANC (poprzednia generacja)", "store": "ElektroMarket (przykład)", "price": 799, "url": "https://example.com/alt3", "type": "podobny produkt", "note": "Bardzo podobna redukcja szumów, brak multipoint — do pociągu w zupełności wystarczy." },
+    { "name": "Nordvik Calm 2", "store": "AudioPunkt (przykład)", "price": 1099, "url": "https://example.com/alt4", "type": "podobny produkt", "note": "Wyżej oceniana redukcja szumów w niezależnych testach, krótsza bateria (24 h)." }
+  ],
+  "verdict": {
+    "decision": "poczekaj",
+    "headline": "Realna obniżka to ok. 4%, nie 32% — a ta cena wraca regularnie.",
+    "reasons": [
+      "Najniższa cena z 30 dni (1349 zł) i historia pokazują, że 1899 zł to sztuczna kotwica.",
+      "Ta sama cena pojawiała się 9 razy w ciągu roku; licznik nie oznacza ostatniej szansy.",
+      "Twoje obecne słuchawki działają, a decyzję podejmujesz w stresie i pod wpływem reklamy.",
+      "Ten sam model jest taniej w innym sklepie, a w outlecie nawet o 250 zł."
+    ],
+    "target_price": 1199,
+    "wait_for": "Black Friday (koniec listopada) — rok temu 1199 zł. Albo od razu outlet za 1049 zł, jeśli potrzeba jest pilna."
+  },
+  "checklist": [
+    "Czy kupiłabym te słuchawki po 1299 zł, gdyby nie było przekreślonej ceny?",
+    "Czy sprawdziłam ten sam model w innych sklepach i w outlecie?",
+    "Czy odczekałam 72 godziny od zobaczenia reklamy?",
+    "Czy zapłaciłabym całą kwotę od razu, bez rat?",
+    "Czy odznaczyłam dodatki w koszyku (Ochrona+ 149 zł)?",
+    "Czy obecne słuchawki naprawdę nie spełniają swojej funkcji?"
+  ],
+  "sources": [
+    { "label": "Strona oferty (przykład)", "url": "https://example.com/aurasound-q9" },
+    { "label": "Porównywarka cen — historia (przykład)", "url": "https://example.com/historia" }
+  ],
+  "limitations": [
+    "To przykład demonstracyjny — produkt, sklepy i ceny są fikcyjne.",
+    "Historia cen obejmuje 12 miesięcy i jeden sklep; inne sklepy mogły mieć inne promocje."
+  ]
+}
