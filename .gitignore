@@ -4,3 +4,12 @@ test-output/
 dist/
 *.built.html
 portrait-*.html
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+.ruff_cache/
+
+# built shopping dashboards (contain personal survey answers)
+analizy/

@@ -64,3 +64,41 @@ skills/fragrance-advisor/
 ```
 
 Perfume and note images come from Fragrantica and are embedded in the portrait for the private use of the person it was made for.
+
+## mindful-shopping: Offer Manipulation Check
+
+Paste a link to an online offer and Claude checks which marketing tactics and cognitive biases it plays on before you buy. First a short survey (purpose, budget, time pressure, mood, what you already own), then Claude:
+
+- reads the offer page and records every sales tactic with evidence (strikethrough prices, "only here", gifts above a threshold, ratings, loyalty points),
+- compares the claimed discount with the real one, based on the EU "lowest price in the last 30 days" (Omnibus) rule, other shops and price history,
+- finds the same product elsewhere and comparable alternatives,
+- builds an HTML **dashboard**: a manipulation-risk gauge, the share of each bias, how each one works and how to resist it, a price chart, alternatives, and a verdict (buy / buy elsewhere / wait / skip).
+
+The skill's instructions and the dashboard are currently in Polish.
+
+### Requirements
+
+- **Claude Code**, ideally in the Claude desktop app: the built-in browser reads shops that block plain requests.
+- [uv](https://docs.astral.sh/uv/) to run the scoring script (Python 3.15, standard library only; uv downloads the interpreter). Without it the dashboard computes the scores itself in the browser.
+
+### Installation
+
+Copy `skills/mindful-shopping` into your Claude Code skills folder (`~/.claude/skills/mindful-shopping/`), the same way as above, and open a new session.
+
+### Usage
+
+Paste a link with a question such as **"Is this a good deal? https://…"**, or run `/mindful-shopping https://…`. Dashboards are saved to `analizy/` in the current folder.
+
+### Structure
+
+```
+skills/mindful-shopping/
+├── SKILL.md                     # main instructions
+├── references/                  # bias catalog, scoring, price research, data schema
+├── assets/
+│   ├── dashboard_template.html  # dashboard template
+│   └── sample_analysis.json     # example data
+├── scripts/                     # validation, scoring and dashboard build (Python)
+├── tests/                       # unittest suite
+└── pyproject.toml, uv.lock      # ruff and ty in the `lint` dependency group
+```
