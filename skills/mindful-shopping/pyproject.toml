@@ -1,0 +1,27 @@
+[project]
+name = "mindful-shopping"
+version = "0.2.0"
+description = "Validates offer analysis data, computes manipulation scores and builds the HTML dashboard."
+requires-python = ">=3.15"
+dependencies = []
+
+[dependency-groups]
+lint = [
+    "ruff>=0.17.4",
+    "ty>=0.0.99",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+src = ["scripts", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+# Messages are Polish text; the en dash in ranges like "0.8–1.5" is intentional.
+allowed-confusables = ["–"]
+
+[tool.ty.environment]
+extra-paths = ["scripts"]
